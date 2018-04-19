@@ -1,0 +1,127 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>师傅地址</title>
+    <link rel="stylesheet" href="http://cache.amap.com/lbs/static/main1119.css"/>
+    <script type="text/javascript"
+            src="http://webapi.amap.com/maps?v=1.4.3&key=c58652b94481fcb3781ac910bbced365&plugin=AMap.InfoWindow,AMap.Marker"></script>
+    <script type="text/javascript" src="http://cache.amap.com/lbs/static/addToolbar.js"></script>
+    <script src="http://libs.baidu.com/jquery/2.1.1/jquery.min.js"></script>
+</head>
+<style>
+</style>
+<body>
+<div id="container"></div>
+<script type="text/javascript">
+  var lnglats = [[116.368904, 39.923423]];
+  //师傅当前经纬度，订单，用户经纬度
+  var dd_lon_lat1=sessionStorage.getItem("dd_lon_lat"),
+    dd_lon_lat_order1=sessionStorage.getItem("dd_lon_lat_order"),
+    dd_distance11=sessionStorage.getItem("dd_distance1"),
+    formatted_location11=sessionStorage.getItem("formatted_location1");
+
+  var dd_lon_lat_order1_masterInfo;
+  var dd_lon_lat_order1_name1;
+  var dd_lon_lat_order1_tel1;
+
+  console.log(1,dd_lon_lat1);
+  console.log(2,JSON.parse(dd_lon_lat_order1));
+  console.log(3,dd_distance11);
+  console.log(4,formatted_location11);
+  if(dd_lon_lat1){//师傅经纬度
+    dd_lon_lat1=JSON.parse(sessionStorage.getItem("dd_lon_lat"));
+  }
+  if(dd_lon_lat_order1){//师傅订单 有
+    dd_lon_lat_order1=JSON.parse(sessionStorage.getItem("dd_lon_lat_order"));
+    dd_lon_lat_order1_name1=dd_lon_lat_order1.masterId;
+    dd_lon_lat_order1_tel1=dd_lon_lat_order1.linkmanName;
+  }else{//师傅订单 没有
+    dd_lon_lat_order1_masterInfo=JSON.parse(sessionStorage.getItem("dd_lon_lat_order_masterInfo"));
+  }
+  if(dd_distance11){//用户经纬度
+    dd_distance11=JSON.parse(sessionStorage.getItem("dd_distance1"));
+  }
+  if(formatted_location11){//师傅经纬度转文字
+    formatted_location11=JSON.parse(sessionStorage.getItem("formatted_location1"));
+  }
+  lnglats[0]=dd_lon_lat1;//师傅经纬度给lnglats
+
+  //初始化地图对象，加载地图
+  var map = new AMap.Map("container", {
+      resizeEnable: true,
+      zoom:10
+  });
+
+  var location_str1=dd_distance11;
+  var location_num1=dd_distance11.indexOf(',');
+  var location_num_one1=location_str1.slice(0, location_num1);
+  var location_num_two1=location_str1.slice(location_num1 +1 ,location_str1.length);
+  var dd_distance1=location_num_one1 * 1;//用户经纬度给dd_distance去计算
+  var dd_distance2=location_num_two1 * 1;//用户经纬度给dd_distance去计算
+
+  var location_str2=dd_lon_lat1;
+  var location_num2=dd_lon_lat1.indexOf(',');
+  var location_num_one2=location_str2.slice(0, location_num2);//师傅经纬度给dd_distance去计算
+  var location_num_two2=location_str2.slice(location_num2 +1 ,location_str2.length);//师傅经纬度给dd_distance去计算
+
+  var lnglat = new AMap.LngLat(location_num_one2[0],location_num_two2[1]); //测算距离
+  var lnglat1 = lnglat.distance([dd_distance1, dd_distance2]);
+
+  console.log('用户', dd_distance1, dd_distance2);
+  console.log('师傅', location_num_one2, location_num_two2);
+  var lnglat_text;
+  if(lnglat1 < 1000){
+    lnglat_text=lnglat1+"米";
+  }else if(lnglat1 > 1000){
+    lnglat_text=(Math.round(lnglat1/100)/10).toFixed(1) + "公里";
+  }
+
+  if(dd_lon_lat_order1 == 'undefined'){
+      lnglat_text='没有订单';
+  }
+
+  var content_text=`
+        <p>
+          <span>师傅工号:</span><span>${dd_lon_lat_order1  ? dd_lon_lat_order1_name1 : dd_lon_lat_order1_masterInfo.id}</span>&nbsp;&nbsp;&nbsp;
+          <span>师傅姓名:</span><span>${dd_lon_lat_order1  ? dd_lon_lat_order1_tel1 : dd_lon_lat_order1_masterInfo.name}</span>
+        </p>
+        <p>
+           <span>当前地址:</span><span id="dd_formatted_address_dom">${formatted_location11 ? formatted_location11 : '无'}</span>
+        </p>
+        <p>
+          <span>距离服务地点:</span><span id="service_point">${lnglat_text ? lnglat_text : '无'}</span>
+        </p>
+    `;
+
+  //  var lnglats = [[116.368904, 39.923423],];
+  var infoWindow = new AMap.InfoWindow({offset: new AMap.Pixel(0, -30)});
+    for (var i = 0, marker; i < lnglats.length; i++) {
+        var marker = new AMap.Marker({
+            position: lnglats[0],
+            map: map
+        });
+
+        //marker.content = '我是第' + (i + 1) + '个Marker';
+        marker.content = content_text;
+        marker.on('click', markerClick);
+        marker.emit('click', {target: marker});
+    }
+    function markerClick(e) {
+      infoWindow.setContent(e.target.content);
+        infoWindow.open(map, e.target.getPosition());
+    }
+    map.setFitView();
+
+
+    //清空当前的数据，防止没有gps数据的师傅借用此数据
+  sessionStorage.removeItem("dd_lon_lat"),
+  sessionStorage.removeItem("dd_lon_lat_order"),
+  sessionStorage.removeItem("dd_distance1"),
+   sessionStorage.removeItem("formatted_location1");
+  sessionStorage.removeItem("dd_lon_lat_order_masterInfo");
+</script>
+</body>
+</html>

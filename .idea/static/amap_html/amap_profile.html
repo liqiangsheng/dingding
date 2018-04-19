@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+  <title>师傅分布图</title>
+  <link rel="stylesheet" href="http://cache.amap.com/lbs/static/main1119.css"/>
+  <link rel="stylesheet" href="css/header_search.css">
+  <!--&plugin=AMap.Autocomplete,AMap.PlaceSearch,AMap.ToolBar,AMap.Scale,AMap.OverView-->
+  <script type="text/javascript"
+          src="http://webapi.amap.com/maps?v=1.4.3&key=c58652b94481fcb3781ac910bbced365&plugin=AMap.CitySearch,AMap.InfoWindow,AMap.Marker,AMap.ToolBar,AMap.Scale,AMap.OverView"
+  ></script>
+  <script type="text/javascript" src="http://cache.amap.com/lbs/static/addToolbar.js"></script>
+</head>
+<style>
+  #container{
+    top:60px;
+    height: auto;
+    /*height: 100%;*/
+  }
+</style>
+<body>
+<div class="amap_top">
+  <div class="select_box">
+    <div>
+      城市：
+    </div>
+    <div class="select_box_select">
+      <select name="" id="select_search">
+        <option value="" selected>请选择</option>
+        <option value="深圳">深圳</option>
+        <!--<option value="广州">广州</option>-->
+      </select>
+    </div>
+  </div>
+  <div class="button_search">
+    <button id="button_search">搜 索</button>
+  </div>
+  <div class="reserved">
+
+  </div>
+</div>
+<div id="container"></div>
+<script src="http://libs.baidu.com/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript" src="js/amap1.js"></script>
+</body>
+</html>
