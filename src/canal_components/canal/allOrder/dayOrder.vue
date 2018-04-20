@@ -4,18 +4,18 @@
         <ul>
           <li v-show="isShow">
             <p>本月完工数</p>
-            <b>50</b>
+            <b>{{Data1}}</b>
           </li>
           <li v-show="isShow">
             <p>上月完工数</p>
-          <b>80</b>
+          <b>{{Data2}}</b>
           </li>
           <li v-show="isShow">
             <p>今年完工数</p>
-            <b>130</b>
+            <b>{{Data3}}</b>
           </li>
           <li>
-            <p>收起数据展示<img :src="jiantou" @click="jiantouClick"></p>
+            <p>{{wenzi}}<img :src="jiantou" @click="jiantouClick"></p>
 
           </li>
         </ul>
@@ -54,11 +54,26 @@ import WaitForService from "./orderPage/waitForService.vue"
         num : 1, //用来改变箭头的方向
         isShow:true,//完工list显示消失
         tabIndex:0, // 点击显示的页面
-
+        wenzi :"收起数据展示",
+        kehuID:"",//客户ID
+        Data1:"", //本月数据
+        Data2:"",//上月数据
+        Data3:"",//今年数据
       }
     },
 
     created(){
+      //子渠道
+      this.chushiId = JSON.parse(sessionStorage.getItem("userInfo"));
+      this.kehuID = this.chushiId[0].id;
+      let url1 = this.$apidomain+"/channelItem/countListByChannel?channelId="+this.kehuID;
+      this.$http.get(url1).then(res=>{
+        console.log(res.data.result)
+             this.Data1 = res.data.result.currentPeriodCompleteNum;
+             this.Data2 = res.data.result.lastCurrentPeriodCompleteNum;
+             this.Data3 = res.data.result.thisYearCompleteNum;
+
+      });
 
     },
     methods: {
@@ -66,10 +81,12 @@ import WaitForService from "./orderPage/waitForService.vue"
         this.num++;
         if(this.num%2== 0){
           this.jiantou = "./static/images/shang.png";
+          this.wenzi = "展开数据展示";
           this.isShow = false;
         }else{
           this.jiantou = "./static/images/xia.png";
           this.isShow = true;
+          this.wenzi = "收起数据展示";
         }
       },
       tabClick(v,i){ //切换显示的页面

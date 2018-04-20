@@ -383,4 +383,5 @@ export let state={
   },
   //分页
   fenyeObj:{},
+  trackAlterId:"", //渠道跟踪ID
 };

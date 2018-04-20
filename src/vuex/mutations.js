@@ -1,4 +1,7 @@
 export let mutations={
+  trackAlterId(state,data){
+     state.trackAlterId = data;
+  },
   edit(state,data){
     state.isEdit=data;
   },

@@ -94,6 +94,10 @@
          </thead>
          <tbody>
          <tr v-for="(item,index) in tableListData.orders">
+           <!--序号-->
+           <td>
+             {{index+1}}
+           </td>
            <!--工单号号-->
            <td>
              {{item.id}}
@@ -112,7 +116,7 @@
            </td>
            <!--下单时间-->
            <td>
-           {{item.createTime}}
+           {{item.appointmentDatetime|moment('YYYY-MM-DD HH:mm:ss')}}
            </td>
            <!--子渠道-->
            <td>
@@ -124,7 +128,7 @@
            </td>
            <!--紧急度-->
            <td>
-             {{item.emergencyDegre|jinjidu}}
+             <span :style="styleRed">{{item.emergencyDegree|jinjidu}}</span>
            </td>
            <!--工单状态-->
            <td>
@@ -132,8 +136,8 @@
            </td>
            <!--操作-->
            <td>
-              <span>跟踪</span>
-             <span>详情</span>
+              <span class="track" @click="trackClick(item,index)">跟踪</span>
+             <span class="detail" @click="detailClick(item,index)">详情</span>
            </td>
          </tr>
          </tbody>
@@ -159,25 +163,31 @@
       <p class="home cursor" @click="firstPage">首页</p>
     </div>
     <!--分页组件结束-->
+    <TrackAlert @isClose="isClose" v-if="trackShow" :trackAlterId="trackAlterId"></TrackAlert>
+    <DetailAlert @isClose1="isClose1" v-if="trackShow1" :trackAlterId="trackAlterId"></DetailAlert>
   </div>
 </template>
 <script>
+  import TrackAlert from "./alertInfos/truckAlert.vue"
+  import DetailAlert from "./alertInfos/detailAlter.vue"
   export default {
     components:{
+      TrackAlert,
+      DetailAlert
     },
     data() {
       return {
         options:[{  // 子渠道
           value: '1',
-          label: '黄金糕'
+          label: '请选择'
         }],
         ziqudao:"",
         options1:[{//渠道质保
           value: '0',
-          label: '质保内'
+          label: '质保外'
         },{
           value: '1',
-          label: '质保外'
+          label: '质保内'
         }],
         ziqudaozhibao:"",
         options2:[{//紧急度
@@ -191,7 +201,7 @@
         gongdanhao:"", //工单号
         tel:"",  //手机号
         lianxiren:"", //联系人
-        theadsName:["工单号","联系人","联系人手机号","分类","下单时间","子渠道","渠道质保","紧急度","工单状态","操作"],
+        theadsName:["序号","工单号","联系人","联系人手机号","分类","下单时间","子渠道","渠道质保","紧急度","工单状态","操作"],
         date:[], //日期
         selone:'',  //分类
         orderLabel:"",
@@ -213,6 +223,11 @@
         statisticsDateEndStr : "", //结束日期
         state:"", //状态
         officialPartnerSubsetId:"", //子渠道选中ID
+        trackShow: false,         //跟踪显示
+        trackAlterId : "",//渠道跟踪ID
+        styleRed:{"background":"#ffffff",color:"black"}, //背景色加急
+        trackShow1:false, //详情显示
+        detailAlterId : "",//渠道跟踪ID
       }
     },
     created(){
@@ -233,6 +248,22 @@
       });
     },
     methods: {
+      isClose(v){////接收给儿子组件数据
+        this.trackShow = v;
+      },
+      isClose1(v){////接收给儿子组件数据
+        this.trackShow1 = v;
+      },
+      trackClick(vItem,Iindex){ //跟踪
+            this.trackShow = true;
+            this.$store.commit("trackAlterId",vItem.id)
+              this.trackAlterId = vItem.id;
+      },
+      detailClick(vItem1,Iindex1){ //详情
+        this.trackShow1 = true;
+//        this.$store.commit("detailAlterId",vItem1.id)
+        this.detailAlterId = vItem1.id;
+      },
       zhibaoqudao(value){
             this.ziqudaoData.forEach(item=>{
                if(item.name == value){
@@ -248,7 +279,14 @@
         })
       },
       reset(){ //重置
-        this.query(false);
+        this.ziqudao ="";
+        this.ziqudaozhibao = "";
+        this.jinjidu="";
+          this.gongdanhao=""; //工单号
+          this.tel=""; //手机号
+          this.lianxiren=""; //联系人
+          this.date=[]; //日期
+          this.orderLabel="";
       },
       query(isTime=[]){  //初始数据
         if(isTime.length&&isTime[0]&&isTime[1]){
@@ -283,6 +321,13 @@
         this.$http.get(url,params).then(r=>{
           let data=r.data;
           this.tableListData = data.result;
+          this.tableListData.orders.forEach((v,i)=>{
+             if(v.emergencyDegree == "1"){
+
+                             this.styleRed ={"background":"red","color":"#ffffff"}
+             }
+          })
+
           this.showPages = data.result.pageNo;
           this.currentPageSize = data.result.pageSize;
           this.total = data.result.total;
@@ -312,6 +357,7 @@
   .allPage{
     width:100%;
     background:rgba(229,233,242,1);
+    /*position: relative;*/
   }
   .tableList,.tableList table{
     width: 100%;
@@ -382,11 +428,12 @@
     float: right;
     margin: 18px 5px;
   }
-  .cursor{
+  .cursor,.track,.detail{
     cursor: pointer;
-  }
-  .cursor:hover{
     color:rgba(32,160,255,1);
+  }
+  .cursor:hover,.track:hover,.detail:hover{
+    color:purple;
   }
 
 </style>

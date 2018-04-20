@@ -4,7 +4,7 @@
       <div class="center">
         <div class="centerDate">
           <ul>
-            <li><span style="display: inline-block;transform: translateY(-10px)">日期范围:</span>
+            <li><span style="display: inline-block;transform: translateY(-10px)">预约时间范围:</span>
               <Row style="display: inline-block">
                 <Col span="12">
                 <DatePicker type="daterange" confirm placement="bottom-end" placeholder="请选择日期" style="width: 200px;display: inline-block" v-model="date"></DatePicker>
@@ -116,7 +116,7 @@
           </td>
           <!--下单时间-->
           <td>
-            {{item.createTime}}
+            {{item.appointmentDatetime|moment('YYYY-MM-DD HH:mm:ss')}}
           </td>
           <!--子渠道-->
           <td>
@@ -128,11 +128,12 @@
           </td>
           <!--紧急度-->
           <td>
-            {{item.emergencyDegre|jinjidu}}
+            <span :style="styleRed">{{item.emergencyDegree|jinjidu}}</span>
           </td>
           <!--操作-->
           <td>
-            <span>详情</span>
+            <span class="track" @click="trackClick(item,index)">跟踪</span>
+            <span class="detail" @click="detailClick(item,index)">详情</span>
           </td>
         </tr>
         </tbody>
@@ -158,11 +159,14 @@
       <p class="home cursor" @click="firstPage">首页</p>
     </div>
     <!--分页组件结束-->
+    <TrackAlert @isClose="isClose" v-if="trackShow" :trackAlterId="trackAlterId"></TrackAlert>
   </div>
 </template>
 <script>
+  import TrackAlert from "./alertInfos/truckAlert.vue"
   export default {
     components:{
+      TrackAlert
     },
     data() {
       return {
@@ -173,10 +177,10 @@
         ziqudao:"",
         options1:[{//渠道质保
           value: '0',
-          label: '质保内'
+          label: '质保外'
         },{
           value: '1',
-          label: '质保外'
+          label: '质保内'
         }],
         ziqudaozhibao:"",
         options2:[{//紧急度
@@ -212,7 +216,10 @@
         statisticsDateEndStr : "", //结束日期
         state:["01","03"], //状态
         officialPartnerSubsetId:"", //子渠道选中ID
-      }
+        styleRed:{"background":"#ffffff",color:"black"}, //背景色加急
+        trackShow: false,         //跟踪显示
+        trackAlterId : "",//渠道跟踪ID
+    }
     },
     created(){
       this.query(false);
@@ -232,7 +239,18 @@
       });
     },
     methods: {
-      zhibaoqudao(value){
+      isClose(v){////接收给儿子组件数据
+        this.trackShow = v;
+      },
+      trackClick(vItem,Iindex){ //跟踪
+        this.trackShow = true;
+        this.$store.commit("trackAlterId",vItem.id)
+        this.trackAlterId = vItem.id;
+      },
+      detailClick(vItem1,Iindex1){ //详情
+
+      },
+      zhibaoqudao(value){ //质保渠道
         this.ziqudaoData.forEach(item=>{
           if(item.name == value){
             this.officialPartnerSubsetId = item.id;
@@ -247,7 +265,14 @@
         })
       },
       reset(){ //重置
-        this.query(false);
+        this.ziqudao ="";
+        this.ziqudaozhibao = "";
+        this.jinjidu="";
+        this.gongdanhao=""; //工单号
+        this.tel=""; //手机号
+        this.lianxiren=""; //联系人
+        this.date=[]; //日期
+        this.orderLabel="";
       },
       query(isTime=[]){  //初始数据
         if(isTime.length&&isTime[0]&&isTime[1]){
@@ -264,8 +289,8 @@
           "pageNo":JSON.stringify(this.showPages),
           "pageSize":JSON.stringify(this.currentPageSize),
           "officialPartnerId":this.$getLocalStorage("enrolleeinfo")[0].id, //客户 id
-          "createTimeStartStr":this.statisticsDateStartStr, //开始时间
-          "createTimeEndStr":this.statisticsDateEndStr,//结束时间
+          "appointmentDatetimeStartStr":this.statisticsDateStartStr, //开始时间
+          "appointmentDatetimeEndStr":this.statisticsDateEndStr,//结束时间
           "state":"01,03", //状态
           "officialPartnerSubsetId":this.officialPartnerSubsetId, //子渠道ID
           "channelWarranty":this.ziqudaozhibao, //渠道质保
@@ -282,6 +307,11 @@
         this.$http.get(url,params).then(r=>{
           let data=r.data;
           this.tableListData = data.result;
+          this.tableListData.orders.forEach((v,i)=>{
+            if(v.emergencyDegree == "1"){
+              this.styleRed ={"background":"red","color":"#ffffff"}
+            }
+          })
           this.showPages = data.result.pageNo;
           this.currentPageSize = data.result.pageSize;
           this.total = data.result.total;
@@ -389,5 +419,12 @@
   }
   .cursor:hover{
     color:rgba(32,160,255,1);
+  }
+  .cursor,.track,.detail{
+    cursor: pointer;
+    color:rgba(32,160,255,1);
+  }
+  .cursor:hover,.track:hover,.detail:hover{
+    color:purple;
   }
 </style>
