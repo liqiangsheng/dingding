@@ -122,6 +122,10 @@ const orderManage = resolve => require(['@/canal_components/order/details/orderM
 const finance = resolve => require(['@/canal_components/finance/finance'], resolve);
 const financeBill = resolve =>require(['@/canal_components/finance/finance_bill'],resolve);
 const financeCommission =resolve =>require(['@/canal_components/finance/finance_commission'],resolve)
+const accountOverview =resolve =>require(['@/canal_components/finance/accountOverview'],resolve)
+const accountRecharge =resolve =>require(['@/canal_components/finance/accountRecharge'],resolve)
+const accountExtract =resolve =>require(['@/canal_components/finance/accountExtract'],resolve)
+
 
 //首页  渠道统计 start
 const canalCensus = resolve => require(['@/canal_components/canal/canalCensus'], resolve);
@@ -369,10 +373,10 @@ let router = new Router({
           // leaf: true, // 只有一个节点
           iconCls: 'iconfont detailed_icons order_icon channel_order_icon', // 图标样式class
           children: [
-            // { path: '/census/canalCensus', component: canalCensus, name: '每日统计', menuShow: true },
+            { path: '/census/canalCensus', component: canalCensus, name: '每日统计', menuShow: true },
             // { path: '/canal_components/order/orderManage', component: orderManage, name: '渠道工单', menuShow: true },
             // {path: '/user/unusual', component: UserUnusual, name: '异常用户', menuShow: true}
-            { path: '/census/canalCensus', component: dayOrder, name: '每日工单', menuShow: true },
+            { path: '/canal_components/canal/allOrder/dayOrder', component: dayOrder, name: '每日工单', menuShow: true },
             { path: '/canal_components/canal/allOrder/newOrder', component: newOrder, name: '新建工单', menuShow: true },
           ]
         },
@@ -401,6 +405,9 @@ let router = new Router({
         children: [
           {path:'/finance/bill',component:financeBill,name:"账单结算",menuShow:true},
           {path:'/finance/commission',component:financeCommission,name:'提成管理',menuShow:true},
+          {path:'/finance/accountOverview',component:accountOverview,name:'账号概览',menuShow:true},
+          {path:'/finance/accountRecharge',component:accountRecharge ,name:'账号充值',menuShow:true},
+          {path:'/finance/accountExtract',component:accountExtract,name:'账号提现',menuShow:true},
           //{ path: '/canal_components/finance/finance', component: finance, name: '财务管理', menuShow: true },
         ]
       },

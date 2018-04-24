@@ -1,4 +1,7 @@
 export let mutations={//同步处理vueX
+  addDataCarter(state,data){
+    state.addDataCarter = data;
+  },
   detailAlterId(state,data){
      state.detailAlterId = data;
   },

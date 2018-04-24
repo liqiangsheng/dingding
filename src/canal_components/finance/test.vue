@@ -20,31 +20,15 @@
           </li>
         </ul>
    </div>
-  <div class="tab">
-    <el-menu theme="dark" class="el-menu-demo" mode="horizontal" >
-      <el-menu-item  v-for="(item,index) in tabList" index="index" :key="index" @click="tabClick(item,index)" >
-        {{item}}
-      </el-menu-item>
-    </el-menu>
-  </div>
-  <AllPage v-if="tabIndex == 0"></AllPage>
-  <Completed v-if="tabIndex == 1"></Completed>
-  <HaveBeenCancelled v-if="tabIndex == 2"></HaveBeenCancelled>
-  <ServiceIng v-if="tabIndex == 3"></ServiceIng>
-  <ToBeAllocated v-if="tabIndex == 4"></ToBeAllocated>
-  <WaitForService v-if="tabIndex == 5"></WaitForService>
+
+ 
 </div>
 </template>
 <script>
-import AllPage from "./orderPage/allPage.vue"
-import Completed from "./orderPage/completed.vue"
-import HaveBeenCancelled from "./orderPage/haveBeenCancelled.vue"
-import ServiceIng from "./orderPage/ServiceIng.vue"
-import ToBeAllocated from "./orderPage/toBeAllocated.vue"
-import WaitForService from "./orderPage/waitForService.vue"
+
   export default {
     components:{
-      AllPage,Completed,HaveBeenCancelled,ServiceIng,ToBeAllocated,WaitForService
+      
     },
     data() {
       return {
@@ -55,10 +39,6 @@ import WaitForService from "./orderPage/waitForService.vue"
         tabIndex:0, // 点击显示的页面
         wenzi :"收起数据展示",
       }
-    },
-
-    created(){
-
     },
     methods: {
       jiantouClick(){   //完工的消失显示
@@ -73,12 +53,9 @@ import WaitForService from "./orderPage/waitForService.vue"
           this.wenzi = "收起数据展示";
         }
       },
-      tabClick(v,i){ //切换显示的页面
-           this.tabIndex = i;
-      },
-    },
-    mounted() {
-    },
+     
+    }
+
   }
 </script>
 <style scoped lang="scss">
@@ -145,28 +122,7 @@ import WaitForService from "./orderPage/waitForService.vue"
      }
    }
   }
- .el-menu-demo{
-   background: #FFFFFF;
-   margin-bottom: 2px;
-   .el-menu-item{
-     background: #FFFFFF;
-     font-size:14px;
-     font-family:PingFangSC-Regular;
-     color:rgba(136,136,136,1);
-     border-bottom: 5px solid transparent;
-   }
-   .el-menu-item:hover{
-     background: #FFFFFF;
-     font-size:14px;
-     font-family:PingFangSC-Medium;
-     color:rgba(230,88,49,1);
-     border-bottom: 5px solid rgba(230,88,49,1);
-   }
- }
+
 </style>
 
-<style>
-  /*body{*/
-    /*background:transparent !important;*/
-  /*}*/
-</style>
+

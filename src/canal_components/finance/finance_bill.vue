@@ -22,11 +22,12 @@
         </div>
         <div class="tab">
             <el-menu theme="dark" class="el-menu-demo" mode="horizontal" >
-               <el-menu-item  v-for="(item,index) in tabList" index="index" @click="tabClick(item,index)" >
+               <el-menu-item  v-for="(item,index) in tabList" :index="index" :key="index" @click="tabClick(item,index)" :class="{'active':flag==index}">
                  {{item}}
                </el-menu-item>
             </el-menu>
         </div>
+        <hr>
         <DailySum v-if="tabIndex == 0"></DailySum>
         <MonthSum v-if="tabIndex == 1"></MonthSum>
     </div>
@@ -42,10 +43,11 @@
          return{
             isShow:true,
             num:1,
-            arrow:"../../assets/images/xia.png",
+            arrow:"./static/images/xia.png",
             content:"收起数据展示",
             tabList:["日汇总","月汇总"],
-            tabIndex:0
+            tabIndex:0,
+            flag:0,   //控制tab高亮
         }
      },
      methods:{
@@ -63,6 +65,7 @@
          },
          tabClick(v,i){
              this.tabIndex = i;
+             this.flag= i;
          }
 
      }
@@ -82,7 +85,7 @@
         ul li{
             width:282px;
             height:80px;
-            //float: left;
+            float: left;
             border-radius:4px;
             p{
                 width:100%;
@@ -115,6 +118,7 @@
             margin-left:18px;
         }
         ul li:nth-of-type(4){
+            height:0px;
             margin-left:25px;
             p{
                 width:100%;
@@ -122,31 +126,42 @@
                 font-size:14px;
                 text-align:left;
                 margin-top:4px;
-                height :20px;
-                line-height:20px;
+                height :30px;
+                line-height:30px;
                 img{
                     margin-left:6px;
                 }
             }
+            p:hover{
+                cursor: pointer;
+            }
         }
+    }
+    hr{
+        height:1px;
+        border:none;
+        border-top:1px solid #C0CCDA;
     }
     .el-menu-demo{
       display:flex;
       background:#FFFFFF;
       margin-left:24px;
-      margin-top:20px;
-      border-bottom: 5px solid transparent;
+      margin-top:30px;
       .el-menu-item{
           background:#FFFFFF;
           color:#888888;
           font-size:14px;
           font-family: PingFangSC;
+          border-bottom: 5px solid transparent;
 
       }
-      .el-menu-item:hover{
+      .active{
           background:#FFFFFF;
           color:#EA5413;
           border-bottom: 4px solid #EA5413;
+      }
+      .el-menu-item:hover{
+          background:#FFFFFF;
       }
     }
 

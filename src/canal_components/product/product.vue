@@ -2,21 +2,19 @@
   <div id="app" class="product">
     <div class="content">
       <el-menu theme="dark" class="el-menu-demo" mode="horizontal" >
-        <el-menu-item  v-for="(item,index) in productIndex" index="index" @click="product(index)" >
+        <el-menu-item  v-for="(item,index) in productIndex" :key="index" @click="product(index)" >
           {{item}}
         </el-menu-item>
       </el-menu>
-
        <div class="footer">
           <div class="footer_table">
             <!--表格数据-->
-            <ProductList v-if="productNum==0" @callBack="callBack"></ProductList>
-            <PartsList v-if="productNum==1" v-show="isShow1"></PartsList>
-            <PartsList1 v-if="productNum == 2" v-show="isShow"></PartsList1>
+              <ProductList v-if="productNum==0" @callBack="callBack"></ProductList>
+              <PartsList v-if="productNum==1" v-show="isShow1"></PartsList>
+              <PartsList1 v-if="productNum == 2" v-show="isShow"></PartsList1>
             <!--表格数据结束-->
           </div>
        </div>
-
     </div>
   </div>
 </template>
@@ -38,7 +36,7 @@
         ProductList,PartsList,PartsList1
     },
     methods:{
-      product(Oneindex){
+      product (Oneindex) {
         this.productNum = Oneindex;
         this.isShow1 = true;
         this.isShow = false;

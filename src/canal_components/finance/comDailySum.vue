@@ -5,15 +5,12 @@
               <div class="center_data">
                   <ul>
                       <li>
-                         <span>年份选择</span>
-                          <el-select v-model="date_state" placeholder="请选择" @change="selectorOne(date_state)">
-                            <el-option
-                              v-for="item in dateState"
-                              :key="item.id"
-                              :label="item.name"
-                              :value="item.name">
-                            </el-option>
-                          </el-select>
+                         <span style="display: inline-block;transform: translateY(-10px)">日期范围</span>
+                          <Row style="display: inline-block">
+                            <Col span="12">
+                                <DatePicker type="daterange" confirm placement="bottom-end" placeholder="请选择日期" style="width: 200px;display: inline-block" v-model="date"></DatePicker>
+                            </Col>
+                          </Row>
                       </li>
                       <li>
                           <span>账单状态</span>
@@ -50,10 +47,11 @@
               <thead>
                   <tr>
                       <th><input type="checkbox"/></th>
-                      <th>记账日期<img src="../../../static/images/paixu.png"></th>
-                      <th>账单金额 (元)<img src="../../../static/images/paixu.png"></th>
+                      <th>记账周期<img src="../../../static/images/paixu.png"></th>
+                      <th>收入 (元)<img src="../../../static/images/paixu.png"></th>
                       <th>账单状态</th>
                       <th>结款状态<img src="../../../static/images/jiekuan.png" alt=""></th>
+                      <th>记账时间</th>
                       <th>操作</th>
                   </tr>
               </thead>
@@ -64,8 +62,9 @@
                       <td>{{item.money}}</td>
                       <td>{{item.billState}}</td>
                       <td>{{item.state}}</td>
+                      <td>{{item.billDate}}</td>
                       <td>
-                          <span class="track" @click="queryClick()">查看明细</span>
+                          <span class="track" @click="queryClick(item,index)">查看明细</span>
                       </td>
                   </tr>
               </tbody>
@@ -78,7 +77,7 @@
     import PoPup from "./popup.vue"
     export default{
        components:{
-         PoPup
+          PoPup
        },
        data(){
            return{
@@ -91,23 +90,22 @@
                 {"id":"","name":"2018"},
                 ] ,
             billState:[  //分类
-                {"id":"","name":"旭日"},
-                {"id":"","name":"凤舞"},
-                {"id":"","name":"清瑶"},
-                {"id":"","name":"碧血"},
+                {"id":"","name":"所有"},
+                {"id":"","name":"未出账"},
+                {"id":"","name":"已出账"},
                 ] ,
             kontState:[
-                {"id":"","name":"武庚"},
-                {"id":"","name":"仓木"},
-                {"id":"","name":"白雪"},
+                {"id":"","name":"所有"},
+                {"id":"","name":"未结款"},
+                {"id":"","name":"已结款"},
             ],
             dataList:[
-                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","operation":"查看明细"},
+                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","billDate":"2018/04/05 12:12:00","operation":"查看明细"},
+                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","billDate":"2018/04/05 12:12:00","operation":"查看明细"},
+                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","billDate":"2018/04/05 12:12:00","operation":"查看明细"},
+                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","billDate":"2018/04/05 12:12:00","operation":"查看明细"},
+                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","billDate":"2018/04/05 12:12:00","operation":"查看明细"},
+                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","billDate":"2018/04/05 12:12:00","operation":"查看明细"},
             ]
            }
        },
@@ -119,11 +117,11 @@
                 }
                 })
              },
-             isClose(v){
-                 this.queryShow = v;
-             },
              queryClick(){
                  this.queryShow = true;
+             },
+             isClose(v){
+                 this.queryShow = v;
              }
        }
     }
@@ -180,7 +178,7 @@
       }
       tr{
           height:45px;
-          td:nth-of-type(6){
+          td:nth-of-type(7){
               color:#20A0FF;
           }
           span:hover{
@@ -219,14 +217,17 @@
              }
              th:nth-of-type(5){
                  width:160px;
-                  img{
+                 img{
                      position: absolute;
-                     right:20px;    
+                     right:20px;
                      top:13.5px;
                  }
              }
              th:nth-of-type(6){
-                 width:420px;
+                 width:206px;
+             }
+             th:nth-of-type(7){
+                 width:214px;
              }
           }
       }

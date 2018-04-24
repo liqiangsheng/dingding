@@ -5,4 +5,7 @@ export let actions={ //异步处理VUEX
   detailAlterId(store,data){
     store.commit("detailAlterId",data)
   },
+  addDataCarter(store,data){
+    store.commit("addDataCarter",data)
+  }
 };

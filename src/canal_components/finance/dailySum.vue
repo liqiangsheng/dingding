@@ -43,14 +43,14 @@
           </div>
       </div>
       <div class="tableList">
-          <table border="1" cellspacing="0" >
+          <table border="0" cellspacing="0" >
               <thead>
                   <tr>
                       <th><input type="checkbox" v-model="tabSelect"/></th>
-                      <th>记账周期</th>
-                      <th>账单金额 (元)</th>
+                      <th>记账周期 <img src="../../../static/images/paixu.png"></th>
+                      <th>账单金额 (元) <img src="../../../static/images/paixu.png"></th>
                       <th>账单状态</th>
-                      <th>结款状态</th>
+                      <th>结款状态 <img src="../../../static/images/jiekuan.png" alt=""></th>
                       <th>操作</th>
                   </tr>
               </thead>
@@ -61,23 +61,28 @@
                       <td>{{item.money}}</td>
                       <td>{{item.billState}}</td>
                       <td>{{item.state}}</td>
-                      <td>{{item.operation}}</td>
+                      <td>
+                        <span class="track" @click="queryClick(item,index)">查看明细</span>
+                      </td>
                   </tr>
               </tbody>
           </table>
       </div>
+      <PoPup @isClose="isClose" v-if="queryShow"></PoPup>
   </div>
 </template>
 <script>
+    import PoPup from "./popup.vue"
     export default{
        components:{
-
+         PoPup
        },
        data(){
            return{
             orderLabel:"",
             selone:"",
             tabSelect:"",
+            queryShow:false,   //查询明细
             billState:[  //分类
                 {"id":"","name":"唐三"},
                 {"id":"","name":"凤舞"},
@@ -106,7 +111,14 @@
                     this.selone=v.id
                 }
                 })
+             },
+             queryClick(){
+                 this.queryShow = true;
+             },
+             isClose(v){
+                 this.queryShow = v;
              }
+
        }
     }
 </script>
@@ -126,6 +138,7 @@
               li{
                   float: left;
                   margin-right:36px;
+                  color:#393939;
                   span{
                       font-size:14px;
                       margin-right:4px;
@@ -150,36 +163,67 @@
       border-color:#E0E6ED;
       //border-spacing: 1px;
       color:#393939;
+      font-size: 14px;
       th,td{
           text-align:center;
+          border-top:1px solid #E0E6ED;
+          border-right:1px solid #E0E6ED;
+      }
+      th{
+          background:#E5E9F2;
+          position: relative;
       }
       tr{
           height:45px;
+          td:nth-of-type(6){
+              color:#20A0FF;
+          }
+          span:hover{
+              cursor: pointer;
+          }
+      }
+      tr:hover{
+         background:#F7F8FA;    
       }
       thead{
            tr{
              height:45px;
              background:#E0E6ED;
-
              th:nth-of-type(1){
                  width:60px;
              }
              th:nth-of-type(2){
                  width:200px;
+                 img{
+                     position: absolute;
+                     left:176px;
+                     top:15px;
+                 }
              }
              th:nth-of-type(3){
                  width:200px;
+                 img{
+                     position: absolute;
+                     left:176px;
+                     top:15px;
+                 }
              }
              th:nth-of-type(4){
                  width:146px;
+                 
              }
              th:nth-of-type(5){
                  width:160px;
+                 img{
+                     position: absolute;
+                     right:20px;
+                     top:13.5px;
+                 }
              }
              th:nth-of-type(6){
                  width:420px;
              }
-          }
+          }         
       }
      
   }
