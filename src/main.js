@@ -22,6 +22,7 @@ import './filter'
 import {isButtonObj} from "@/components/commonJs/nav_ishow"
 import { mutations } from "@/vuex/mutations"
 import { state } from "@/vuex/state"
+import { actions } from "@/vuex/actions"
 import {testReg,imageExp,selectorExp,selectorExpSite} from "@/components/commonJs/regExp"
 import queryFun from "@/components/commonJs/queryFun"
 import seqencingIcon from "@/components/commInfo/seqencingIcon"
@@ -70,7 +71,8 @@ Vue.use(dialog);
 Mock.init();
 const store = new Vuex.Store({
     state,
-    mutations
+    mutations,
+    actions
 });
 Vue.config.productionTip = false;
 Vue.use(ElementUI);

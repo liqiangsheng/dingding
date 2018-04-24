@@ -988,3 +988,12 @@ Vue.filter('jinjidu',function(input){
   }
   return "无"
 });
+//渠道结算状态
+Vue.filter('orderStateShow1',function(input){
+ if("17"==input){
+    return "已出账";
+  }else if("18"==input){
+    return "已结款";
+  }
+  return "未出账,未结款"
+});

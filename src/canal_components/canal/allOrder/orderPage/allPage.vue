@@ -93,13 +93,13 @@
          </tr>
          </thead>
          <tbody>
-         <tr v-for="(item,index) in tableListData.orders">
+         <tr v-for="(item,index) in tableListData.orders" id="trHover">
            <!--序号-->
            <td>
              {{index+1}}
            </td>
            <!--工单号号-->
-           <td>
+           <td style="flex-grow:2">
              {{item.id}}
            </td>
            <!--联系人-->
@@ -164,7 +164,7 @@
     </div>
     <!--分页组件结束-->
     <TrackAlert @isClose="isClose" v-if="trackShow" :trackAlterId="trackAlterId"></TrackAlert>
-    <DetailAlert @isClose1="isClose1" v-if="trackShow1" :trackAlterId="trackAlterId"></DetailAlert>
+    <DetailAlert @isClose1="isClose1" v-if="trackShow1" :detailAlterId="detailAlterId"></DetailAlert>
   </div>
 </template>
 <script>
@@ -256,12 +256,14 @@
       },
       trackClick(vItem,Iindex){ //跟踪
             this.trackShow = true;
-            this.$store.commit("trackAlterId",vItem.id)
+//            this.$store.commit("trackAlterId",vItem.id) //同步
+               this.$store.dispatch("trackAlterId",vItem.id)//异步
               this.trackAlterId = vItem.id;
       },
       detailClick(vItem1,Iindex1){ //详情
         this.trackShow1 = true;
 //        this.$store.commit("detailAlterId",vItem1.id)
+         this.$store.dispatch("detailAlterId",vItem1.id);
         this.detailAlterId = vItem1.id;
       },
       zhibaoqudao(value){
@@ -323,7 +325,6 @@
           this.tableListData = data.result;
           this.tableListData.orders.forEach((v,i)=>{
              if(v.emergencyDegree == "1"){
-
                              this.styleRed ={"background":"red","color":"#ffffff"}
              }
           })
@@ -362,26 +363,54 @@
   .tableList,.tableList table{
     width: 100%;
     background:rgba(229,233,242,1);
+
   }
-  .tableList table theads{
+  .tableList table thead{
     width: 100%;
-    display: flex;
+    tr{
+      width: 100%;
+      display: flex;
+
+      th{
+        flex: 1;
+        height:52px;
+        font-size:14px;
+        font-family:PingFangSC-Regular;
+        color:rgba(57,57,57,1);
+        line-height:52px;
+        text-align: center;
+      };
+      th:nth-child(2){
+        flex-grow:2;
+      }
+    };
   }
-  .tableList table th{
-    flex: 1;
-    height:20px;
-    font-size:14px;
-    font-family:PingFangSC-Regular;
-    color:rgba(57,57,57,1);
-    line-height:20px;
-    text-align: center;
+  .tableList table tbody{
+    width: 100%;
+    tr{
+      width: 100%;
+      display: flex;
+      border-left: 1px solid #bfcbd9;
+      background:rgba(255,255,255,1);
+      td{
+        height:46px;
+        flex: 1;
+        line-height:46px;
+        text-align: center;
+        border: 1px solid #bfcbd9;
+        border-bottom: 0;
+        border-left: 0;
+      }
+    }
+    /*td:hover{*/
+      /*background: #DBF0FF;*/
+    /*}*/
+    tr:last-child{
+      border-bottom: 1px solid #bfcbd9;
+    }
   }
-  .tableList table td{
-    height:46px;
-    background:rgba(255,255,255,1);
-    flex: 1;
-    line-height:46px;
-    text-align: center;
+  .tableList table tbody #trHover:hover{
+    background: #DBF0FF;
   }
   .center{
     width:90%;
@@ -412,8 +441,8 @@
     }
     .bnt{
       margin-top: 20px;
-      width: 90%;
-      margin-left: 10%;
+      width: 50%;
+      margin: 0 auto;
       .el-button{
         width:200px;
       }

@@ -229,26 +229,50 @@
 <style scoped lang="scss">
   .productList,.productList table{
     width: 100%;
+    background:rgba(229,233,242,1);
   }
-  .productList table theads{
+  .productList table thead{
     width: 100%;
-    display: flex;
+    tr{
+      width: 100%;
+      display: flex;
+      th{
+        flex: 1;
+        height:52px;
+        font-size:14px;
+        font-family:PingFangSC-Regular;
+        color:rgba(57,57,57,1);
+        line-height:52px;
+        text-align: center;
+      };
+    };
   }
-  .productList table th{
-    flex: 1;
-    height:20px;
-    font-size:14px;
-    font-family:PingFangSC-Regular;
-    color:rgba(57,57,57,1);
-    line-height:20px;
-    text-align: center;
+  .productList table tbody{
+    width: 100%;
+    tr{
+      width: 100%;
+      display: flex;
+      border-left: 1px solid #bfcbd9;
+      td{
+        height:46px;
+        background:rgba(255,255,255,1);
+        flex: 1;
+        line-height:46px;
+        text-align: center;
+        border: 1px solid #bfcbd9;
+        border-bottom: 0;
+        border-left: 0;
+      }
+    }
+    td:hover{
+      background: #DBF0FF;
+    }
+    tr:last-child{
+      border-bottom: 1px solid #bfcbd9;
+    }
   }
-  .productList table td{
-    height:46px;
-    background:rgba(255,255,255,1);
-    flex: 1;
-    line-height:46px;
-    text-align: center;
+  .productList table tbody tr:hover{
+    background: #DBF0FF;
   }
   .center{
     width:100%;

@@ -13,70 +13,132 @@
                               <p><span></span>服务信息</p>
                               <div class="userInfos">
                                     <ul class="userInfosBox">
-                                      <li><span>工单号</span><span>{{}}</span></li>
-                                      <li><span>质保状态</span><span>{{}}</span></li>
-                                      <li><span>联系人</span><span>{{}}</span></li>
-                                      <li><span>服务地址</span><span>{{}}</span></li>
-                                      <li><span>预约时间</span><span>{{}}</span></li>
-                                      <li><span>服务时长</span><span>{{}}</span></li>
-                                      <li><span>师傅工号</span><span>{{}}</span></li>
-                                      <li><span>子渠道</span><span>{{}}</span></li>
+                                      <li><span>工单号</span><span>{{detailData.id}}</span><span>工单状态</span><span>{{detailData.state|orderStateShow}}</span></li>
+                                      <li><span>质保状态</span><span>{{detailData.channelWarranty|qudaozhibao}}</span><span>紧急程度</span><span>{{detailData.emergencyDegree|jinjidu}}</span></li>
+                                      <li><span>联系人</span><span>{{detailData.linkmanName}}</span><span>联系人手机</span><span>{{detailData.linkmanPhoneNum}}</span></li>
+                                      <li><span style="flex-grow: 1">服务地址</span><span style="flex-grow: 3">{{detailData.linkmanDetails}}</span></li>
+                                      <li><span>预约时间</span><span>{{detailData.appointmentDatetime|moment('YYYY-MM-DD HH:mm:ss')}}</span><span>完成时间</span><span>{{detailData.createTime|moment('YYYY-MM-DD HH:mm:ss')}}</span></li>
+                                      <li><span>服务时长</span><span>{{detailData.workTimeLimit}}</span><span>子渠道</span><span>{{detailData.officialPartnerSubsetName}}</span></li>
+                                      <li><span>师傅工号</span><span>{{detailData.masterId}}</span><span>工单类型</span><span>{{detailData.type|orderType}}</span></li>
+                                      <li><span style="flex-grow: 1">备注</span><span style="flex-grow: 3">{{detailData.remark}}</span></li>
                                     </ul>
-                                     <ul class="userInfosBox1">
-                                       <li><span>工单状态</span><span>{{}}</span></li>
-                                       <li><span>紧急程度</span><span>{{}}</span></li>
-                                       <li><span>联系人手机</span><span>{{}}</span></li>
-                                       <li><span style="border-right: 0;">　</span><span style="color: #FFFFFF">叮叮快修</span></li>
-                                       <li><span>完成时间</span><span>{{}}</span></li>
-                                       <li><span>子渠道</span><span>{{}}</span></li>
-                                       <li><span>工单类型</span><span>{{}}</span></li>
-                                       <li><span>备注</span><span>{{}}</span></li>
-                                     </ul>
                               </div>
                          </div>
                          <div class="userInformation1">
                            <p><span></span>服务类型</p>
-                           <div class="userInfos1">
+                           <div class="userInfos1"  v-for="(item,index) in chanpingleixing">
                              <div class="userInfosBox2">
-
+                                 <ul class="list1">
+                                   <li>产品名称</li>
+                                   <li style="flex-grow:4">{{item.serviceFullName}}</li>
+                                   <li>品牌</li>
+                                   <li>{{item.serviceBrand}}</li>
+                                   <li>型号</li>
+                                   <li>{{item.serviceModel}}</li>
+                                   <li style="flex-grow:1">数量</li>
+                                   <li style="flex-grow:1;border-right:0;">{{item.serviceSize}}</li>
+                                 </ul>
+                               <ul class="list2">
+                                 <li style="flex-grow:2">服务费</li>
+                                 <li>{{item.price2}}</li>
+                                 <li style="flex-grow:2">检测费</li>
+                                 <li>{{item.price1}}</li>
+                               </ul>
+                               <ul class="list3" v-show="listShow">
+                                 <li v-for="(item1,index2) in item.mountings">
+                                   <span>配件{{index2+1}}</span><span style="flex-grow:6">{{item1.serviceMountingsName}}</span>
+                                   <span>单价</span><span style="flex-grow:4">{{item1.serviceMountingsPrice}}</span>
+                                   <span>数量</span><span style="flex-grow:3">{{item1.serviceMountingsCount}}</span>
+                                 </li>
+                               </ul>
                              </div>
-                             <div class="userInfosBox3"></div>
                            </div>
                          </div>
                            <div class="userInformation2">
                              <p><span></span>费用说明</p>
                              <div class="userInfos2">
-                               <div class="userInfosBox4"></div>
-                               <div class="userInfosBox5"></div>
+                               <div class="userInfosBox4">
+                                   <ul class="list1">
+                                     <li>总检测费</li>
+                                     <li>{{detailData.price1Subtotal}}</li>
+                                     <li>总服务费</li>
+                                     <li>{{detailData.price2Subtotal}}</li>
+                                     <li>总配件费</li>
+                                     <li>{{detailData.price3Subtotal}}</li>
+                                     <li>总高空费</li>
+                                     <li style="border-right:0;">{{detailData.price4Subtotal}}</li>
+                                     <li>工单总费用</li>
+                                     <li style="border-right:0;">{{detailData.orderTotal}}</li>
+                                   </ul>
+                                   <ul class="list2">
+                                     <li>已退款</li>
+                                     <li>{{detailData.refundAmount}}</li>
+                                     <li>已返现</li>
+                                     <li>{{detailData.cashbackAmount}}</li>
+                                     <li>已付款</li>
+                                     <li>{{detailData.paidAmount}}</li>
+                                     <li>待付款</li>
+                                     <li>{{detailData.paidAmount}}</li>
+                                     <li>结款状态</li>
+                                     <li> {{detailData.state|orderStateShow1}}</li>
+                                   </ul>
+                               </div>
                              </div>
                            </div>
                              <div class="userInformation3">
-                               <p>申请维保？<img src=""></p>
-                               <p>致电客服热线：400-999-1891</p>
+                               <p @click="weibaiClick">申请维保？<img src="/static/images/wenhao.png" style="width: 18px;height: 18px"></p>
+                               <p v-show="shenqingweibao">致电客服热线：400-999-1891</p>
                              </div>
                          </div>
                    </div>
             </div>
-        </div>
+
   </div>
 </template>
 <script>
   export default {
     components:{
     },
+    props:["detailAlterId"],
     data() {
       return {
-
+        listShow:false,  //服务类型 配件费
+        peijian:[], //配件列表
+        detailData:{}, //详情数据
+        shenqingweibao:false, //申请维保
+        chanpingleixing:[], //产品类型
+        peijian:[], //配件
       }
     },
     created(){
+//          console.log(this.$store.state.detailAlterId,"vuex异步")
+      let url = this.$apidomain +"/orderquery/findOneDetails?id="+this.$store.state.detailAlterId;
+      this.$http.get(url).then(res=>{
+        console.log(res,"详情数据")
+        this.detailData = res.data.result.coreMainOrder;
+        this.chanpingleixing = res.data.result.coreMainOrderServices;
+        if(!this.detailData.remark){
+          this.detailData.remark = "暂无";
+        }
+        this.chanpingleixing.forEach(res=>{
+          this.peijian = res.mountings;
+          if(this.peijian.length <= 0){
+               this.listShow = false;
+          }else {
+            this.listShow = true;
+          }
+        })
 
+      })
     },
     methods: {
        close(){ //传值给父亲组件
         let isbool = false;
         this.$emit("isClose1",isbool)
-        }
+        },
+      weibaiClick(){ //申请维保
+         this.shenqingweibao = !this.shenqingweibao;
+      },
     },
     mounted() {
     },
@@ -133,7 +195,7 @@
   width: 100%;
   height: 93%;
   padding: 10px;
-  overflow: hidden;
+  overflow-y: auto;
 }
   .detail{
     width:100%;
@@ -160,86 +222,29 @@
       width: 100%;
       padding: 20px;
       display: flex;
-      .userInfosBox,.userInfosBox1{
-         flex: 1;
-      }
+
       .userInfosBox{
-        width: 100%;
-        border: 1px solid #CCCCCC;
-        border-bottom:0;
-        border-right:0;
-          li{
-          font-size:14px;
-          font-family:PingFangSC-Regular;
-          color:rgba(94,109,130,1);
-          line-height:36px;
-          display: flex;
-          span:nth-child(1){
-            width: 120px;
-            text-align: center;
-            border-bottom: 1px solid #CCCCCC;
-          }
-            span:nth-child(2){
-              flex: 1;
-              text-align: center;
-              border-left: 1px solid #CCCCCC;
-              border-bottom: 1px solid #CCCCCC;
-            }
-
-        }
-
-
-      }
-      .userInfosBox1{
-        width: 100%;
-        border: 1px solid #CCCCCC;
-        border-bottom:0;
-        border-left:0;
-        li:nth-child(4){
-          border-left:0;
-          span{
-            border-left: 0;
-            border-right: 0;
-            /*background: red;*/
-          }
-        }
-
-        li{
-          font-size:14px;
-          font-family:PingFangSC-Regular;
-          color:rgba(94,109,130,1);
-          border-left: 1px solid #CCCCCC;
-          line-height:36px;
-          display: flex;
-          span:nth-child(1){
-            width: 120px;
-            text-align: center;
-            border-bottom: 1px solid #CCCCCC;
-            border-right: 1px solid #CCCCCC;
-          }
-          span:nth-child(2){
-            flex: 1;
-            text-align: center;
-            border-bottom: 1px solid #CCCCCC;
-          }
-
-        }
-      }
-    }
-    .userInfos1{
-      width: 100%;
-      padding: 20px;
-      display: flex;
-      .userInfosBox,.userInfosBox1{
         flex: 1;
-      }
-      .userInfosBox{
-        background: red;
-        height: 100px;
-      }
-      .userInfosBox1{
-        background: green;
-        height: 100px;
+        border-left: 1px solid #CCCCCC;
+        border-top: 1px solid #CCCCCC;
+          li{
+            text-align: center;
+            display: flex;
+          font-size:14px;
+          font-family:PingFangSC-Regular;
+          color:rgba(94,109,130,1);
+          line-height:36px;
+          span{
+            display: inline-block;
+            flex: 1;
+            border: 1px solid #CCCCCC;
+            border-top:0 ;
+            border-left:0;
+          }
+        }
+
+
+
       }
     }
   }
@@ -264,33 +269,65 @@
       width: 100%;
       padding: 20px;
       display: flex;
-      .userInfosBox2,.userInfosBox3{
-        flex: 1;
-      }
       .userInfosBox2{
-        background: red;
-        height: 100px;
+        flex: 1;
+        border: 1px solid #CCCCCC;
+        border-bottom: 0;
+        .list1{
+          width:100%;
+          display: flex;
+          li{
+            font-size:14px;
+            flex: 2;
+            text-align: center;
+            height:38px;
+            background:rgba(229,233,242,1);
+            line-height: 38px;
+            border-right: 1px solid #cccccc;
+            border-bottom: 1px solid #cccccc;
+          }
+        }
+        .list2{
+          width: 100%;
+          display: flex;
+          li{
+            flex: 4;
+            font-size:14px;
+            text-align: center;
+            height:38px;
+            background:rgba(255,247,204,1);
+            line-height: 38px;
+            border-right: 1px solid #cccccc;
+            border-bottom: 1px solid #cccccc;
+          }
+        }
+        .list3{
+          width: 100%;
+          li{
+            width: 100%;
+            display: flex;
+            span{
+              height:38px;
+              text-align: center;
+              background:rgba(255,255,255,1);
+              font-size:14px;
+              font-family:PingFangSC-Regular;
+              color:rgba(94,109,130,1);
+              line-height:36px;
+              flex: 2;
+              border-right: 1px solid #cccccc;
+              border-bottom: 1px solid #cccccc;
+            }
+          }
+        }
       }
-      .userInfosBox3{
-        background: green;
-        height: 100px;
-      }
+
+
     }
     .userInfos2{
       width: 100%;
       padding: 20px;
       display: flex;
-      .userInfosBox2,.userInfosBox3{
-        flex: 1;
-      }
-      .userInfosBox2{
-        background: red;
-        height: 100px;
-      }
-      .userInfosBox3{
-        background: green;
-        height: 100px;
-      }
     }
   }
   .userInformation2{
@@ -314,34 +351,39 @@
       width: 100%;
       padding: 20px;
       display: flex;
-      .userInfosBox,.userInfosBox1{
+      .userInfosBox4 {
         flex: 1;
-      }
-      .userInfosBox4{
-        background: red;
-        height: 100px;
-      }
-      .userInfosBox5{
-        background: green;
-        height: 100px;
+        border: 1px solid #CCCCCC;
+        .list1 {
+          width: 100%;
+          display: flex;
+          li {
+            flex: 2;
+            text-align: center;
+            height: 38px;
+            line-height: 38px;
+            font-size:14px;
+            border-right: 1px solid #cccccc;
+            border-bottom: 1px solid #cccccc;
+          }
+        }
+        .list2 {
+          width: 100%;
+          display: flex;
+          li {
+            flex: 4;
+            text-align: center;
+            height: 38px;
+            font-size:14px;
+            background: rgba(255, 247, 204, 1);
+            line-height: 38px;
+            border-right: 1px solid #cccccc;
+            border-bottom: 1px solid #cccccc;
+          }
+        }
       }
     }
-    .userInfos2{
-      width: 100%;
-      padding: 20px;
-      display: flex;
-      .userInfosBox4,.userInfosBox5{
-        flex: 1;
-      }
-      .userInfosBox4{
-        background: red;
-        height: 100px;
-      }
-      .userInfosBox5{
-        background: green;
-        height: 100px;
-      }
-    }
+
   }
   .userInformation3{
     width: 100%;
@@ -354,6 +396,7 @@
       line-height:20px;
       padding: 0 10px;
       line-height:39px;
+      cursor: pointer;
     }
     p:nth-child(2){
       height: 59px;

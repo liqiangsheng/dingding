@@ -1,4 +1,7 @@
-export let mutations={
+export let mutations={//同步处理vueX
+  detailAlterId(state,data){
+     state.detailAlterId = data;
+  },
   trackAlterId(state,data){
      state.trackAlterId = data;
   },

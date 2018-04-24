@@ -99,7 +99,7 @@
             {{index+1}}
           </td>
           <!--工单号号-->
-          <td>
+          <td style="flex-grow:2">
             {{item.id}}
           </td>
           <!--联系人-->
@@ -338,36 +338,59 @@
   }
 </script>
 <style scoped lang="scss">
-  .ServiceIng{
+  .allPage{
     width:100%;
     background:rgba(229,233,242,1);
-  }
-  .tableList,.tableList table{
-    width: 100%;
+    /*position: relative;*/
   }
   .tableList,.tableList table{
     width: 100%;
     background:rgba(229,233,242,1);
+
   }
-  .tableList table theads{
+  .tableList table thead{
     width: 100%;
-    display: flex;
+    tr{
+      width: 100%;
+      display: flex;
+
+      th{
+        flex: 1;
+        height:52px;
+        font-size:14px;
+        font-family:PingFangSC-Regular;
+        color:rgba(57,57,57,1);
+        line-height:52px;
+        text-align: center;
+      };
+      th:nth-child(2){
+        flex-grow:2;
+      }
+    };
   }
-  .tableList table th{
-    flex: 1;
-    height:20px;
-    font-size:14px;
-    font-family:PingFangSC-Regular;
-    color:rgba(57,57,57,1);
-    line-height:20px;
-    text-align: center;
+  .tableList table tbody{
+    width: 100%;
+    tr{
+      width: 100%;
+      display: flex;
+      border-left: 1px solid #bfcbd9;
+      background:rgba(255,255,255,1);
+      td{
+        height:46px;
+        flex: 1;
+        line-height:46px;
+        text-align: center;
+        border: 1px solid #bfcbd9;
+        border-bottom: 0;
+        border-left: 0;
+      }
+    }
+    tr:last-child{
+      border-bottom: 1px solid #bfcbd9;
+    }
   }
-  .tableList table td{
-    height:46px;
-    background:rgba(255,255,255,1);
-    flex: 1;
-    line-height:46px;
-    text-align: center;
+  .tableList table tbody tr:hover{
+    background: #DBF0FF;
   }
   .center{
     width:90%;
@@ -414,12 +437,6 @@
     float: right;
     margin: 18px 5px;
   }
-  .cursor{
-    cursor: pointer;
-  }
-  .cursor:hover{
-    color:rgba(32,160,255,1);
-  }
   .cursor,.track,.detail{
     cursor: pointer;
     color:rgba(32,160,255,1);
@@ -427,4 +444,5 @@
   .cursor:hover,.track:hover,.detail:hover{
     color:purple;
   }
+
 </style>

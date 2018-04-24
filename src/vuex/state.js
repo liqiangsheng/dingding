@@ -1,4 +1,4 @@
-export let state={
+export let state={ //vueX初始化
   tableData:"",
     isAlert:false,
     refuse:false,
@@ -384,4 +384,5 @@ export let state={
   //分页
   fenyeObj:{},
   trackAlterId:"", //渠道跟踪ID
+  detailAlterId:"", //渠道详情ID
 };
