@@ -323,10 +323,12 @@
         this.$http.get(url,params).then(r=>{
           let data=r.data;
           this.tableListData = data.result;
-          this.tableListData.orders.forEach((v,i)=>{
+          this.tableListData.orders.map((v,i)=>{
+            let isbool = false;
+            this.tableListData.orders.push(isbool)
              if(v.emergencyDegree == "1"){
-                             this.styleRed ={"background":"red","color":"#ffffff"}
-             }
+               this.styleRed ={"background":"red","color":"#ffffff"}
+              }
           })
 
           this.showPages = data.result.pageNo;

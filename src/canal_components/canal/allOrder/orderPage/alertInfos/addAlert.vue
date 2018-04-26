@@ -68,7 +68,6 @@
         price1:"", //上门检测费
         price2:"", // 服务费
         yijiName:"",//一级分类名字
-//        cityId:this.$store.state.cityIdid, // 城市ID
         moziID:"", //末子级ID
         serviceInfo:{},
        }
@@ -94,8 +93,6 @@
         this.objData.serviceBrand = this.input1;
         this.objData.serviceModel = this.input2;
         this.objData.size = this.num;
-//        this.objData.result = this.labeloptions;
-//        this.objData.objOptions = this.objOptions;
         this.objData.serviceInfo = this.serviceInfo;
              if("001"== this.fenlei){
                this.yijiName = "家电清洗";
@@ -161,7 +158,6 @@
 
     },
     mounted() {
-
     },
     created(){
       let url = this.$apidomain+"/common/findflabelbusinessname";

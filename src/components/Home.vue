@@ -201,7 +201,7 @@
         this.isTooltip();
       });
       let url =`${this.$apidomain}/sysMessage/findredismessage`,_this=this,
-        setMission=()=> {
+        setMission = () => {
           _this.$http.get(url).then(res => {
             let data = res.data;
             if (data.code === '0000'&&data.result) {
@@ -215,7 +215,9 @@
             }
           });
         };
+
       setInterval(setMission,30000);
+
       setTimeout(()=>{
         this.OrderDataList.forEach(v=>{
           if(v.state==='0'){

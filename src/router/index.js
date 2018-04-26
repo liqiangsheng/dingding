@@ -9,14 +9,24 @@ import { setSession, getSession } from "../../static/js/session";
 * 2.网点
 * 3.渠道
 * */
-if(window.location.href.indexOf('manage.')!==-1){
+const locationUrl= window.location.href;
+
+if(locationUrl.includes('manage.')){
+
   setSession("KEY", "1");
-}else if(window.location.href.indexOf('site.')!==-1){
+
+}else if(locationUrl.includes('site.')){
+
   setSession("KEY", "2");
-}else if(window.location.href.indexOf('channel.')!==-1){
+
+}else if(locationUrl.includes('channel.')){
+
   setSession("KEY", "3");
+
 }else{
+
   setSession("KEY", "3");
+
 }
 function backstage() {
     if(getSession("KEY")[0] === "1") {
@@ -63,6 +73,7 @@ const OrderList8 = resolve => require(['@/components/order/assess'], resolve);//
 const OrderList6 = resolve => require(['@/components/order/complete'], resolve);
 
 //渠道管理
+
 const canalList = resolve => require(['@/components/channel/canalList/canalList'], resolve);
 const channelList = resolve => require(['@/components/channel/channelList'], resolve);
 const canaChildren = resolve => require(['@/components/channel/canaChildren/canaChildren'], resolve);
@@ -123,8 +134,9 @@ const finance = resolve => require(['@/canal_components/finance/finance'], resol
 const financeBill = resolve =>require(['@/canal_components/finance/finance_bill'],resolve);
 const financeCommission =resolve =>require(['@/canal_components/finance/finance_commission'],resolve)
 const accountOverview =resolve =>require(['@/canal_components/finance/accountOverview'],resolve)
-const accountRecharge =resolve =>require(['@/canal_components/finance/accountRecharge'],resolve)
-const accountExtract =resolve =>require(['@/canal_components/finance/accountExtract'],resolve)
+const accountRecharge =resolve =>require(['@/canal_components/finance/accountRecharge'],resolve)             //账号充值
+const accountExtract =resolve =>require(['@/canal_components/finance/accountExtract'],resolve)               //账号提现
+const transactionDetail =resolve =>require(['@/canal_components/finance/transactionDetail'],resolve)               //账号提现
 
 
 //首页  渠道统计 start
@@ -373,10 +385,10 @@ let router = new Router({
           // leaf: true, // 只有一个节点
           iconCls: 'iconfont detailed_icons order_icon channel_order_icon', // 图标样式class
           children: [
-            { path: '/census/canalCensus', component: canalCensus, name: '每日统计', menuShow: true },
+            // { path: '/census/canalCensus', component: canalCensus, name: '每日统计', menuShow: true },
             // { path: '/canal_components/order/orderManage', component: orderManage, name: '渠道工单', menuShow: true },
             // {path: '/user/unusual', component: UserUnusual, name: '异常用户', menuShow: true}
-            { path: '/canal_components/canal/allOrder/dayOrder', component: dayOrder, name: '每日工单', menuShow: true },
+            { path: '/census/canalCensus', component: dayOrder, name: '每日工单', menuShow: true },
             { path: '/canal_components/canal/allOrder/newOrder', component: newOrder, name: '新建工单', menuShow: true },
           ]
         },
@@ -408,6 +420,7 @@ let router = new Router({
           {path:'/finance/accountOverview',component:accountOverview,name:'账号概览',menuShow:true},
           {path:'/finance/accountRecharge',component:accountRecharge ,name:'账号充值',menuShow:true},
           {path:'/finance/accountExtract',component:accountExtract,name:'账号提现',menuShow:true},
+          {path:'/finance/transactionDetail',component:transactionDetail,name:'交易明细',menuShow:true},
           //{ path: '/canal_components/finance/finance', component: finance, name: '财务管理', menuShow: true },
         ]
       },
@@ -522,7 +535,6 @@ let router = new Router({
 });
 
 router.beforeEach((to, from, next) => {
-    // console.log('to:' + to.path)
     if (to.path.startsWith('/login')) {
         window.sessionStorage.removeItem('access-user');
         next()

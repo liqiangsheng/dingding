@@ -5,8 +5,8 @@
             <p>可用余额（元）</p>
             <p class="sum">0.00</p>
           <div class="button_container">
-          <el-button @click="recharge" type="primary">充值</el-button>
-          <el-button >提现</el-button>
+              <el-button @click="recharge(1)" type="primary">充值</el-button>
+              <el-button @click="recharge(0)">提现</el-button>
           </div>
         </div>
         <div class="data_list">
@@ -24,7 +24,6 @@
                 <a href="###">查看账单记录>></a>
               </div>
             </div>
-
         </div>
       </nav>
 <!---->
@@ -46,27 +45,26 @@
               {{index+1}}
             </td>
             <td>
-              {{item.id}}
+              {{item.journalAccountNum}}
             </td>
             <td>
-              {{item.name}}
+              {{item.payType |payType}}
             </td>
             <td>
-              {{item.details}}
+              {{item.operationFee}}
             </td>
             <td>
-              {{item.userNumber}}
+              {{item.remark||'无'}}
             </td>
             <td>
-              {{item.totalOutput}}
+              {{item.paySource | paySourceShow}}
             </td>
             <td>
-              {{item.completeCount||0}}
+              {{item.createTime}}
             </td>
             <td>
-              {{item.totalWater}}
+              {{item.payState|payState}}
             </td>
-
           </tr>
           </tbody>
         </table>
@@ -94,28 +92,28 @@
 
         },
         methods: {
-          recharge(){
-            this.$router.push({path:"/finance/accountRecharge"})
+          recharge(state){
+            !!state?this.$router.push({path:"/finance/accountRecharge"}):this.$router.push({path:"/finance/accountExtract"})
           },
           quiry(){
             this.getTableList(this.paramsData(this.params));
           },
           paramsData(channel=""){
             return {params: {
-              "officialPartnerId":this.$getLocalStorage("enrolleeinfo")[0].id,
-              "id":channel.channel
+//              "officialPartnerId":this.$getLocalStorage("enrolleeinfo")[0].id,
+//              "id":channel.channel
             }}
           },
           getTableList(params){
-            let url=this.$apidomain+"/officialPartnerSubsetInfo/findlistOfficialPartnerSubsetInfo";
-            this.$http.get(url,params).then(r=>{
+//
+            let url=`${this.$apidomain}/officialpartnercostflowController/all`;
+            this.$http.post(url).then(r=>{
               let data=r.data;
-              this.tableListData = data.result;
-
-              this.showPages = data.result.pageNo;
-              this.currentPageSize = data.result.pageSize;
-              this.total = data.result.total;
-              this.pageTotal = data.result.pageTotal;
+              if(data.code==="0000"){
+                this.tableListData = data.result.list;
+              }else{
+                this.$queryFun.successAlert.call(this,data.error);
+              }
             })
           },
         },
@@ -172,11 +170,13 @@
       }
       > .data_list:first-of-type{
         width:340px;
+        min-width:320px;
         margin-right:15px;
         /*background: yellow;*/
       }
       >.data_list:last-of-type{
         flex:1;
+        min-width: 411px;
         display: flex;
         >.data_list_item{
           flex:1;
@@ -240,9 +240,11 @@
             font-size:14px;
             border-left:1px solid #ccc;
           }
+          >td:first-of-type{
+            border-left:none;
+          }
         }
       }
-
     }
   }
 

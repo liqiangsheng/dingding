@@ -733,6 +733,19 @@ Vue.filter('payTypeShow',function(input){
     return "退款";
   }
 });
+Vue.filter('payType',function(input){
+  if("1"==input){
+    return "充值";
+  }else if("2"==input){
+    return "提现";
+  }else if("3"==input){
+    return "支付";
+  }else if("4"==input){
+    return "结款";
+  }
+  return "无"
+});
+
 Vue.filter('StatisticsTypeShow',function(input){
   if("PayTheFees"==input){
     return "缴费";
@@ -997,3 +1010,12 @@ Vue.filter('orderStateShow1',function(input){
   }
   return "未出账,未结款"
 });
+Vue.filter('payState',function(input){
+ if("1"==input){
+    return "进行中";
+  }else if("2"==input){
+    return "已完成";
+  }
+  return "无"
+});
+

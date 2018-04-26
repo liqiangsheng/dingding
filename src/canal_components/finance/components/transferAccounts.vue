@@ -17,21 +17,23 @@
 
           </div>
       </section>
+
       <section class="files">
-        <img height="140px;" width="280px" style="margin-right:10px;" v-for="(item,index) in images" :src="item.url" alt="">
-        <a href="javascript:;" class="file">
-          上传凭证
-          <input type="file" @change="onchangeFile" accept="image/gif,image/jpeg,image/jpg,image/png,image/svg" >
-        </a>
+        <upload-files :images="images" :delFilesImage="delFilesImage" :onchangeFile="onchangeFile"></upload-files>
       </section>
       <section class="submit">
-        <el-button type="primary" style="margin:0 auto;"> 确认提交</el-button>
+        <el-button type="primary" @click="submit" style="margin:0 auto;"> 确认提交</el-button>
       </section>
 
     </div>
 </template>
 <script>
-    export default {
+  import uploadFiles from "@/components/commInfo/uploadFiles"
+  export default {
+    props:["parentData"],
+    components:{
+      uploadFiles
+    },
         data() {
             return {
               dataObj:{},
@@ -40,7 +42,16 @@
             }
         },
         methods: {
+          delFilesImage(e,i){
+            this.$queryFun.confirm.call(this,{text:"确定删除？",title:"删除",success(){
+              this.images.splice(i,1)
+              this.$queryFun.successAlert.call(this,"删除成功","1")
+            }})
+
+          },
+
           onchangeFile(event){
+
             let filesObj=event.target.files[0];
 
             let filesName=event.target.files[0].name;
@@ -55,14 +66,22 @@
               let data=res.data;
               if(data.error===0){
                 this.images.push(data);   //参数是ajax返回的图片地址
-
               }else{
-
-                alert("上传失败");
+                this.$queryFun.successAlert.call(this,"上传失败")
               }
-
             });
           },
+          submit(){
+            setTimeout(()=>{
+              let params={
+                  image:"rechar_wait",
+                  successTitle:"您的提现申请正在审核中",
+                  successDescribe:"您于2018/02/11 12:11:00 提交的提现申请已在审核中，1-3个工作日将会返回到您的充值账号中。具体以银行到账时间为准"
+              }
+              this.$store.commit("changeAccountAlertData",params);
+              this.parentData.isShow=true;
+            },2000)
+          }
         },
         created() {
 
@@ -109,49 +128,17 @@
         padding-left:3em;
         padding-right:3em;
       }
-
-
-    }
-  }
-  .files{
-
-    .file {
-      position: relative;
-      display: inline-block;
-      border: 1px solid #99D3F5;
-      border-radius: 4px;
-      padding: 4px 12px;
-      width:280px;
-      height: 140px;
-      line-height: 120px;
-      overflow: hidden;
-      color: #1E88C7;
-      font-size:18px;
-      text-decoration: none;
-      text-indent: 0;
-
-      text-align: center;
-    }
-    .file input {
-      position: absolute;
-      font-size: 100px;
-      width:100%;
-      height: 100%;
-      right: 0;
-
-      top: 0;
-      opacity: 0;
-    }
-    .file:hover {
-      background: #AADFFD;
-      border-color: #78C3F3;
-      color: #004974;
-      text-decoration: none;
     }
   }
   .el-tabs__content{
     /*height:100%;*/
   }
+
+
 </style>
 
-
+<style>
+  .el-message-box__wrapper{
+    z-index: 999999 !important;
+  }
+</style>

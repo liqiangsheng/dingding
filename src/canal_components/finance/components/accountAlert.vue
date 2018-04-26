@@ -5,83 +5,52 @@
         </div>
         <div id="detailAlert_box">
           <div class="el-message-box__title">
-            <span>充值</span>
-            <i class="el-message-box__close el-icon-close" @click="data.isShow=false"></i>
+            <span>{{$store.state.accountOverviewAlertData.title}}</span>
+            <i class="el-message-box__close el-icon-close" @click="$store.commit('closeIsOpen')"></i>
           </div>
-          <section class="content">
-              <ul>
-                <li>
-                  <div class="list_name">
-                    充值账号
-                  </div>
-                    金业地产
-                </li>
-                <li>
-                  <div class="list_name">
-                    当前余额
-                  </div>
-                    0.00元
-                </li>
-                <li>
-                  <div class="list_name">
-                    充值金额
-                  </div>
-                  <span class="money">
-                      1,600.00元
-                  </span>
-                  <span class="revise"> 修改充值金额</span>
-                </li>
-              </ul>
-          </section>
 
-          <section id="el-tabs">
-            <el-tabs type="border-card">
+          <component :parentData="parentData" :is="parentData.isShow?'recharSuccess':'rechargeList'"></component>
 
-              <el-tab-pane label="微信扫码充值">
-                <wechat-scavenging :type="'wechat'"></wechat-scavenging>
-              </el-tab-pane>
-
-              <el-tab-pane label="支付宝扫码充值">
-                <wechat-scavenging :type="'alipay'"></wechat-scavenging>
-              </el-tab-pane>
-
-              <el-tab-pane label="线下转账充值">
-                <transfer-accounts></transfer-accounts>
-              </el-tab-pane>
-
-            </el-tabs>
-          </section>
         </div>
       </div>
     </div>
 </template>
 <script>
-  import wechatScavenging from "./wechatScavenging"
-  import transferAccounts from "./transferAccounts"
+
+  import rechargeList from "./rechargeList"
+  import recharSuccess from "./recharSuccess"
+
     export default {
     components:{
-      wechatScavenging,
-      transferAccounts
+          rechargeList,
+          recharSuccess
     },
-      props:["data"],
+
         data() {
             return {
-
+              parentData:{
+                isShow:false,
+              }
             }
         },
         methods: {
-          close(){
 
-          }
         },
+      computed:{
+        getPaState(){
+          return this.$store.state.accountOverviewAlertData.paState=="2"?'recharSuccess':'rechargeList';
+        }
+      },
         created() {
 
-        }
+        },
+      watch:{
+
+      }
     }
 </script>
 
 <style scoped lang="scss">
-  /*@import "../../../assets/styles/ch_alert.scss";*/
   p,div,ul,li,span,h3{
     font-family:PingFangSC-Regular;
   }
@@ -136,26 +105,6 @@
       width:7em;
       margin-right:2em;
       color:#5E6D82;
-    }
-    .content{
-      padding-top:1.5em;
-      >ul{
-        >li{
-          font-size:14px;
-          line-height: 3em;
-          .money{
-            color:#E65831;
-            font-size:20px;
-            font-family:PingFangSC-Regular;
-          }
-          .revise{
-            color:#20A0FF;
-            transform:translateX(60%);
-            display: inline-block;
-            font-size:14px;
-          }
-        }
-      }
     }
 
   }

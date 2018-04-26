@@ -386,5 +386,14 @@ export let state={ //vueX初始化
   trackAlterId:"", //渠道跟踪ID
   detailAlterId:"", //渠道详情ID
   addDataCarter:{}, //渠道新增数据
-  cityIdid:""
+  cityIdid:"",
+//  渠道端 财务 管理 弹框状态数据 start
+  accountOverviewAlertData:{
+    isShow:false, //tang
+    money:0,
+    image:"rechar_success",         //成功的icon
+    successTitle:"恭喜充值成功！",
+    successDescribe:"具体到账时间以银行收款时间为准"
+  }
+//  渠道端 财务 管理 弹框状态数据 end
 };

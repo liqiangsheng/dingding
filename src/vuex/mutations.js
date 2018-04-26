@@ -153,4 +153,14 @@ export let mutations={//同步处理vueX
        })
   },
 
+//  渠道 弹框数据状态
+  closeIsOpen(state){
+    state.accountOverviewAlertData.isShow=!state.accountOverviewAlertData.isShow
+
+  },
+  changeAccountAlertData(state,params){
+    for(let k in params){
+        state.accountOverviewAlertData[k]=params[k]
+    }
+  }
 };

@@ -16,7 +16,6 @@
           </li>
           <li>
             <p>{{wenzi}}<img :src="jiantou" @click="jiantouClick"></p>
-
           </li>
         </ul>
    </div>

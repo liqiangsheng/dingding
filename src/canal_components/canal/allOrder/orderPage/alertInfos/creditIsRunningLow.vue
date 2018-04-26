@@ -11,19 +11,21 @@
         <div class="center">
                <p><img src="/static/images/tanchuangDENG.png"></p>
                <p>您的账户余额不足，导致无法下单，请及时充</p>
-               <p>您需要支付的工单金额为{{}}元，请正确选择充值金额，充值金额将预存到您的账户上。</p>
+               <p>您需要支付的工单金额为{{yujifei}}元，请正确选择充值金额，充值金额将预存到您的账户上。</p>
         </div>
         <div class="footer">
                <p>请选择充值金额</p>
           <ul>
             <li v-for="(item,index) in price3" > <el-button :class="{active:ActiveIndex==index}" :plain="true"     :disabled="item.disabled" @click="priceClick(item,index)">{{item.num}}元</el-button></li>
           </ul>
+           <div><el-button type="primary" @click="OKClick">确定</el-button></div>
         </div>
     </div>
   </div>
 </template>
 <script>
   export default {
+    props:["yujifei"],
     components:{
     },
     data() {
@@ -48,7 +50,10 @@
         ActiveIndex:0, //class下标
         disabled:false,
         a:250,
+        chushiId:[], //渠道信息
+        qudaoNaem:"",//渠道名字
        }
+
     },
     methods: {
       close(){ //传值给父级
@@ -57,15 +62,24 @@
       priceClick(v,i){ //点击价格
         this.ActiveIndex = i;
       },
+      OKClick(){ // 确定按钮
+        console.log("确定")
+        this.close();
+        this.$emit("isBool",true)
+      },
 
     },
     mounted() {
     },
     created(){
+      //子渠道
+      this.chushiId = JSON.parse(sessionStorage.getItem("userInfo"));
+      this.qudaoNaem = this.chushiId[0].fullName;
 
       this.price3.forEach((v,i)=>{
-        if(this.a+100 > v.num){
+        if(this.yujifei+100 > v.num){
           v.disabled = true;
+          this.ActiveIndex =i+1;
         }
       })
     },
@@ -184,6 +198,15 @@
         margin-right: 0;
       }
 
+    }
+    div{
+      width: 100%;
+      height: 36px;
+      margin-top: 40px;
+      text-align: center;
+      .el-button{
+        width: 30%;
+      }
     }
   }
 

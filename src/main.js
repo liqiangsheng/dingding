@@ -36,7 +36,6 @@ Vue.component("commAlerttext",commAlerttext);
 //缓存  start
 import { getLocalStorage, setLocalStorage, getSession ,getLocalStorageUserInfo} from "../static/js/session";
 Vue.prototype.$getLocalStorage = getLocalStorageUserInfo;
-Vue.prototype.$getLocalStorage = getLocalStorageUserInfo;
 Vue.prototype._$=index;
 const common =window.common;
 // Vue.prototype.$apiIM = common;  //IM客服系统

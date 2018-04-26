@@ -10,7 +10,6 @@
           <!--document.domain = "http://177dd.udesk.cn";-->
           <!--document.domain = "http://177dd.udesk.cn";-->
         <!--</script>-->
-
         <!--<object   style="width: 100%;height:100%;background-color:red;" type="text/html" data="http://177dd.udesk.cn"></object ><br/>-->
       </div>
   </div>
@@ -40,7 +39,6 @@
             console.log(_this.$getLocalStorage("enrolleeinfo")[0].token);
 //              _this.$http.get('http://admin.test.dingdingkuaixiu.com/udesk/usersAuthJwtCallback').then(res =>{
               _this.$http.get(`${_this.$apidomain}/udesk/usersAuthJwtCallback`,{"token": _this.$getLocalStorage("enrolleeinfo")[0].token }).then(function(res){
-                console.log(res);
                 if(res.data.code=='0000'){
                   _this.$message({
                     message: "请求成功",

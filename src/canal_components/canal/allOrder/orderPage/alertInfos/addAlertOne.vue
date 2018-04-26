@@ -45,7 +45,7 @@
 </template>
 <script>
   export default {
-    props:["bianjiData","cityId"],
+    props:["bianjiData1","cityId"],
     components:{
     },
     data() {
@@ -70,6 +70,7 @@
         yijiName:"",//一级分类名字
         moziID:"", //末子级ID
         serviceInfo:{},
+
        }
 
     },
@@ -93,6 +94,9 @@
         this.objData.serviceBrand = this.input1;
         this.objData.serviceModel = this.input2;
         this.objData.size = this.num;
+        this.objData.serviceInfo = this.serviceInfo;
+//        this.objData.result = this.labeloptions;
+//        this.objData.objOptions = this.objOptions;
         this.objData.serviceInfo = this.serviceInfo;
         if("001"== this.fenlei){
           this.yijiName = "家电清洗";
@@ -131,6 +135,7 @@
         console.log(this.moziID)
         let urlThree=this.$common.apidomain+"/articleinfo/findChannelListServiceInfo?labelId="+this.moziID +"&areaId="+this.cityId;
         this.$http.get(urlThree).then((res)=>{
+          console.log(res)
           if(res.data.code === "0000"){
             this.serviceInfo = res.data.result[0].serviceInfo;
           }else{
@@ -162,8 +167,11 @@
     },
     created(){
 
-     this.fenleiOptions = [];
-      this.fenleiOptions .push(this.bianjiData)
+      this.fenleiOptions = [];
+      this.fenleiOptions .push(this.bianjiData1)
+         console.log(this.fenleiOptions)
+      console.log(this.bianjiData1)
+      console.log(this.cityId)
       }
 
   }
