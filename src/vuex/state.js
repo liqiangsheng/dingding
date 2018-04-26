@@ -386,4 +386,5 @@ export let state={ //vueX初始化
   trackAlterId:"", //渠道跟踪ID
   detailAlterId:"", //渠道详情ID
   addDataCarter:{}, //渠道新增数据
+  cityIdid:""
 };

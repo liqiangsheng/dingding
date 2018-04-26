@@ -21,8 +21,7 @@
               <li id="productNub">产品<span>*</span>
                 <el-cascader
                   style="width: 80%"
-                  @change="changeSelector2($event)"
-                  ref="elCascader"
+                  @change="changeSelector2"
                   :options="labeloptions"
                   :disabled="isKeXuan"
                   v-model="objOptions"
@@ -46,7 +45,7 @@
 </template>
 <script>
   export default {
-    props:["bianjiData"],
+    props:["bianjiData","cityId"],
     components:{
     },
     data() {
@@ -69,55 +68,57 @@
         price1:"", //上门检测费
         price2:"", // 服务费
         yijiName:"",//一级分类名字
+        moziID:"", //末子级ID
+        serviceInfo:{},
        }
 
     },
     methods: {
       addProduct(){ //添加
-             if(this.fenlei == ""){
-               alert("请选择分类");
-               return ;
-             }
-            if(this.objOptions.length <= 0){
-              alert("请选择产品");
-              return ;
-            }
+        if(this.fenlei == ""){
+          alert("请选择分类");
+          return ;
+        }
+        if(this.objOptions.length <= 0){
+          alert("请选择产品");
+          return ;
+        }
         if(this.num < 1){
           alert("数量不得小于0");
           return ;
         }
+        this.objData.id = this.moziID ;
         this.objData.fenlei = this.fenlei;
-        this.objData.input1 = this.input1;
-        this.objData.input2 = this.input2;
-        this.objData.num = this.num;
-        this.objData.str = this.str;
-        this.objData.result = this.labeloptions;
-        this.objData.objOptions = this.objOptions;
-        this.objData.isBool = true;
-        if("001"==this.objOptions[0]){
+        this.objData.serviceBrand = this.input1;
+        this.objData.serviceModel = this.input2;
+        this.objData.size = this.num;
+//        this.objData.result = this.labeloptions;
+//        this.objData.objOptions = this.objOptions;
+        this.objData.serviceInfo = this.serviceInfo;
+        if("001"== this.fenlei){
           this.yijiName = "家电清洗";
-        }else if("002"==this.objOptions[0]){
+        }else if("002"== this.fenlei){
           this.yijiName = "家电维修";
-        }else if("003"==this.objOptions[0]){
+        }else if("003"== this.fenlei){
           this.yijiName = "手机维修";
-        }else if("004"==this.objOptions[0]){
+        }else if("004" == this.fenlei){
           this.yijiName =  "家居维修";
-        }else if("005"==this.objOptions[0]){
+        }else if("005"== this.fenlei){
           this.yijiName = "开锁修锁";
-        }else if("006"==this.objOptions[0]){
+        }else if("006"== this.fenlei){
           this.yijiName = "管道疏通";
-        }else if("007"==this.objOptions[0]){
+        }else if("007"==this.fenlei){
           this.yijiName = "灯具线路";
-        }else if("008"==this.objOptions[0]){
+        }else if("008"== this.fenlei){
           this.yijiName = "卫浴洁具";
-        }else if("009"==this.objOptions[0]){
+        }else if("009"== this.fenlei){
           this.yijiName = "安装服务";
         }
-        this.objData.yijiName = this.yijiName
+        this.objData.yijiName = this.yijiName;
         this.$store.dispatch("addDataCarter",this.objData);
         this.$emit("pejianzengjia",this.objData)
-          alert("添加成功");
-          this.close();
+        alert("添加成功");
+        this.close();
 
       },
       close(){ //传值给父级
@@ -127,7 +128,17 @@
         console.log(value);
       },
       changeSelector2(val){
-        this.str = this.$refs.elCascader.currentLabels.join("-");
+        this.moziID = val[val.length - 1];
+        console.log(this.moziID)
+        let urlThree=this.$common.apidomain+"/articleinfo/findChannelListServiceInfo?labelId="+this.moziID +"&areaId="+this.cityId;
+        this.$http.get(urlThree).then((res)=>{
+          console.log(res)
+          if(res.data.code === "0000"){
+            this.serviceInfo = res.data.result[0].serviceInfo;
+          }else{
+            alert(res.data.error)
+          }
+        });
       },
       yijifenlei2(id){ //分类产品
           let urlTwo=this.$common.apidomain+'/articleinfo/findlabelbusinessbyflabel?id='+id;

@@ -1,7 +1,9 @@
 <template>
   <div>
-  <AddAlter @isClose="isClose" v-if="addShow" @pejianzengjia="pejianzengjia"></AddAlter>
-    <BianjiAlter @isClose="isClose" v-if="bianjiShow" @pejianzengjia="pejianzengjia" :bianjiData="bianjiData"></BianjiAlter>
+  <AddAlter @isClose="isClose" v-if="addShow" @pejianzengjia="pejianzengjia" :cityId="cityId"></AddAlter>
+    <BianjiAlter @isClose="isClose" v-if="bianjiShow" @pejianzengjia="pejianzengjia" :bianjiData="bianjiData"  :cityId="cityId"></BianjiAlter>
+    <!--<CreditIsRunningLow v-if="chongzhiShow" @isClose="isClose"></CreditIsRunningLow>-->
+    <WorkOrderSubmission @isClose="isClose" v-if="chongzhiShow1"></WorkOrderSubmission>
   <div class="newOrder">
 
     <div class="tab">
@@ -11,102 +13,131 @@
         </el-menu-item>
       </el-menu>
     </div>
-    <div class="chanpin">
-         <p class="chanpinP"><span></span>产品信息</p><br>
-         <el-button type="success" @click="addProduct">添加产品</el-button>
 
-          <div class="alertOne" v-if="peijiankuang">
-            <!--表格数据-->
-            <table>
-              <thead>
-              <tr class="theads">
-                <th v-for="(item,index) in theadsName">{{item}}</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr v-for="(item,index) in tableListData" id="trHover">
-                <!--序号-->
-                <td>
-                  {{index+1}}
-                </td>
-                <!--产品名称-->
-                <td style="flex-grow:3">
-                  {{item.str}}
-                </td>
-                <!--品牌-->
-                <td>
-                  {{item.input1}}
-                </td>
-                <!--型号-->
-                <td>
-                  {{item.input2}}
-                </td>
-                <!--数量-->
-                <td>
-                  {{item.num}}
-                </td>
-                <!--检测费-->
-                <td>
-                  {{}}
-                </td>
-                <!--服务费-->
-                <td>
-                  {{}}
-                <!--操作-->
-                <td>
-                  <span class="track" @click="detailClick(item,index)">删除</span>
-                  <span class="detail" @click="bianjiClick(item,index)">编辑</span>
-                </td>
-              </tr>
-              </tbody>
-            </table>
-            <!--表格数据结束-->
-            <ul class="feiyongList">
-              <li>检测费小计：</li>
-              <li>服务费小计：</li>
-              <li>预估价：</li>
-            </ul>
-
-          </div>
-    </div>
     <div class="yuyue">
       <p class="yuyueP"><span></span>预约信息</p><br>
       <ul>
         <li>　　联系人<span>*</span><el-input v-model="input1" placeholder="请输入内容" style="width: 25%"></el-input></li>
         <li>联系人手机<span>*</span><el-input v-model="input2" placeholder="请输入内容" style="width: 25%"></el-input> 　　　<b style="font-weight:100; margin: 0 20px">座机</b><el-input v-model="input6" placeholder="请输入内容" style="width: 20%"></el-input></li>
-        <li>　服务地区<span>*</span><el-input v-model="input3" placeholder="请输入内容" style="width: 50%"></el-input></li>
+        <li id="citycity">　服务地区<span>*</span>
+          <el-cascader
+            expand-trigger="hover"
+            :options="options"
+            :props="props"
+            style="width:25%;"
+            placeholder="选择城市"
+            v-model="selectedOptions2"
+            @change="handleChange">
+          </el-cascader>
+
+          <el-cascader id="city" style="width:25%;"
+                       @change="changeSelector($event)"
+                       ref="one"
+                       :options="serveAreas"
+                        placeholder="选择区域"
+                       v-model="selectedOptions1"
+                       :props="props2"
+          ></el-cascader>
+        </li>
         <li>　详细地址<span>*</span><el-input v-model="input4" placeholder="请输入内容" style="width: 25%"></el-input></li>
         <li id="shijian">　预约时间<span>*</span>
           <!--<Col span="12" style="display: inline-block">-->
-          <DatePicker type="date" placeholder="请选择日期" style="width: 24.6%;height: 36px" v-model="input5"></DatePicker>
-          <!--</Col>-->
+          <!--<DatePicker type="date" placeholder="请选择日期" style="width: 24.6%;height: 36px" v-model="input5"></DatePicker>-->
+          <DatePicker type="datetime" v-model="input5" format="yyyy-MM-dd HH:mm:ss" placeholder="请选择日期" style="width: 24.6%;height: 36px"></DatePicker><!--</Col>-->
         </li>
 
       </ul>
     </div>
+
+    <div class="chanpin">
+      <p class="chanpinP"><span></span>产品信息</p><br>
+      <el-button type="success" @click="addProduct">添加产品</el-button>
+
+      <div class="alertOne" v-if="peijiankuang">
+        <!--表格数据-->
+        <table>
+          <thead>
+          <tr class="theads">
+            <th v-for="(item,index) in theadsName">{{item}}</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="(item,index) in tableListData" id="trHover">
+            <!--序号-->
+            <td>
+              {{index+1}}
+            </td>
+            <!--产品名称-->
+            <td style="flex-grow:3">
+              {{item.serviceInfo.fullName}}
+            </td>
+            <!--品牌-->
+            <td>
+              {{item.serviceBrand}}
+            </td>
+            <!--型号-->
+            <td>
+              {{item.serviceModel}}
+            </td>
+            <!--数量-->
+            <td>
+              {{item.size}}
+            </td>
+            <!--检测费-->
+            <td>
+              {{item.serviceInfo.price1}}
+            </td>
+            <!--服务费-->
+            <td>
+              {{item.serviceInfo.price2}}
+              <!--操作-->
+            </td>
+            <td>
+              <span class="track" @click="detailClick(item,index)">删除</span>
+              <span class="detail" @click="bianjiClick(item,index)">编辑</span>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+        <!--表格数据结束-->
+        <ul class="feiyongList">
+          <li>检测费小计：</li>
+          <li>服务费小计：</li>
+          <li>预估价：</li>
+        </ul>
+
+      </div>
+    </div>
+
     <ul class="zhibao">
     <li class="zhibaoP"><span></span><b style="float: left;font-weight: 100">质保状态</b>
-      <p @click="danxuan1"><el-button>保内</el-button>
-        <img src="/static/images/danxuan.png"  v-show="danxuanShow1"></p>
-      <p @click="danxuan2"><el-button>保外</el-button><img src="/static/images/danxuan.png" v-show="danxuanShow2"></p>
-    </li>
+      <!--<p @click="danxuan1"><el-button>保内</el-button>-->
+        <!--<img src="/static/images/danxuan.png"  v-show="danxuanShow1"></p>-->
+      <!--<p @click="danxuan2"><el-button>保外</el-button><img src="/static/images/danxuan.png" v-show="danxuanShow2"></p>-->
+    <!--</li>-->
+
+        <p @click="danxuan2(item,index)" v-for="(item,index) in zhibao"><el-button>{{item}}</el-button><img src="/static/images/danxuan.png"  v-show="jinjiduIndex1 == index"></p>
+      </li>
 
   </ul>
     <ul class= "jinji">
+      <!--<li class="jinjiduP"><span></span><b style="float: left;font-weight: 100">紧急程度</b>-->
+        <!--<p @click="danxuan3"><el-button>正常</el-button><img src="/static/images/danxuan.png" v-show="danxuanShow3"></p>-->
+        <!--<p @click="danxuan4"><el-button>加急</el-button><img src="/static/images/danxuan.png" v-show="danxuanShow4"></p>-->
+      <!--</li>-->
       <li class="jinjiduP"><span></span><b style="float: left;font-weight: 100">紧急程度</b>
-        <p @click="danxuan3"><el-button>正常</el-button><img src="/static/images/danxuan.png" v-show="danxuanShow3"></p>
-        <p @click="danxuan4"><el-button>加急</el-button><img src="/static/images/danxuan.png" v-show="danxuanShow4"></p>
+        <p @click="danxuan3(item,index)" v-for="(item,index) in jinjidu"><el-button>{{item}}</el-button><img src="/static/images/danxuan.png" v-show="jinjiduIndex == index"></p>
       </li>
 
     </ul>
     <div class="ziqudao">
       <p class="ziqudaoP">　　子渠道
-        <el-select v-model="value" placeholder="请选择">
+        <el-select v-model="value" placeholder="请选择" @change="ziqudaoA(value)">
           <el-option
             v-for="(item,index) in ziqudao"
             :key="index"
-            :label="item"
-            :value="item">
+            :label="item.name"
+            :value="item.name">
           </el-option>
         </el-select>
       </p>
@@ -125,74 +156,158 @@
   </div>
 </template>
 <script>
-  import AddAlter from "./orderPage/alertInfos/addAlert.vue"
-  import BianjiAlter from "./orderPage/alertInfos/bianjiAlert.vue"
+  import AddAlter from "./orderPage/alertInfos/addAlert.vue" //增加
+  import BianjiAlter from "./orderPage/alertInfos/bianjiAlert.vue"  //编辑
+  import CreditIsRunningLow from "./orderPage/alertInfos/creditIsRunningLow.vue" //余额不足
+  import WorkOrderSubmission from "./orderPage/alertInfos/WorkOrderSubmission.vue" //余额不足
   export default {
     components:{
-      AddAlter,BianjiAlter
+      AddAlter,BianjiAlter,CreditIsRunningLow,WorkOrderSubmission
     },
     data() {
       return {
+        //区域start
+        cityId:"",
+        selectedOptions2: [], //城市选择
+        selectedOptions1: [],//区域选择
+        options: [],
+        props: {
+          value: 'id',
+          label: 'label',
+          children: 'cities'
+        },
+        serveAreas: [],
+        props2: {
+          value: 'id',
+          label: 'label',
+          children: 'cities',
+        },
+        //区域end
+        jinjiduIndex:0,//紧急度下标
+        jinjiduIndex1:0,//紧急度下标
+        zhibao:["质保外","质保内"],//质保
+        zhibaoStr:"0",
+        jinjiduStr:"0",
+        jinjidu:["正常","加急"],//紧急度
         bianjiShow:false, //编辑唐匡
         theadsName:["序号","产品名称","品牌","型号","数量","检测费","服务费","操作"],
         input1:"", //　联系人
         input2:"",//　联系人手机
-        input3:"",//　服务地区*
         input4:"",//　详细地址*
         input5:"",//　　预约时间*
         input6:"",//　座机
         tabList:["填写工单","批量导入"], //头部数据
         qita:"",//其他
-        ziqudao:["牛逼"],//子渠道
+        ziqudao:[],//子渠道
         value:"",//子渠道
-        danxuanShow1:false,  //保内单选
-        danxuanShow2:false,//保外单选
-        danxuanShow3:false,//正常单选
-        danxuanShow4:false,//加急单选
         addShow:false,      //增加配件弹框
         peijiankuang:false,  //配件显示宽
         tableListData:[], //展示数据
         bianjiData:{}, //编辑数据
+        linkmanAreaId:"",//街道ID
+        linkmanName:"", //街道名字
+        flag: true,
+        chushiId:"", //子渠道id
+        xiaoqudaoId:"",//小子渠道Id
+        chongzhiShow:false, //充值显示
+        chongzhiShow1:false, //充值显示成功
       }
     },
     created(){
+        //子渠道
+        this.chushiId = JSON.parse(sessionStorage.getItem("userInfo"))
+      let url1 = this.$apidomain+"/officialPartnerSubsetInfo/findlistOfficialPartnerSubsetInfo?officialPartnerId="+this.chushiId[0].id;
+      this.$http.get(url1).then(res=>{
+        console.log(res,"22222")
+        this.ziqudao = res.data.result;
+      });
 
+      let cityurl = `${this.$apidomain}/common/findprovinceandcitylist`;
+      this.$http.get(cityurl).then(res=>{
+        if (res.data.code === '0000') {
+          this.options =res.data.result;
+        }
+      });
+      //获取区和街道
     },
     methods: {
-      addTijiao(){
-        if(this.peijiankuang == false){
-          alert("请添加产品");
+      ziqudaoA(value){ //子渠道
+           console.log(value)
+         this.ziqudao.forEach((v,i)=>{
+             if(value == v.name){
+                this.xiaoqudaoId = v.id;
+             }
+         })
+      },
+      handleChange(value) {
+        this.cityId = value[value.length - 1];
+        console.log(this.cityId)
+          this.$store.dispatch("cityIdid",this.cityId)
+        //选择区域街道
+        let cityIdurl=this.$apidomain+"/common/findareaandstreetoptions?cityId="+ this.cityId;//获取区域
+        this.$http.get(cityIdurl).then(res=>{
+          this.serveAreas = res.data.result;
+        })
+      },
+      changeSelector($event) {
+//        console.log($event)
+        this.linkmanAreaId = this.selectedOptions1[this.selectedOptions1.length - 1];
+//        console.log(this.linkmanAreaId)
+//        console.log(this.$refs.one.currentLabels)
+        this.linkmanName =this.$refs.one.currentLabels[1];
+//        console.log(this.linkmanName)
+
+       },
+      ifElse(){  //
+        if(this.input1 == ""){
+          alert("请填写联系人");
+          this.flag = false;
           return;
         }
-           if(this.input1 == ""){
-             alert("请填写联系人");
-             return;
-           }
+
         if(this.input2 == ""){
           alert("请填写联系人手机");
+          this.flag = false;
           return;
         }
-        if(this.input3 == ""){
+        if(this.selectedOptions2.length<=0||this.selectedOptions1.length<=0){
           alert("请填写服务地区");
+          this.flag = false;
           return;
         }
         if(this.input4 == ""){
           alert("请填写详细地址");
+          this.flag = false;
           return;
         }
         if(this.input5 == ""){
           alert("请填写预约时间");
+          this.flag = false;
+          return;
+        }
+      },
+      addTijiao(){
+          this.ifElse();
+
+        if(this.peijiankuang == false){
+          alert("请添加产品");
+          this.flag = false;
           return;
         }
         if(this.danxuanShow1 == false&&this.danxuanShow2 == false){
           alert("请选择质保状态");
+          this.flag = false;
           return;
         }
         if(this.danxuanShow3 == false&&this.danxuanShow4 == false){
           alert("请选择紧急程度");
+          this.flag = false;
           return;
         }
-
+         this.query();
+        //充值显示
+        this.chongzhiShow = true;
+        this.chongzhiShow1 = true;
       },
       detailClick(v,i){  //删除
         this.tableListData = this.tableListData.filter((item,index)=>{
@@ -209,19 +324,10 @@
           this.bianjiData = v;
           this.bianjiShow = true;
       },
-      pejianzengjia(obj){
+      pejianzengjia(obj){  //配件增加
         this.peijiankuang = true;
-        if(this.tableListData.length > 0){
-          this.tableListData.forEach((item)=>{
-            if(item.str == obj.str&&obj.input1 == item.input1&&obj.input2 == item.input2){
-              item.num += obj.num;
-            }else{
-              this.tableListData.push(obj)
-            }
-          })
-        }else{
-          this.tableListData.push(obj)
-        }
+        this.tableListData.push(obj)
+
 
       },
       isClose(val){//增加配件弹框
@@ -229,25 +335,70 @@
         this.bianjiShow = val;
       },
       addProduct(){//添加产品
+
+        this.ifElse();
+//        let reg =  /^(13[0-9]|15[0-35-9]|18[0-9]|17[06-8]|14[57])\d{8}$/;
+//        if(reg.test(this.input2)==false){
+//          alert("请填写正确手机号");
+//          this.flag = false;
+//          return;
+//        }
+        if( this.flag == false){
+          this.addShow = false;
+        }else if(this.flag == true){
           this.addShow = true;
+        }
+      },
+      query(){  //初始数据
+        this.input5 = this.$moment(this.input5).format("YYYY-MM-DD HH:mm:ss");
+//        this.$moment(data.selectorBehindObj.appointmentDatetime).format("YYYY-MM-DD HH:mm:ss")
+        this.getTableList(this.paramsData());
+      },
+      paramsData(){  //传数据给后台
+          let aaaaaa=JSON.stringify(this.tableListData)
+        return{
+          "officialPartnerId":this.chushiId[0].id, //主渠道ID
+          "appointmentDatetime":this.input5, //预约时间
+          "linkmanAddress":this.input4, //详细地址
+          "linkmanArea":this.linkmanName, //街道
+          "linkmanAreaId":this.linkmanAreaId, //街道id
+          "linkmanName":this.input1, //联系人名称
+          "linkmanPhoneNum":this.input2, //联系人手机号
+          "linkmanTelephone":this.input6, //联系人座机
+          "serviceIdsJson":aaaaaa, // 产品信息
+          "orderRemark":this.qita, // 订单备注其他
+          "officialPartnerSubsetId":this.xiaoqudaoId,    //  子渠道id
+          "emergencyDegree":this.jinjiduStr, // 紧急度
+          "channelWarranty":this.zhibaoStr,    //  渠道质保
+
+        };
+      },
+      getTableList(params){
+        let url=this.$apidomain+"/order/submitByChannel";
+        this.$http.post(url,params).then(res=>{
+                 console.log(res,"////////////////////")
+
+         })
       },
 
-      danxuan1(){//保内单选
-        this.danxuanShow1=true ; //保内单选
-        this.danxuanShow2=false;//保外单选
+      danxuan2(v,i){//保外单选
+        this.jinjiduIndex1 = i;
+        console.log(i,"888888888")
+        if(i=0){
+          this.zhibaoStr = "0";
+        }else if(i=1){
+          this.zhibaoStr = "1";
+        }
       },
-      danxuan2(){//保外单选
-        this.danxuanShow1=false;  //保内单选
-        this.danxuanShow2=true ;//保外单选
-      },
-      danxuan3(){//正常单选
-        this.danxuanShow3=true; //保内单选
-        this.danxuanShow4=false;//保外单选
-      },
-      danxuan4(){//加急单选
-        this.danxuanShow3=false;  //保内单选
-        this.danxuanShow4=true ;//保外单选
-
+      danxuan3(v,i){//正常单选
+        console.log(i,"99999999999")
+        this.jinjiduIndex = i;
+        if(i==0){
+          console.log(i,"777777777")
+          this.jinjiduStr = "0";
+        }else if(i==1){
+         this.jinjiduStr = "1";
+        }
       },
 //
     },
@@ -255,11 +406,17 @@
     },
   }
 </script>
-<style>
+<style lang="scss">
   #shijian .ivu-input{
     height: 36px !important;
     border: 1px solid #bfcbd9
   }
+  #citycity {
+    .el-cascader__label {
+      line-height: 36px !important;
+    }
+  }
+
 </style>
 <style scoped lang="scss">
   .newOrder{
