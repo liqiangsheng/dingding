@@ -12,7 +12,7 @@
 
               {{item.value}}
 
-              <span class="revise cursor"  @click="$store.commit('closeIsOpen')" v-if="item.revise">{{item.revise}}</span>
+              <span class="revise cursor"  @click="closeIsOpen" v-if="item.revise">{{item.revise}}</span>
             </li>
           </ul>
         </section>
@@ -20,11 +20,11 @@
           <el-tabs type="border-card" @tab-click="tabClick">
 
             <el-tab-pane label="微信扫码充值">
-              <wechat-scavenging :createCodeUrl="createCodeUrl" :type="'wechat'"></wechat-scavenging>
+              <wechat-scavenging :params="params" :parentData="parentData" :type="'wechat'"></wechat-scavenging>
             </el-tab-pane>
 
             <el-tab-pane label="支付宝扫码充值">
-              <wechat-scavenging :createCodeUrl="createCodeUrl" :type="'alipay'"></wechat-scavenging>
+              <wechat-scavenging :params="params"  :parentData="parentData" :type="'alipay'"></wechat-scavenging>
             </el-tab-pane>
             <el-tab-pane label="线下转账充值">
               <transfer-accounts :parentData="parentData"></transfer-accounts>
@@ -45,17 +45,17 @@
     },
     data() {
       return {
-        createCodeUrl:"",
+        params:{},
         listItem:[
           {
             name:'充值账号',
-            value:"金业地产",
+            value:this.$store.state.creditCardMessage.bankCard,
           }, {
             name:'当前余额',
-            value:"0.00元",
+            value:`${this.$store.state.creditCardMessage.balance.toFixed(2)} 元`,
           }, {
             name:' 充值金额',
-            value:`${(this.$store.state.accountOverviewAlertData.money-0).toFixed(2)}元`,
+            value:`${(this.$store.state.accountOverviewAlertData.money-0).toFixed(2)} 元`,
             revise:"修改充值金额"
           },
         ]
@@ -77,6 +77,10 @@
             }
 
       },
+      closeIsOpen(){
+        this.$store.commit('closeIsOpen')
+      },
+
       close(){
 
       },
@@ -92,7 +96,7 @@
           let data=res.data;
           if(data.code==="0000"){
             let orderIdObj = params.payType==="1"?{wechatOrderId:data.result.faPayJournalAccountId}:{alipayOrderId:data.result.faPayJournalAccountId}
-                this.createCodeUrl = data.result.createCodeUrl;
+                this.params = data.result;
                 this.$store.commit("changeAccountAlertData",orderIdObj);
                 let url=`${this.$common.apidomain}/officialpartnercostflowController/findOne`;
                 new Init({url,id:data.result.officialPartnerCostFlowId}).timeoutGet(this);

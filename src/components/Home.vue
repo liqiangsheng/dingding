@@ -184,11 +184,14 @@
   export default {
     components:{
       channelInfo,
-
       amendPassword
     },
     name: 'home',
     created(){
+      this.$store.commit("pushTabPathList",{
+        name:this.$route.name,
+        path:this.$route.path
+      })
         this.customer_service_link();  //进来就请求客服免登录链接给a标签
       getSession("access-user");
       setSession("flag",false);
@@ -242,12 +245,12 @@
     data () {
       return {
         isChannel:getSession("KEY")[0]==="3",   //判断是否是渠道端
-        tabPathList:[
-          {
-            name:this.$route.name,
-            path:this.$route.path
-          },
-        ],
+        tabPathList:this.$store.state.tabPathList,
+//          {
+//            name:this.$route.name,
+//            path:this.$route.path
+//          },
+
 
         userName:getSession("access-user").fullName,
         size:0,
@@ -277,9 +280,11 @@
     methods: {
         channelDeop(state) {
           if(state){
-            this.tabPathList=this.tabPathList.filter((v,i)=>{
+            let tabList=this.tabPathList.filter((v,i)=>{
                 if(this.$route.path===v.path)return v;
               });
+            this.$store.commit("resettingTabPathList",tabList);
+            this.tabPathList = this.$store.state.tabPathList
           }else{
             history.go(0)
           }
@@ -290,11 +295,13 @@
               let i=index===0?2:index;
               this.$router.push(this.tabPathList[i-1].path)
                }
-            this.tabPathList.splice(index,1);
+//            this.tabPathList.splice(index,1);
+            this.$store.commit("spliceTabPathList",index)
           },
           Path(name,path){
             if(this.tabPathList.length>7){
-              this.tabPathList.splice(0,1);
+//              this.tabPathList.splice(0,1);
+              this.$store.commit("spliceTabPathList",0)
             }
             let isAddPath=true, o={};
             this.tabPathList.forEach(v=>{
@@ -305,7 +312,8 @@
             if(isAddPath){
                   o.name=name;
                   o.path=path;
-                  this.tabPathList.push(o)
+//                  this.tabPathList.push(o)
+              this.$store.commit("pushTabPathList",o)
             }
           },
         //退出登录

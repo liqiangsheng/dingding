@@ -162,5 +162,17 @@ export let mutations={//同步处理vueX
     for(let k in params){
         state.accountOverviewAlertData[k]=params[k]
     }
+  },
+  pushTabPathList(state,param){
+      state.tabPathList.push(param)
+  },
+  spliceTabPathList(state,index){
+    state.tabPathList.splice(index,1);
+  },
+  resettingTabPathList(state,lis){
+    state.tabPathList=lis
+  },
+  pushCreditCardMessage(state,obj){
+    Object.assign(state.creditCardMessage,obj)
   }
 };

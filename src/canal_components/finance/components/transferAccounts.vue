@@ -14,7 +14,6 @@
             <p>
               收款方账号：4425 0100 0048 0000 1047
             </p>
-
           </div>
       </section>
 
@@ -74,9 +73,9 @@
           submit(){
             setTimeout(()=>{
               let params={
+                  successTitle:"转账信息已提交",
                   image:"rechar_wait",
-                  successTitle:"您的提现申请正在审核中",
-                  successDescribe:"您于2018/02/11 12:11:00 提交的提现申请已在审核中，1-3个工作日将会返回到您的充值账号中。具体以银行到账时间为准"
+                  successDescribe:"以银行到账时间为准，1-3个工作日内为您处理",
               }
               this.$store.commit("changeAccountAlertData",params);
               this.parentData.isShow=true;

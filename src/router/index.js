@@ -134,8 +134,8 @@ const finance = resolve => require(['@/canal_components/finance/finance'], resol
 const financeBill = resolve =>require(['@/canal_components/finance/finance_bill'],resolve);
 const financeCommission =resolve =>require(['@/canal_components/finance/finance_commission'],resolve)
 const accountOverview =resolve =>require(['@/canal_components/finance/accountOverview'],resolve)
-const accountRecharge =resolve =>require(['@/canal_components/finance/accountRecharge'],resolve)             //账号充值
-const accountExtract =resolve =>require(['@/canal_components/finance/accountExtract'],resolve)               //账号提现
+const accountRecharge =resolve =>require(['@/canal_components/finance/accountRecharge'],resolve)             //账号充值 /提现
+
 const transactionDetail =resolve =>require(['@/canal_components/finance/transactionDetail'],resolve)               //账号提现
 
 
@@ -418,8 +418,7 @@ let router = new Router({
           {path:'/finance/bill',component:financeBill,name:"账单结算",menuShow:true},
           {path:'/finance/commission',component:financeCommission,name:'提成管理',menuShow:true},
           {path:'/finance/accountOverview',component:accountOverview,name:'账号概览',menuShow:true},
-          {path:'/finance/accountRecharge',component:accountRecharge ,name:'账号充值',menuShow:true},
-          {path:'/finance/accountExtract',component:accountExtract,name:'账号提现',menuShow:true},
+          {path:'/finance/accountRecharge/:state',component:accountRecharge ,name:'充值',menuShow:false},
           {path:'/finance/transactionDetail',component:transactionDetail,name:'交易明细',menuShow:true},
           //{ path: '/canal_components/finance/finance', component: finance, name: '财务管理', menuShow: true },
         ]

@@ -235,7 +235,7 @@
       //子渠道
       this.chushiId = JSON.parse(sessionStorage.getItem("userInfo"))
       this.kehuID = this.chushiId[0].id;
-      let url1 = this.$apidomain+"/officialPartnerSubsetInfo/findlistOfficialPartnerSubsetInfo?officialPartnerId="+this.kehuID
+      let url1 = this.$apidomain+"/officialPartnerSubsetInfo/findlistOfficialPartnerSubsetInfo?officialPartnerId="+this.kehuID[0].id;
       this.$http.get(url1).then(res=>{
         this.ziqudaoData = res.data.result;
       });
@@ -323,12 +323,10 @@
         this.$http.get(url,params).then(r=>{
           let data=r.data;
           this.tableListData = data.result;
-          this.tableListData.orders.map((v,i)=>{
-            let isbool = false;
-            this.tableListData.orders.push(isbool)
+          this.tableListData.orders.forEach((v,i)=>{
              if(v.emergencyDegree == "1"){
-               this.styleRed ={"background":"red","color":"#ffffff"}
-              }
+                             this.styleRed ={"background":"red","color":"#ffffff"}
+             }
           })
 
           this.showPages = data.result.pageNo;

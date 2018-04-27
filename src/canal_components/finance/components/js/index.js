@@ -2,35 +2,40 @@ export function Init(params){
   for(let k in params){
     this[k]=params[k]
   }
+  this.clearTime = pic => window.clearInterval(pic);
 }
+ Init.prototype.pic=null;
+
  Init.prototype.timeoutGet=function($this){
-      let isTest="1";
-      let flag=true,
-          pic=setInterval(()=>{
-            if(flag&&$this.$store.state.accountOverviewAlertData.isShow){
-              $this.$http.post(this.url,{id:this.id}).then(res=>{
-                let data=res.data;
-                console.log(data);
-                // if(data.code==="0000"&&!!data.result&&data.result.paState=="2"){
-                //   $this.$store.commit("changeAccountAlertData",{paState:data.result.paState});
-                //   flag=false;
-                // }
-                console.log(isTest);
-                if(isTest=="2"){
+      let flag = true;
+      this.clearTime(this.pic);
+          this.pic = setInterval(()=>{
+            if(flag&&$this.$store.state.accountOverviewAlertData.isShow&&!$this.parentData.isShow){
+                this.getQuery( $this, state => {
                   $this.parentData.isShow=true;
-                  // $this.$store.commit("changeAccountAlertData",{paState:isTest});
                   flag=false;
-                }else if(!!$this.parentData.isClear){
-                  flag=false;
-                }
-              })
+                  $this.$store.commit("changeAccountAlertData",{paState:state});
+                });
+                if(!!$this.parentData.isClear)flag=false;
             }else{
-              window.clearInterval(pic);
-              return;
+              return this.clearTime(this.pic)
             }
-      },5000);
-   setTimeout(()=>{
-     isTest="2";
-   },10000)
- }
+      },3000);
+ };
+
+Init.prototype.getQuery=function($this,callback=null){
+  $this.$http.post(this.url,{id:this.id}).then(res=>{
+    let data=res.data;
+    console.log(data);
+    if( data.code === "0000" && data.result && data.result.payState==="2"){
+      if(!!callback){
+          callback(data.result.paState);
+      }else{
+        console.log(this.pic,"pic----=");
+        this.clearTime(this.pic);
+        $this.parentData.isShow=true;
+      }
+    }
+  })
+};
 

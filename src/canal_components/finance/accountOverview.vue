@@ -3,25 +3,25 @@
       <nav class="nav_container">
         <div class="data_list">
             <p>可用余额（元）</p>
-            <p class="sum">0.00</p>
+            <p class="sum">{{creditCardMessage.balance}}</p>
           <div class="button_container">
-              <el-button @click="recharge(1)" type="primary">充值</el-button>
-              <el-button @click="recharge(0)">提现</el-button>
+              <el-button @click="recharge('1')" type="primary">充值</el-button>
+              <el-button @click="recharge('0')">提现</el-button>
           </div>
         </div>
         <div class="data_list">
             <div class="data_list_item">
                <p>提成收入（元） <span>截止到昨天</span></p>
-                <p class="sum">0.00</p>
+                <p class="sum">{{findExtractTotal.toFixed(2)}}</p>
               <div class="button_container">
-                <a href="###">查看收入明细>></a>
+                <a href="javescript:;">查看收入明细>></a>
               </div>
             </div>
           <div class="data_list_item">
                <p>待结款金额（元） <span>不含未出账</span></p>
                 <p class="sum">0.00</p>
               <div class="button_container">
-                <a href="###">查看账单记录>></a>
+                <a href="javescript:;">查看账单记录>></a>
               </div>
             </div>
         </div>
@@ -72,9 +72,14 @@
     </div>
 </template>
 <script>
-    export default {
+
+  const isPushPath = (tabPathList,path) => !tabPathList.some( v => v.path === path);
+
+  //  console.log(a,b);
+  export default {
         data() {
             return {
+              creditCardMessage:this.$store.state.creditCardMessage,
               //查询的date    数据  end
               theadsName:[
                 '序号',
@@ -86,26 +91,21 @@
                 '交易时间',
                 '交易状态'
               ],
-
+              findExtractTotal:0,
               tableListData:[],          //表格数据
             }
 
         },
         methods: {
           recharge(state){
-            !!state?this.$router.push({path:"/finance/accountRecharge"}):this.$router.push({path:"/finance/accountExtract"})
+           let path=`/finance/accountRecharge/${state}`;
+           if(isPushPath(this.$store.state.tabPathList, path))this.$store.commit("pushTabPathList",{
+                     path:`/finance/accountRecharge/${state}`,
+                     name:!!parseInt(state)?"充值":"提现"
+                   });
+            this.$router.push({path});
           },
-          quiry(){
-            this.getTableList(this.paramsData(this.params));
-          },
-          paramsData(channel=""){
-            return {params: {
-//              "officialPartnerId":this.$getLocalStorage("enrolleeinfo")[0].id,
-//              "id":channel.channel
-            }}
-          },
-          getTableList(params){
-//
+          getTableList(){
             let url=`${this.$apidomain}/officialpartnercostflowController/all`;
             this.$http.post(url).then(r=>{
               let data=r.data;
@@ -118,7 +118,28 @@
           },
         },
         created() {
-          this.quiry()
+          this.getTableList();
+          const url = `${this.$common.apidomain}/officialPartnerAccountInfo/findOne`
+          this.$http.post(url).then(res=>{
+            const data= res.data;
+            if(data.code==="0000"){
+              for(let k in data.result){
+                this.$set(this.creditCardMessage,k,data.result[k]);
+              }
+              this.$store.commit("pushCreditCardMessage",data.result);
+            }else{
+              this.$queryFun.successAlert.call(this,data.error);
+            }
+          })
+          const _url = `${this.$common.apidomain}/officialPartnerAccountInfo/findExtractTotal`;
+          this.$http.post(_url).then(res=>{
+            const data=res.data;
+            if(data.code==="0000"){
+              this.findExtractTotal=data.result;
+            }else{
+              this.$queryFun.successAlert.call(this,data.error);
+            }
+          })
         }
     }
 </script>

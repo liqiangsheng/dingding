@@ -8,14 +8,15 @@
       </section>
       <section class="center">
         <p> {{type==='alipay'?'支付宝扫码支付':'推荐微信扫码支付'}} </p>
-        <img :src="createCodeUrl" alt="">
-        <el-button type="primary"> 我已成功支付</el-button>
+        <img :src="params.createCodeUrl" alt="">
+        <el-button type="primary" @click="success"> 我已成功支付</el-button>
       </section>
     </div>
 </template>
 <script>
+  import {Init} from "./js/index"
     export default {
-        props:["type","createCodeUrl"],
+        props:["type","params","parentData"],
         data() {
             return {
 
@@ -23,9 +24,13 @@
         },
         methods: {
           webPay(){
-            const url=`${this.$common.apidomain}/officialpartnerpay/rechargeWeb?paymentChannel=3&payType=2&openId=1&token=${this.$getLocalStorage("enrolleeinfo")[0].token}&payAmount=${this.$store.state.accountOverviewAlertData.money}`;
+            const url=`${this.$common.apidomain}/officialpartnerpay/rechargeWeb?paymentChannel=3&payType=2&openId=1&token=${this.$getLocalStorage("enrolleeinfo")[0].token}&payAmount=${this.$store.state.accountOverviewAlertData.money}&faPayJournalAccountId=${this.params.faPayJournalAccountId}`;
             window.open(url)
           },
+          success(){
+//            let query = Init({url:`${this.$common.apidomain}/officialpartnercostflowController/findOne`,data:this.params.officialPartnerCostFlowId})
+//                query.getQuery(this)
+          }
         },
       computed:{
 

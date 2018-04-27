@@ -70,7 +70,7 @@
           <thead>
           <tr class="theads">
             <th>
-              <el-checkbox v-model="checked" @change="wholeSelector(tableListData,checked)"></el-checkbox>
+              <el-checkbox v-model="checked" @change="wholeSelector(tableListData.list,checked)"></el-checkbox>
             </th>
             <th v-for="(item,index) in theadsName" :key="index">
               {{item}}
@@ -79,7 +79,7 @@
           </tr>
           </thead>
           <tbody>
-          <tr v-for="(item,index) in tableListData">
+          <tr v-for="(item,index) in tableListData.list">
             <!--序号-->
             <td>
               <el-checkbox v-model="isCheckboxList[index]" @change="checkbox(index)"></el-checkbox>
@@ -200,10 +200,8 @@
             ]
           },
         ],
-
         //<!--搜索框筛选数据end-->
         //<!--搜索框与table与分页start-->
-
         theadsName:[
           '序号',
           '流水号',
@@ -226,7 +224,7 @@
           pageSize:20,
           total:0,
           pageTotal: 1,
-          masterInfos:[]
+          list:[]
         },
         showPages:1,
         currentPageSize:20,
@@ -237,43 +235,42 @@
     },
     created(){
       this.getTableList(this.paramsData());
-
     },
     methods: {
       /*
         全选反选模块start
       */
       checkbox(index){
-        this.$queryFun.isCheckbox.call(this,this.tableListData,index);
+        this.$queryFun.isCheckbox.call(this,this.tableListData.list,index);
       },
       wholeSelector(item,currentState){
         this.$queryFun.wholeSelector.call(this,item,currentState);
       },
       derive(){        //导出事件
         let data=[];
-        this.tableListData.forEach((v, i) => {
-          if (v.isCheckboxList) data.push(v.masterId);
-        });
+//        this.tableListData.forEach(v => {
+//          if (v.isCheckboxList) data.push(v.masterId);
+//        });
         if(data.length){
-          const dataStr=data.join(",");
-          const url=`${this.$common.apidomain}/statisticsMasterOneDay/createMasterExcel`,
-            param={
-              params:{
-                statisticsDateStartStr:this.statisticsDateStartStr,
-                statisticsDateEndStr:this.statisticsDateEndStr,
-                masterId:dataStr,
-                time:this.time
-              }
-            }
-          this.$http.get(url,param).then(res=>{
-            const data=res.data;
-            if(data.code==="0000"){
-              window.location=data.result;
-              this.$queryFun.successAlert.call(this,"导出成功","1");
-            }else{
-              this.$queryFun.successAlert.call(this,data.error);
-            }
-          })
+//          const dataStr=data.join(",");
+//          const url=`${this.$common.apidomain}/statisticsMasterOneDay/createMasterExcel`,
+//            param={
+//              params:{
+//                statisticsDateStartStr:this.statisticsDateStartStr,
+//                statisticsDateEndStr:this.statisticsDateEndStr,
+//                masterId:dataStr,
+//                time:this.time
+//              }
+//            };
+//          this.$http.get(url,param).then(res=>{
+//            const data=res.data;
+//            if(data.code==="0000"){
+//              window.location=data.result;
+//              this.$queryFun.successAlert.call(this,"导出成功","1");
+//            }else{
+//              this.$queryFun.successAlert.call(this,data.error);
+//            }
+//          })
         }else{
           this.$queryFun.successAlert.call(this,"请选择需要导出的选项");
         }
@@ -312,12 +309,11 @@
       },
 
       getTableList(params){
-
         let url=`${this.$apidomain}/officialpartnercostflowController/all`;
         this.$http.post(url,params).then(r=>{
           let data=r.data;
           if(data.code==="0000"){
-            this.tableListData = data.result.list;
+            this.tableListData = data.result;
             this.showPages = data.result.pageNo;
             this.currentPageSize = data.result.pageSize;
             this.total = data.result.total;
@@ -325,7 +321,7 @@
             this.isCheckboxList=[];
             data.result.list.forEach((v,i)=>{
               this.isCheckboxList.push(false);
-              this.tableListData[i].isCheckboxList=false;
+              this.tableListData.list[i].isCheckboxList=false;
             })
 
           }else{

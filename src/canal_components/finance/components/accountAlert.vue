@@ -6,10 +6,10 @@
         <div id="detailAlert_box">
           <div class="el-message-box__title">
             <span>{{$store.state.accountOverviewAlertData.title}}</span>
-            <i class="el-message-box__close el-icon-close" @click="$store.commit('closeIsOpen')"></i>
+            <i class="cursor el-message-box__close el-icon-close" @click="$store.commit('closeIsOpen')"></i>
           </div>
 
-          <component :parentData="parentData" :is="parentData.isShow?'recharSuccess':'rechargeList'"></component>
+          <component :parentData="parentData" :is="parentData.isShow||$store.state.accountOverviewAlertData.withdraw?'recharSuccess':'rechargeList'"></component>
 
         </div>
       </div>
@@ -37,12 +37,9 @@
 
         },
       computed:{
-        getPaState(){
-          return this.$store.state.accountOverviewAlertData.paState=="2"?'recharSuccess':'rechargeList';
-        }
+
       },
         created() {
-
         },
       watch:{
 

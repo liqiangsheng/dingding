@@ -356,6 +356,8 @@
 //         this.chongzhiShow = val;
       },
       isClose1(val){//充值弹框
+
+        console.log(123)
          this.zhifuShow = val;
       },
       isBool(val){//充值弹框
