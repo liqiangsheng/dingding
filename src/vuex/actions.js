@@ -10,5 +10,5 @@ export let actions={ //异步处理VUEX
   },
   addDataCarter(store,data){
     store.commit("addDataCarter",data)
-  }
+  },
 };

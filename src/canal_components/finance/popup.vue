@@ -9,6 +9,7 @@
         </div>
         <!-- 头部end -->
         <!-- 查询 -->
+        <div class="content">
         <div class="center">
               <div class="center_data">
                   <ul>
@@ -21,11 +22,11 @@
                           </Row>
                       </li>
                       <li>
-                          <span>结款状态</span>
-                          <el-select v-model="bill_state" placeholder="请选择" @change="selectorOne(bill_state)">
+                          <span>渠道质保</span>
+                          <el-select v-model="qudaozhibao" placeholder="请选择" >
                             <el-option
-                              v-for="item in billState"
-                              :key="item.id"
+                              v-for="(item,index) in billState"
+                              :key="index"
                               :label="item.name"
                               :value="item.name">
                             </el-option>
@@ -33,18 +34,26 @@
                       </li>
                       <li>
                           <span>子渠道</span>
-                          <el-select v-model="kont_state" placeholder="请选择" @change="selectorOne(kont_state)">
+                          <el-select v-model="ziqudao" placeholder="请选择" >
                             <el-option
-                              v-for="item in kontState"
-                              :key="item.id"
+                              v-for="(item,index) in kontState"
+                              :key="index"
                               :label="item.name"
                               :value="item.name">
                             </el-option>
                           </el-select>
-                      </li>
-                       <li>
+                      </li>                     
+                  </ul>
+              </div>
+              <div class="list">
+                  <ul>
+                      <li>
                            <span>工单号</span>
-                          <el-input  placeholder="请输入工单号" v-model="gongdanhao"></el-input>
+                          <el-input  placeholder="请输入工单号" v-model="gongdanhao" clearable></el-input>
+                      </li>
+                      <li>
+                           <span>联系人手机号</span></span>
+                          <el-input  placeholder="请输入手机号" v-model="tel" clearable></el-input>
                       </li>
                   </ul>
               </div>
@@ -59,21 +68,22 @@
             <table border="0" cellspacing="0" >
                 <thead>
                     <tr>
-                        <th><input type="checkbox" v-model="tabSelect"/></th>
+                        <th><el-checkbox v-model="checked"></el-checkbox></th>
                         <th>序号</th>
                         <th>创建时间 <img src="../../../static/images/paixu.png"></th>
                         <th>工单号</th>
                         <th>联系人</th>
                         <th>联系人手机</th>
                         <th>服务区域</th>
-                        <th>金额 (元)<img src="../../../static/images/paixu.png"></th>
-                        <th>结款状态<img src="../../../static/images/paixu.png"></th>
+                        <th>工单总费用  (元)<img src="../../../static/images/paixu.png"></th>
+                        <th>待付款元 ()<img src="../../../static/images/paixu.png"></th>
+                        <th>渠道质保</th>
                         <th>操作</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="(item,index) in dataList" :key="index">
-                        <td><input type="checkbox"/></td>
+                        <td><el-checkbox v-model="checked"></el-checkbox></td>
                         <td>{{index+1}}</td>
                         <td>{{item.a}}</td>
                         <td>{{item.b}}</td>
@@ -82,12 +92,14 @@
                         <td>{{item.e}}</td>
                         <td>{{item.f}}</td>
                         <td>{{item.g}}</td>
+                        <td>{{item.h}}</td>
                         <td>
-                            <span class="track" @click="queryClick(item,index)">工单详情</span>
+                            <span class="track">工单详情</span>
                         </td>
                     </tr>
                 </tbody>
             </table>
+        </div>
         </div>
       </div>
   </div>
@@ -99,18 +111,38 @@
     },
     data() {
       return {
+        checked:false,
+        tabSelect:"",
+        qudaozhibao:"",
+        ziqudao:"",
+        gongdanhao:"",
+        tel:"",
+        date:"",      //日期范围
         userInformation:[],//用户信息
         detailInformation:{},//详情信息
         createTimeInformation:[],//时间信息
         isShow:false,  //备注显示消失
+        billState:[  //分类
+                {"id":"","name":"唐三"},
+                {"id":"","name":"凤舞"},
+                {"id":"","name":"清瑶"},
+                {"id":"","name":"碧血"},
+                ] ,
+            kontState:[
+                {"id":"","name":"武庚"},
+                {"id":"","name":"仓木"},
+                {"id":"","name":"白雪"},
+            ],
         dataList:[
-            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"已结款"},
-            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"已结款"},
-            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"已结款"},
-            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"已结款"},
-            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"已结款"},
-            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"已结款"},
-            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"已结款"},
+            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"80","h":"保内"},
+            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"80","h":"保内"},
+            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"80","h":"保内"},
+            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"80","h":"保内"},
+            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"80","h":"保内"},
+            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"80","h":"保内"},
+            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"80","h":"保内"},
+            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"80","h":"保内"},
+            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"80","h":"保内"},
         ]
       }
     },
@@ -118,18 +150,18 @@
     },
     created(){
 //      console.log(this.$store.state.trackAlterId)
-        let url = this.$apidomain+"/orderquery/findOrderTracking?mainOrderId="+this.trackAlterId;
-        this.$http.get(url).then(res=>{
-             this.detailInformation = res.data.result.order;
-             this.userInformation = res.data.result.coreMainOrderRecords;
-             this.userInformation.forEach(v=>{
-                if(!v.operateRemark){
-                          this.isShow = false;
-                }else{
-                   this.isShow =true;
-                }
-             })
-        })
+        // let url = this.$apidomain+"/orderquery/findOrderTracking?mainOrderId="+this.trackAlterId;
+        // this.$http.get(url).then(res=>{
+        //      this.detailInformation = res.data.result.order;
+        //      this.userInformation = res.data.result.coreMainOrderRecords;
+        //      this.userInformation.forEach(v=>{
+        //         if(!v.operateRemark){
+        //                   this.isShow = false;
+        //         }else{
+        //            this.isShow =true;
+        //         }
+        //      })
+        // })
     },
     methods: {
       close(){ //传值给父亲组件
@@ -157,13 +189,13 @@
     opacity: 0.2;
   }
   .trackAlert_box{
-    width: 1180px;
+    width: 1280px;
     height: 700px;
     background-color: #fff;
     position: absolute;
     top: 50%;
     left: 50%;
-    margin-left:-590px;   //往左上角移动元素的一半宽高
+    margin-left:-640px;   //往左上角移动元素的一半宽高
     margin-top:-350px;
     //left:-590px;
     z-index:2008;
@@ -171,6 +203,10 @@
     font-size: 16px;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden
+  }
+  .content{
+      height:640px;
+      overflow-y:auto;
   }
   .headBox{
     width: 100%;
@@ -207,16 +243,39 @@
               margin-bottom: 18px;         
           }
       }
+      .center_data{
+          .ivu-input{
+              height:36px;
+          }
+          ul li:nth-of-type(1){
+              .ivu-select-dropdown{
+                  left:0px !important;
+              }
+          }
+          li:nth-of-type(2){
+              margin-left:42px;
+          }
+      }
       .btn{
           margin-left:62px;
           .el-button{
               width:140px;
           }
       }
-  }
+      .list{
+          .el-input{
+              width:200px;
+          }
+          span:nth-of-type(1){
+              margin-left:15px;
+          }
+      }
+      }
    .tableList{
       margin-top:45px;
-      border-bottom:1px solid #E0E6ED
+      //height:361px;
+      border-bottom:1px solid #E0E6ED;
+      //overflow-y:auto;
   }
   .tableList,.tableList table{
       width:100%;
@@ -229,7 +288,7 @@
       }
       tr{
             height:45px;
-            td:nth-of-type(10){
+            td:nth-of-type(11){
                 color:#20A0FF;
             }
             span:hover{
@@ -237,7 +296,7 @@
             }
         }
         tr:hover{
-            background:#F7F8FA;
+            background:#DBF0FF;
         }
       thead{
         th{
@@ -275,7 +334,7 @@
                img{
                 position: absolute;
                 top:15px;
-                right:10px;
+                right:1px;
               }
           }
         th:nth-of-type(9){
@@ -283,7 +342,7 @@
                img{
                 position: absolute;
                 top:15px;
-                right:8px;
+                right:1px;
               }
           }
         th:nth-of-type(10){

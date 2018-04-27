@@ -1,6 +1,11 @@
 export let mutations={//同步处理vueX
+  weachat(state,data){
+    state.weachat = data;
+  },
+  zhifuDataObj(state,data){
+      state.zhifuDataObj = data;
+  },
   cityIdid(state,data){
-
   state.cityIdid = data;
 },
   addDataCarter(state,data){

@@ -5,19 +5,19 @@
               <div class="center_data">
                   <ul>
                       <li>
-                          <span style="display: inline-block;transform: translateY(-10px)">日期范围</span>
-                          <Row style="display: inline-block">
-                            <Col span="12">
-                                <DatePicker type="daterange" confirm placement="bottom-end" placeholder="请选择日期" style="width: 200px;display: inline-block" v-model="date"></DatePicker>
-                            </Col>
-                          </Row>
+                          <span class="demonstration">日期范围</span>
+                            <el-date-picker
+                                v-model="date"
+                                type="month"
+                                placeholder="选择月">
+                            </el-date-picker>
                       </li>
                       <li>
                           <span>账单状态</span>
                           <el-select v-model="bill_state" placeholder="请选择" @change="selectorOne(bill_state)">
                             <el-option
-                              v-for="item in billState"
-                              :key="item.id"
+                              v-for="(item,index) in billState"
+                              :key="index"
                               :label="item.name"
                               :value="item.name">
                             </el-option>
@@ -27,8 +27,8 @@
                           <span>结款状态</span>
                           <el-select v-model="kont_state" placeholder="请选择" @change="selectorOne(kont_state)">
                             <el-option
-                              v-for="item in kontState"
-                              :key="item.id"
+                              v-for="(item,index) in kontState"
+                              :key="index"
                               :label="item.name"
                               :value="item.name">
                             </el-option>
@@ -37,7 +37,7 @@
                   </ul>
               </div>
               <div class="btn">
-                  <el-button type="primary">查询</el-button>
+                  <el-button type="primary" round>查询</el-button>
                   <el-button>重置</el-button>
               </div>
           </div>
@@ -46,9 +46,10 @@
           <table border="0" cellspacing="0" >
               <thead>
                   <tr>
-                      <th><input type="checkbox" v-model="tabSelect"/></th>
+                      <th><el-checkbox v-model="checked"></el-checkbox></th>
                       <th>记账周期 <img src="../../../static/images/paixu.png"></th>
                       <th>账单金额 (元) <img src="../../../static/images/paixu.png"></th>
+                      <th>待结金额 (元)<img src="../../../static/images/paixu.png"></th>
                       <th>账单状态</th>
                       <th>结款状态 <img src="../../../static/images/jiekuan.png" alt=""></th>
                       <th>操作</th>
@@ -56,9 +57,10 @@
               </thead>
               <tbody>
                   <tr v-for="(item,index) in dataList" :key="index">
-                      <td><input type="checkbox" /></td>
+                      <td><el-checkbox v-model="checked"></el-checkbox></td>
                       <td>{{item.date}}</td>
                       <td>{{item.money}}</td>
+                      <td>{{item.daijie}}</td>
                       <td>{{item.billState}}</td>
                       <td>{{item.state}}</td>
                       <td>
@@ -79,6 +81,10 @@
        },
        data(){
            return{
+            checked:false,
+            date:"",          //日期范围
+            bill_state:"",    //账单状态
+            kont_state:"",   //结款状态
             orderLabel:"",
             selone:"",
             tabSelect:"",
@@ -95,12 +101,18 @@
                 {"id":"","name":"白雪"},
             ],
             dataList:[
-                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","operation":"查看明细"},
+                {"date":"2018/10/11","money":"120","daijie":"200","billState":"出账","state":"已结款","operation":"查看明细"},
+                {"date":"2018/10/11","money":"120","daijie":"200","billState":"出账","state":"已结款","operation":"查看明细"},
+                {"date":"2018/10/11","money":"120","daijie":"200","billState":"出账","state":"已结款","operation":"查看明细"},
+                {"date":"2018/10/11","money":"120","daijie":"200","billState":"出账","state":"已结款","operation":"查看明细"},
+                {"date":"2018/10/11","money":"120","daijie":"200","billState":"出账","state":"已结款","operation":"查看明细"},
+                {"date":"2018/10/11","money":"120","daijie":"200","billState":"出账","state":"已结款","operation":"查看明细"},
+                 {"date":"2018/10/11","money":"120","daijie":"200","billState":"出账","state":"已结款","operation":"查看明细"},
+                {"date":"2018/10/11","money":"120","daijie":"200","billState":"出账","state":"已结款","operation":"查看明细"},
+                {"date":"2018/10/11","money":"120","daijie":"200","billState":"出账","state":"已结款","operation":"查看明细"},
+                {"date":"2018/10/11","money":"120","daijie":"200","billState":"出账","state":"已结款","operation":"查看明细"},
+                {"date":"2018/10/11","money":"120","daijie":"200","billState":"出账","state":"已结款","operation":"查看明细"},
+                {"date":"2018/10/11","money":"120","daijie":"200","billState":"出账","state":"已结款","operation":"查看明细"},
             ]
            }
        },
@@ -164,6 +176,8 @@
       //border-spacing: 1px;
       color:#393939;
       font-size: 14px;
+      border-bottom:1px solid #E0E6ED;
+      border-left:1px solid #E0E6ED;
       th,td{
           text-align:center;
           border-top:1px solid #E0E6ED;
@@ -175,7 +189,7 @@
       }
       tr{
           height:45px;
-          td:nth-of-type(6){
+          td:nth-of-type(7){
               color:#20A0FF;
           }
           span:hover{
@@ -183,7 +197,7 @@
           }
       }
       tr:hover{
-         background:#F7F8FA;    
+         background:#DBF0FF;    
       }
       thead{
            tr{
@@ -196,7 +210,7 @@
                  width:200px;
                  img{
                      position: absolute;
-                     left:176px;
+                     right:15px;
                      top:15px;
                  }
              }
@@ -204,24 +218,33 @@
                  width:200px;
                  img{
                      position: absolute;
-                     left:176px;
+                     right:15px;
                      top:15px;
                  }
              }
              th:nth-of-type(4){
-                 width:146px;
+                 width:200px;
+                 img{
+                     position: absolute;
+                     right:15px;
+                     top:15px;
+                 }
                  
              }
              th:nth-of-type(5){
+                 width:146px;
+    
+             }
+             th:nth-of-type(6){
                  width:160px;
                  img{
                      position: absolute;
-                     right:20px;
+                     right:15px;    
                      top:13.5px;
                  }
              }
-             th:nth-of-type(6){
-                 width:420px;
+             th:nth-of-type(7){
+                 width:220px;
              }
           }         
       }

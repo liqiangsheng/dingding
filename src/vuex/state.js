@@ -397,5 +397,7 @@ export let state={ //vueX初始化
   },
 //  渠道端 财务 管理 弹框状态数据 end
   tabPathList:[],   //  //页签路由
-  creditCardMessage:{}
+  creditCardMessage:{},
+  zhifuDataObj:{}, //充值数据
+  weachat:{}, //微信支付数据
 };

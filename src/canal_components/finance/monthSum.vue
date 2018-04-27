@@ -5,22 +5,19 @@
               <div class="center_data">
                   <ul>
                       <li>
-                         <span>年份选择</span>
-                          <el-select v-model="date_state" placeholder="请选择" @change="selectorOne(date_state)">
-                            <el-option
-                              v-for="item in dateState"
-                              :key="item.id"
-                              :label="item.name"
-                              :value="item.name">
-                            </el-option>
-                          </el-select>
+                         <span class="demonstration">年份选择</span>
+                            <el-date-picker
+                            v-model="date_state"
+                            type="year"
+                            placeholder="选择年">
+                            </el-date-picker>
                       </li>
                       <li>
                           <span>账单状态</span>
                           <el-select v-model="bill_state" placeholder="请选择" @change="selectorOne(bill_state)">
                             <el-option
-                              v-for="item in billState"
-                              :key="item.id"
+                              v-for="(item,index) in billState"
+                              :key="index"
                               :label="item.name"
                               :value="item.name">
                             </el-option>
@@ -30,8 +27,8 @@
                           <span>结款状态</span>
                           <el-select v-model="kont_state" placeholder="请选择" @change="selectorOne(kont_state)">
                             <el-option
-                              v-for="item in kontState"
-                              :key="item.id"
+                              v-for="(item,index) in kontState"
+                              :key="index"
                               :label="item.name"
                               :value="item.name">
                             </el-option>
@@ -49,19 +46,21 @@
           <table border="0" cellspacing="0" >
               <thead>
                   <tr>
-                      <th><input type="checkbox"/></th>
+                      <th><el-checkbox v-model="checked"></el-checkbox></th>
                       <th>记账日期<img src="../../../static/images/paixu.png"></th>
                       <th>账单金额 (元)<img src="../../../static/images/paixu.png"></th>
-                      <th>账单状态</th>
+                      <th>待结金额 (元)<img src="../../../static/images/paixu.png"></th>
+                      <th>账单状态</th>                     
                       <th>结款状态<img src="../../../static/images/jiekuan.png" alt=""></th>
                       <th>操作</th>
                   </tr>
               </thead>
               <tbody>
                   <tr v-for="(item,index) in dataList" :key="index">
-                      <td><input type="checkbox"/></td>
+                      <td><el-checkbox v-model="checked"></el-checkbox></td>
                       <td>{{item.date}}</td>
                       <td>{{item.money}}</td>
+                      <td>{{item.daijie}}</td>
                       <td>{{item.billState}}</td>
                       <td>{{item.state}}</td>
                       <td>
@@ -82,6 +81,10 @@
        },
        data(){
            return{
+            checked:false,
+            date_state:"",   //年份选择
+            bill_state:"",    //账单状态
+            kont_state:"",   //结款状态
             orderLabel:"",
             queryShow:false,   //查询明细
              dateState:[  //分类
@@ -102,12 +105,12 @@
                 {"id":"","name":"白雪"},
             ],
             dataList:[
-                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","operation":"查看明细"},
+                {"date":"2018/10/11","money":"120","daijie":"200","billState":"出账","state":"已结款","operation":"查看明细"},
+                {"date":"2018/10/11","money":"120","daijie":"200","billState":"出账","state":"已结款","operation":"查看明细"},
+                {"date":"2018/10/11","money":"120","daijie":"200","billState":"出账","state":"已结款","operation":"查看明细"},
+                {"date":"2018/10/11","money":"120","daijie":"200","billState":"出账","state":"已结款","operation":"查看明细"},
+                {"date":"2018/10/11","money":"120","daijie":"200","billState":"出账","state":"已结款","operation":"查看明细"},
+                {"date":"2018/10/11","money":"120","daijie":"200","billState":"出账","state":"已结款","operation":"查看明细"},
             ]
            }
        },
@@ -169,10 +172,11 @@
       //border-spacing: 1px;
       color:#393939;
       font-size: 14px;
+      border-right:1px solid #E0E6ED;
       th,td{
           text-align:center;
           border-top:1px solid #E0E6ED;
-          border-right:1px solid #E0E6ED;
+          border-left:1px solid #E0E6ED;
       }
       th{
           background:#E5E9F2;
@@ -180,7 +184,7 @@
       }
       tr{
           height:45px;
-          td:nth-of-type(6){
+          td:nth-of-type(7){
               color:#20A0FF;
           }
           span:hover{
@@ -188,13 +192,12 @@
           }
       }
       tr:hover{
-         background:#F7F8FA;    
+         background:#DBF0FF;    
       }
       thead{
            tr{
              height:45px;
              background:#E0E6ED;
-
              th:nth-of-type(1){
                  width:60px;
              }
@@ -202,7 +205,7 @@
                  width:200px;
                  img{
                      position: absolute;
-                     left:176px;
+                     right:15px;
                      top:15px;
                  }
              }
@@ -210,25 +213,35 @@
                  width:200px;
                  img{
                      position: absolute;
-                     left:176px;
+                     right:15px;
                      top:15px;
                  }
              }
              th:nth-of-type(4){
-                 width:146px;
+                 width:200px;
+                 img{
+                     position: absolute;
+                     right:15px;
+                     top:15px;
+                 }
+                 
              }
              th:nth-of-type(5){
+                 width:146px;
+    
+             }
+             th:nth-of-type(6){
                  width:160px;
-                  img{
+                 img{
                      position: absolute;
-                     right:20px;    
+                     right:15px;    
                      top:13.5px;
                  }
              }
-             th:nth-of-type(6){
-                 width:420px;
+             th:nth-of-type(7){
+                 width:220px;
              }
-          }
+          }         
       }
      
   }

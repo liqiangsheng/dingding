@@ -82,7 +82,7 @@
             </td>
             <!--服务费-->
             <td>
-              {{item.serviceInfo.price2}}
+              {{item.serviceInfo.price2DiscountFee}}
               <!--操作-->
             </td>
             <td>
@@ -145,7 +145,7 @@
   import BianjiAlter from "./alertInfos/bianjiAlert.vue"  //编辑
   import CreditIsRunningLow from "./alertInfos/creditIsRunningLow.vue" //余额不足
   import WorkOrderSubmission from "./alertInfos/WorkOrderSubmission.vue" //支付成功
-  import ZhifuAlter from "./alertInfos/zhifuAlter.vue" //余额不足
+  import ZhifuAlter from "./alertInfos/zhifuAlter.vue" //支付
   export default {
     components:{
       AddAlter,BianjiAlter,CreditIsRunningLow,WorkOrderSubmission,AddAlterOne,ZhifuAlter
@@ -205,6 +205,7 @@
         fuwufei:0,
         yujifei:0,
         zhifuShow:false, //支付显示
+        mainOrderId:"",// 订单Id
       }
     },
     computed:{
@@ -250,55 +251,50 @@
        },
       ifElse(){  //
         if(this.input1 == ""){
-          alert("请填写联系人");
           this.flag = false;
-          return;
+          return this.$queryFun.successAlert.call(this,"请填写联系人")
         }
 
         if(this.input2 == ""){
-          alert("请填写联系人手机");
           this.flag = false;
-          return;
+          return this.$queryFun.successAlert.call(this,"请填写联系人手机");
         }
-//        let reg =  /^(13[0-9]|15[0-35-9]|18[0-9]|17[06-8]|14[57])\d{8}$/;
-//        if(reg.test(this.input2)==false){
-//          alert("请填写正确手机号");
-//          this.flag = false;
-//          return;
-//        }
-        if(this.selectedOptions2.length<=0||this.selectedOptions1.length<=0){
-          alert("请填写服务地区");
+        let reg =  /^(13[0-9]|15[0-35-9]|18[0-9]|17[06-8]|14[57])\d{8}$/;
+        if(reg.test(this.input2)==false){
           this.flag = false;
-          return;
+          return this.$queryFun.successAlert.call(this,"请填写正确手机号")
+
+        }
+        if(this.selectedOptions2.length<=0||this.selectedOptions1.length<=0){
+          this.flag = false;
+          return this.$queryFun.successAlert.call(this,"请填写服务地区")
         }
         if(this.input4 == ""){
-          alert("请填写详细地址");
           this.flag = false;
-          return;
+          return this.$queryFun.successAlert.call(this,"请填写详细地址")
+
         }
         if(this.input5 == ""){
-          alert("请填写预约时间");
+
           this.flag = false;
-          return;
+          return this.$queryFun.successAlert.call(this,"请填写预约时间")
+
         }
       },
-      addTijiao(){
+      addTijiao(){ //提交
           this.ifElse();
 
         if(this.peijiankuang == false){
-          alert("请添加产品");
           this.flag = false;
-          return;
+          return this.$queryFun.successAlert.call(this,"请添加产品")
         }
         if(this.danxuanShow1 == false&&this.danxuanShow2 == false){
-          alert("请选择质保状态");
           this.flag = false;
-          return;
+          return this.$queryFun.successAlert.call(this,"请选择质保状态")
         }
         if(this.danxuanShow3 == false&&this.danxuanShow4 == false){
-          alert("请选择紧急程度");
           this.flag = false;
-          return;
+          return this.$queryFun.successAlert.call(this,"请选择紧急程度")
         }
          this.query();
 
@@ -324,6 +320,16 @@
           this.tableListData.push(obj)
         }else if(this.flagOne == 2){
               this.tableListData.push(obj)
+//          console.log(2632)
+//            if (this.tableListData.indexOf(obj) === -1) {
+//              this.tableListData.push(obj)
+//              console.log(2632)
+//             } else {
+////              obj.size += v.size;
+//              console.log(2632)
+//              this.tableListData.splice(this.tableListData.indexOf(obj), 1)
+//            }
+
         }else if(this.flagOne == 3){
             for(let i=0;i<this.tableListData.length;i++){
               this.tableListData.splice(this.tableListData[i],1,obj)
@@ -342,9 +348,9 @@
         this.tableListData.forEach((v,i)=>{
           c.push(v.serviceInfo.price1)
           this.zongjia=Math.max.apply(null, c); //求最大值
-            d.push(v.serviceInfo.price2*v.size)
+            d.push(v.serviceInfo.price2DiscountFee*v.size)
           this.fuwufei= eval(d.join("+"));//求和
-          this.yujifei = this.zongjia+this.fuwufei;
+          this.yujifei = this.zongjia+this.fuwufei;  //求总金额
         })
       },
       isClose(val){//增加配件弹框
@@ -353,15 +359,11 @@
         this.bianjiShow = val;
         this.chongzhiShow = val; //充值显示
         this.chongzhiShow1 = val; //充值显示成功
-//         this.chongzhiShow = val;
       },
       isClose1(val){//充值弹框
-
-        console.log(123)
          this.zhifuShow = val;
       },
       isBool(val){//充值弹框
-        console.log(val)
         this.zhifuShow = val;
       },
       addProduct1(){//添加产品
@@ -388,7 +390,6 @@
       },
       query(){  //初始数据
         this.input5 = this.$moment(this.input5).format("YYYY-MM-DD HH:mm:ss");
-//        this.$moment(data.selectorBehindObj.appointmentDatetime).format("YYYY-MM-DD HH:mm:ss")
         this.getTableList(this.paramsData());
       },
       paramsData(){  //传数据给后台
@@ -415,11 +416,29 @@
         let url=this.$apidomain+"/order/submitByChannel";
         this.$http.post(url,params).then(res=>{
                  console.log(res,"////////////////////")
+
               if(res.data.code == "0000"){
                 //充值显示
-                this.chongzhiShow1 = true;
-              }else if(res.data.code == "0902"){
-                this.chongzhiShow = true;
+                  this.mainOrderId = res.data.result;
+                  sessionStorage.removeItem("mainOrderId");
+                   sessionStorage.setItem('mainOrderId', JSON.stringify(this.mainOrderId));
+                   let mainOrderIdObj={};
+                mainOrderIdObj.mainOrderId = this.mainOrderId;
+                mainOrderIdObj.officialPartnerId = this.chushiId[0].id;
+                let mainOrderIdUrl=this.$apidomain+"/order/payCallback";
+                this.$http.post(mainOrderIdUrl,mainOrderIdObj).then(res1=>{
+                  console.log(res1)
+                   if(res1.data.code=="0000"){
+                     console.log(res1)
+                       this.chongzhiShow1 = true;
+
+                   }else if(res1.data.code=="0902"){
+                     console.log(res1)
+                     this.chongzhiShow=true;    //充值显示
+                   }else{
+                     return this.$queryFun.successAlert.call(this,res1.data.error)
+                   }
+                })
               }else{
                 alert(res.data.error)
               }

@@ -2,16 +2,16 @@
     <div class="finance_bill">
         <div class="bill_header">
             <ul>
-                <li v-if="isShow">
-                    <p>待借款金额 (元)</p>
+                <li v-show="isShow">
+                    <p>待结款金额 (元)</p>
                     <p>28,888.00</p>
                 </li>
-                <li v-if="isShow">
+                <li v-show="isShow">
                     <p>未出账金额 (元)</p>
                     <p>1,531.00</p>
                 </li>
-                <li v-if="isShow">
-                    <p>累计已借款 (元)</p>
+                <li v-show="isShow">
+                    <p>累计已结款 (元)</p>
                     <p>245,221.00</p>
                 </li>
                 <li>
@@ -22,7 +22,7 @@
         </div>
         <div class="tab">
             <el-menu theme="dark" class="el-menu-demo" mode="horizontal" >
-               <el-menu-item  v-for="(item,index) in tabList" :index="index" :key="index" @click="tabClick(item,index)" :class="{'active':flag==index}">
+               <el-menu-item  v-for="(item,index) in tabList" index="index" :key="index" @click="tabClick(item,index)" :class="{'active':flag==index}">
                  {{item}}
                </el-menu-item>
             </el-menu>
@@ -75,6 +75,7 @@
     .finance_bill,.bill_header{
         width:100%;
         background:#FFFFFF;
+        //overflow-y:auto;
     }
     .bill_header{
         margin-top:24px;

@@ -5,43 +5,17 @@
               <div class="center_data">
                   <ul>
                       <li>
-                         <span>年份选择</span>
-                          <el-select v-model="date_state" placeholder="请选择" @change="selectorOne(date_state)">
-                            <el-option
-                              v-for="item in dateState"
-                              :key="item.id"
-                              :label="item.name"
-                              :value="item.name">
-                            </el-option>
-                          </el-select>
-                      </li>
-                      <li>
-                          <span>账单状态</span>
-                          <el-select v-model="bill_state" placeholder="请选择" @change="selectorOne(bill_state)">
-                            <el-option
-                              v-for="item in billState"
-                              :key="item.id"
-                              :label="item.name"
-                              :value="item.name">
-                            </el-option>
-                          </el-select>
-                      </li>
-                      <li>
-                          <span>结款状态</span>
-                          <el-select v-model="kont_state" placeholder="请选择" @change="selectorOne(kont_state)">
-                            <el-option
-                              v-for="item in kontState"
-                              :key="item.id"
-                              :label="item.name"
-                              :value="item.name">
-                            </el-option>
-                          </el-select>
+                         <span class="demonstration">年份选择</span>
+                            <el-date-picker
+                            v-model="date_state"
+                            type="year"
+                            placeholder="选择年">
+                            </el-date-picker>
                       </li>
                   </ul>
               </div>
               <div class="btn">
                   <el-button type="primary">查询</el-button>
-                  <el-button>重置</el-button>
               </div>
           </div>
       </div>
@@ -49,18 +23,18 @@
           <table border="0" cellspacing="0" >
               <thead>
                   <tr>
-                      <th><input type="checkbox"/></th>
+                      <th><el-checkbox v-model="checked"></el-checkbox></th>
                       <th>记账周期<img src="../../../static/images/paixu.png"></th>
-                      <th>收入 (元)<img src="../../../static/images/paixu.png"></th>
-                      <th>账单状态</th>
-                      <th>结款状态<img src="../../../static/images/jiekuan.png" alt=""></th>
+                      <th>预估收入<img src="../../../static/images/paixu.png"></th>
+                      <th>已结收入</th>
+                      <th>交易笔数</th>
                       <th>记账时间</th>
                       <th>操作</th>
                   </tr>
               </thead>
               <tbody>
                   <tr v-for="(item,index) in dataList" :key="index">
-                      <td><input type="checkbox"/></td>
+                      <td><el-checkbox v-model="checked"></el-checkbox></td>
                       <td>{{item.date}}</td>
                       <td>{{item.money}}</td>
                       <td>{{item.billState}}</td>
@@ -77,13 +51,17 @@
   </div>
 </template>
 <script>
-    import PoPup from "./popup.vue"
+    import PoPup from "./comPupop"
     export default{
        components:{
         PoPup
        },
        data(){
            return{
+            checked:"",
+            date_state:"",   //年份选择
+            //bill_state:"",    //账单状态
+            //kont_state:"",   //结款状态
             orderLabel:"",
             queryShow:false,   //查询明细
              dateState:[  //分类
@@ -103,12 +81,12 @@
                 {"id":"","name":"已结款"},
             ],
             dataList:[
-                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","billDate":"2018/04/05 12:12:00","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","billDate":"2018/04/05 12:12:00","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","billDate":"2018/04/05 12:12:00","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","billDate":"2018/04/05 12:12:00","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","billDate":"2018/04/05 12:12:00","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","billState":"出账","state":"已结款","billDate":"2018/04/05 12:12:00","operation":"查看明细"},
+                {"date":"2018/10/11","money":"120","billState":"222","state":"60","billDate":"2018/04/05 12:12:00","operation":"查看明细"},
+                {"date":"2018/10/11","money":"120","billState":"222","state":"60","billDate":"2018/04/05 12:12:00","operation":"查看明细"},
+                {"date":"2018/10/11","money":"120","billState":"222","state":"60","billDate":"2018/04/05 12:12:00","operation":"查看明细"},
+                {"date":"2018/10/11","money":"120","billState":"222","state":"60","billDate":"2018/04/05 12:12:00","operation":"查看明细"},
+                {"date":"2018/10/11","money":"120","billState":"222","state":"60","billDate":"2018/04/05 12:12:00","operation":"查看明细"},
+                {"date":"2018/10/11","money":"120","billState":"222","state":"60","billDate":"2018/04/05 12:12:00","operation":"查看明细"},
             ]
            }
        },
@@ -153,7 +131,8 @@
           }
       }
       .btn{
-          margin-left:65px;
+          margin: 18px 0px 0px 65px;
+          height:100px;
           .el-button{
               width: 140px;
               margin-top: 18px;
@@ -189,7 +168,7 @@
           }
       }
       tr:hover{
-         background:#F7F8FA;    
+         background:#DBF0FF;    
       }
       thead{
            tr{
@@ -202,7 +181,7 @@
                  width:200px;
                  img{
                      position: absolute;
-                     left:176px;
+                     right:15px;
                      top:15px;
                  }
              }
@@ -210,20 +189,15 @@
                  width:200px;
                  img{
                      position: absolute;
-                     left:176px;
+                     right:15px;
                      top:15px;
                  }
              }
              th:nth-of-type(4){
-                 width:146px;
+                 width:200px;
              }
              th:nth-of-type(5){
-                 width:160px;
-                 img{
-                     position: absolute;
-                     right:20px;
-                     top:13.5px;
-                 }
+                 width:120px;
              }
              th:nth-of-type(6){
                  width:206px;

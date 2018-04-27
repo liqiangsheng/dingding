@@ -30,10 +30,10 @@
     },
     data() {
       return {
-        price:[100,200,300,500,1000,2000,5000],
+        price:[1,200,300,500,1000,2000,5000],
         price3:[{
           disabled:false,
-          num:100},{
+          num:1},{
           disabled:false,
           num:200},{
           disabled:false,
@@ -52,6 +52,8 @@
         a:250,
         chushiId:[], //渠道信息
         qudaoNaem:"",//渠道名字
+        chongzhiPrice:"", //充值金额
+        zhifuData:{}, //支付对象
        }
 
     },
@@ -61,12 +63,30 @@
       },
       priceClick(v,i){ //点击价格
         this.ActiveIndex = i;
+        this.chongzhiPrice = v.num;
+        sessionStorage.setItem("price1",JSON.stringify(v.num))
+
       },
       OKClick(){ // 确定按钮
-        console.log("确定")
-        this.close();
-        this.$emit("isBool",true)
+
+        let priceObj = {};
+        priceObj.faPayJournalAccountId="";
+        priceObj.payAmount=this.chongzhiPrice; //价格
+        priceObj.paymentChannel=2;
+        priceObj.payType = 1; //1微信//2支付宝
+        //        http://admin.test.dingdingkuaixiu.com/officialpartnerpay/recharge
+        let url=this.$apidomain+"/officialpartnerpay/recharge"
+        this.$http.post(url,priceObj).then(res=>{
+          this.zhifuData=res.data.result;
+//          window.sessionStorage.removeItem("price");
+          sessionStorage.setItem("zhifuData",JSON.stringify(this.zhifuData))
+
+          this.close();
+          this.$emit("isBool",true)
+        })
+        this.$store.commit("zhifuDataObj",this.zhifuData);
       },
+
 
     },
     mounted() {
@@ -75,13 +95,16 @@
       //子渠道
       this.chushiId = JSON.parse(sessionStorage.getItem("userInfo"));
       this.qudaoNaem = this.chushiId[0].fullName;
-
       this.price3.forEach((v,i)=>{
-        if(this.yujifei+100 > v.num){
+        if(this.yujifei+0.1 > v.num){
           v.disabled = true;
           this.ActiveIndex =i+1;
+          this.chongzhiPrice = this.price3[i+1].num;
+//          this.priceClick(v.num,i+1);
+          sessionStorage.setItem("price1",JSON.stringify(this.price3[i+1].num))
         }
       })
+
     },
 
   }

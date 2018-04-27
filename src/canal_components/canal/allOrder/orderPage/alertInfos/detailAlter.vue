@@ -14,7 +14,7 @@
                               <div class="userInfos">
                                     <ul class="userInfosBox">
                                       <li><span>工单号</span><span>{{detailData.id}}</span><span>工单状态</span><span>{{detailData.state|orderStateShow}}</span></li>
-                                      <li><span>质保状态</span><span>{{detailData.channelWarranty|qudaozhibao}}</span><span>紧急程度</span><span>{{detailData.emergencyDegree|jinjidu}}</span></li>
+                                      <li><span>质保状态</span><span>{{detailData.channelWarranty|qudaozhibao}}</span><span>紧急程度</span><span><b :style="isStyle">{{detailData.emergencyDegree|jinjidu}}</b></span></li>
                                       <li><span>联系人</span><span>{{detailData.linkmanName}}</span><span>联系人手机</span><span>{{detailData.linkmanPhoneNum}}</span></li>
                                       <li><span style="flex-grow: 1">服务地址</span><span style="flex-grow: 3">{{detailData.linkmanDetails}}</span></li>
                                       <li><span>预约时间</span><span>{{detailData.appointmentDatetime|moment('YYYY-MM-DD HH:mm:ss')}}</span><span>完成时间</span><span>{{detailData.createTime|moment('YYYY-MM-DD HH:mm:ss')}}</span></li>
@@ -108,6 +108,7 @@
         shenqingweibao:false, //申请维保
         chanpingleixing:[], //产品类型
         peijian:[], //配件
+        isStyle:{"background":"#ffffff"}
       }
     },
     created(){
@@ -116,6 +117,10 @@
       this.$http.get(url).then(res=>{
         console.log(res,"详情数据")
         this.detailData = res.data.result.coreMainOrder;
+        if(this.detailData.emergencyDegree =="1"){
+          this.isStyle = {background:"red",color:"#ffffff"}
+        }
+
         this.chanpingleixing = res.data.result.coreMainOrderServices;
         if(!this.detailData.remark){
           this.detailData.remark = "暂无";

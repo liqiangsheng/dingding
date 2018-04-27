@@ -21,7 +21,7 @@ if(locationUrl.includes('manage.')){
 
 }else if(locationUrl.includes('channel.')){
 
-  setSession("KEY", "3");
+  setSession("KEY", "1");
 
 }else{
 

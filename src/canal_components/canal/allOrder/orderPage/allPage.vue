@@ -128,7 +128,7 @@
            </td>
            <!--紧急度-->
            <td>
-             <span :style="styleRed">{{item.emergencyDegree|jinjidu}}</span>
+             <span :class="{active:item.isbool}">{{item.emergencyDegree|jinjidu}}</span>
            </td>
            <!--工单状态-->
            <td>
@@ -225,7 +225,7 @@
         officialPartnerSubsetId:"", //子渠道选中ID
         trackShow: false,         //跟踪显示
         trackAlterId : "",//渠道跟踪ID
-        styleRed:{"background":"#ffffff",color:"black"}, //背景色加急
+        isClass:false, //背景色加急
         trackShow1:false, //详情显示
         detailAlterId : "",//渠道跟踪ID
       }
@@ -324,8 +324,11 @@
           let data=r.data;
           this.tableListData = data.result;
           this.tableListData.orders.forEach((v,i)=>{
-             if(v.emergencyDegree == "1"){
-                             this.styleRed ={"background":"red","color":"#ffffff"}
+            this.tableListData.orders[i].isbool =false;
+             if(this.tableListData.orders[i].emergencyDegree == "1"){
+                 v.isbool =true;
+             }else if(this.tableListData.orders[i].emergencyDegree == "0"){
+                v.isbool = false;
              }
           })
 
@@ -400,6 +403,10 @@
         border: 1px solid #bfcbd9;
         border-bottom: 0;
         border-left: 0;
+        .active{
+          background: red;
+          color: #FFFFFF;
+        }
       }
     }
     /*td:hover{*/
