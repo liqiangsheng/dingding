@@ -16,17 +16,20 @@
         <div class="footer">
                <p>请选择充值金额</p>
           <ul>
-            <li v-for="(item,index) in price3" > <el-button :class="{active:ActiveIndex==index}" :plain="true"     :disabled="item.disabled" @click="priceClick(item,index)">{{item.num}}元</el-button></li>
+            <li v-for="(item,index) in price3" > <el-button :class="{active:ActiveIndex==index}" :plain="true" :disabled="item.disabled" @click="priceClick(item,index)">{{item.num}}元</el-button></li>
           </ul>
            <div><el-button type="primary" @click="OKClick">确定</el-button></div>
         </div>
     </div>
+    <ZhifuAlter v-if="zhifuShow" @isClose1="isClose1" @modifyClick="modifyClick"></ZhifuAlter>
   </div>
 </template>
 <script>
+  import ZhifuAlter from "./zhifuAlter.vue" //支付
   export default {
     props:["yujifei"],
     components:{
+      ZhifuAlter
     },
     data() {
       return {
@@ -48,16 +51,21 @@
           num:5000}],
         price2:[],
         ActiveIndex:0, //class下标
-        disabled:false,
         a:250,
         chushiId:[], //渠道信息
         qudaoNaem:"",//渠道名字
         chongzhiPrice:"", //充值金额
-        zhifuData:{}, //支付对象
+        zhifuShow:false, //支付显示
        }
 
     },
     methods: {
+      isClose1(val){//充值弹框
+        this.zhifuShow = val;
+      },
+      modifyClick(v){  //关闭支付页面
+        this.zhifuShow = v;
+      },
       close(){ //传值给父级
         this.$emit("isClose",false)
       },
@@ -65,26 +73,9 @@
         this.ActiveIndex = i;
         this.chongzhiPrice = v.num;
         sessionStorage.setItem("price1",JSON.stringify(v.num))
-
       },
       OKClick(){ // 确定按钮
-
-        let priceObj = {};
-        priceObj.faPayJournalAccountId="";
-        priceObj.payAmount=this.chongzhiPrice; //价格
-        priceObj.paymentChannel=2;
-        priceObj.payType = 1; //1微信//2支付宝
-        //        http://admin.test.dingdingkuaixiu.com/officialpartnerpay/recharge
-        let url=this.$apidomain+"/officialpartnerpay/recharge"
-        this.$http.post(url,priceObj).then(res=>{
-          this.zhifuData=res.data.result;
-//          window.sessionStorage.removeItem("price");
-          sessionStorage.setItem("zhifuData",JSON.stringify(this.zhifuData))
-
-          this.close();
-          this.$emit("isBool",true)
-        })
-        this.$store.commit("zhifuDataObj",this.zhifuData);
+         this.zhifuShow = true;
       },
 
 
@@ -96,15 +87,13 @@
       this.chushiId = JSON.parse(sessionStorage.getItem("userInfo"));
       this.qudaoNaem = this.chushiId[0].fullName;
       this.price3.forEach((v,i)=>{
-        if(this.yujifei+0.1 > v.num){
+        if(this.yujifei+0.01 > v.num){
           v.disabled = true;
-          this.ActiveIndex =i+1;
-          this.chongzhiPrice = this.price3[i+1].num;
-//          this.priceClick(v.num,i+1);
-          sessionStorage.setItem("price1",JSON.stringify(this.price3[i+1].num))
         }
-      })
-
+      });
+      this.ActiveIndex =this.price3.length-1;
+      this.chongzhiPrice = 5000;
+      sessionStorage.setItem("price1",JSON.stringify(this.chongzhiPrice))
     },
 
   }

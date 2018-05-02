@@ -14,7 +14,7 @@
                       </li>
                       <li>
                           <span>账单状态</span>
-                          <el-select v-model="bill_state" placeholder="请选择" @change="selectorOne(bill_state)">
+                          <el-select v-model="bill_state" placeholder="请选择" >
                             <el-option
                               v-for="(item,index) in billState"
                               :key="index"
@@ -25,7 +25,7 @@
                       </li>
                       <li>
                           <span>结款状态</span>
-                          <el-select v-model="kont_state" placeholder="请选择" @change="selectorOne(kont_state)">
+                          <el-select v-model="kont_state" placeholder="请选择" >
                             <el-option
                               v-for="(item,index) in kontState"
                               :key="index"
@@ -46,7 +46,7 @@
           <table border="0" cellspacing="0" >
               <thead>
                   <tr>
-                      <th><el-checkbox v-model="checked"></el-checkbox></th>
+                      <th><el-checkbox v-model="checked" @change="wholeSelector(dataList,checked)"></el-checkbox></th>
                       <th>记账日期<img src="../../../static/images/paixu.png"></th>
                       <th>账单金额 (元)<img src="../../../static/images/paixu.png"></th>
                       <th>待结金额 (元)<img src="../../../static/images/paixu.png"></th>
@@ -57,31 +57,29 @@
               </thead>
               <tbody>
                   <tr v-for="(item,index) in dataList" :key="index">
-                      <td><el-checkbox v-model="checked"></el-checkbox></td>
+                      <td><el-checkbox v-model="isCheckboxList[index]" @change="checkbox(index)"></el-checkbox></td>
                       <td>{{item.date}}</td>
                       <td>{{item.money}}</td>
                       <td>{{item.daijie}}</td>
                       <td>{{item.billState}}</td>
                       <td>{{item.state}}</td>
                       <td>
-                          <span class="track" @click="queryClick()">查看明细</span>
+                          <!-- <span class="track" @click="queryClick()">查看明细</span> -->
+                          <span class="track" @click="jump()">查看明细</span>
                       </td>
                   </tr>
               </tbody>
           </table>
       </div>
-      <PoPup @isClose="isClose" v-if="queryShow"></PoPup>
   </div>
 </template>
-<script>
-    import PoPup from "./popup.vue"
-    export default{
-       components:{
-         PoPup
-       },
+<script>   
+    const isPushPath = (tabPathList,path) => !tabPathList.some( v => v.path === path);    
+    export default{    
        data(){
            return{
-            checked:false,
+            isCheckboxList:[],  //全选,反选
+            checked:false,      //全选,反选
             date_state:"",   //年份选择
             bill_state:"",    //账单状态
             kont_state:"",   //结款状态
@@ -114,20 +112,35 @@
             ]
            }
        },
+       created(){
+         this.getTableList();
+       },
        methods:{
-            selectorOne(item){       //选中后的下拉列表
-                this.labeloptions2.forEach(v=>{
-                if(v.name==item){
-                    this.selone=v.id
-                }
+            //全选,反选start
+           checkbox(index){
+                    this.$queryFun.isCheckbox.call(this,this.dataList,index);
+                },
+                wholeSelector(item,currentState){
+                    this.$queryFun.wholeSelector.call(this,item,currentState);
+                },          
+             //全选反选end
+             //表格数据请求
+             getTableList(){
+                this.isCheckboxList = [];
+                this.dataList.forEach((v,i) =>{
+                    this.isCheckboxList.push(false);
+                    this.dataList[i].isCheckboxList = false;
                 })
              },
-             isClose(v){
-                 this.queryShow = v;
-             },
-             queryClick(){
-                 this.queryShow = true;
-             }
+             //页签跳转
+             jump(state){
+                let path=`/finance/bill/billSettlementDetails`;
+                if(isPushPath(this.$store.state.tabPathList, path))this.$store.commit("pushTabPathList",{
+                            path:`/finance/bill/billSettlementDetails`,
+                            name:"账单结算明细"
+                        });
+                    this.$router.push({path});
+                }
        }
     }
 </script>

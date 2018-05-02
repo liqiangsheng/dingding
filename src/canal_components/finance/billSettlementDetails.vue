@@ -1,14 +1,6 @@
 <template>
   <div>
-      <div class="trackAlert"><!--背阴--> </div>
       <div class="trackAlert_box">
-          <!-- 头部 -->
-        <div class="headBox">
-           <span>提成结算明细</span>
-           <i class="el-message-box__close el-icon-close" @click="close"></i>
-        </div>
-        <div class="content">
-        <!-- 头部end -->
         <!-- 查询 -->
         <div class="center">
               <div class="center_data">
@@ -22,8 +14,8 @@
                           </Row>
                       </li>
                       <li>
-                          <span>结款状态</span>
-                          <el-select v-model="jiekuanzhuangtai" placeholder="请选择" @change="selectorOne(bill_state)">
+                          <span>渠道质保</span>
+                          <el-select v-model="qudaozhibao" placeholder="请选择" >
                             <el-option
                               v-for="(item,index) in billState"
                               :key="index"
@@ -34,7 +26,7 @@
                       </li>
                       <li>
                           <span>子渠道</span>
-                          <el-select v-model="ziqudao" placeholder="请选择" @change="selectorOne(kont_state)">
+                          <el-select v-model="ziqudao" placeholder="请选择" >
                             <el-option
                               v-for="(item,index) in kontState"
                               :key="index"
@@ -49,11 +41,11 @@
                   <ul>
                       <li>
                            <span>工单号</span>
-                          <el-input  placeholder="请输入工单号" v-model="gongdanhao"></el-input>
+                          <el-input  placeholder="请输入工单号" v-model="gongdanhao" clearable></el-input>
                       </li>
                       <li>
                            <span>联系人手机号</span></span>
-                          <el-input  placeholder="请输入手机号" v-model="tel"></el-input>
+                          <el-input  placeholder="请输入手机号" v-model="tel" clearable></el-input>
                       </li>
                   </ul>
               </div>
@@ -68,20 +60,22 @@
             <table border="0" cellspacing="0" >
                 <thead>
                     <tr>
-                        <th><el-checkbox v-model="checked"></el-checkbox></th>
+                        <th><el-checkbox v-model="checked" @change="wholeSelector(dataList,checked)"></el-checkbox></th>
                         <th>序号</th>
                         <th>创建时间 <img src="../../../static/images/paixu.png"></th>
                         <th>工单号</th>
                         <th>联系人</th>
-                        <th>手机尾号</th>
+                        <th>联系人手机</th>
                         <th>服务区域</th>
-                        <th>预估收入 (元)<img src="../../../static/images/paixu.png"></th>
-                        <th>结款状态</th>
+                        <th>工单总费用  (元)<img src="../../../static/images/paixu.png"></th>
+                        <th>待付款元 ()<img src="../../../static/images/paixu.png"></th>
+                        <th>渠道质保</th>
+                        <th>操作</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="(item,index) in dataList" :key="index">
-                        <td><el-checkbox v-model="checked"></el-checkbox></td>
+                        <td><el-checkbox v-model="isCheckboxList[index]" @change="checkbox(index)"></el-checkbox></td>
                         <td>{{index+1}}</td>
                         <td>{{item.a}}</td>
                         <td>{{item.b}}</td>
@@ -90,27 +84,36 @@
                         <td>{{item.e}}</td>
                         <td>{{item.f}}</td>
                         <td>{{item.g}}</td>
+                        <td>{{item.h}}</td>
+                        <td>
+                            <span class="track" @click="skip()">工单详情</span>
+                        </td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        </div>
       </div>
+      <work-order-details v-if="ordeShow" @isClose="isClose"></work-order-details>
   </div>
 </template>
 <script>
+  import workOrderDetails from "./workOrderDetails"
   export default {
     props:["trackAlterId"],
     components:{
+        workOrderDetails
     },
     data() {
       return {
-        checked:"",
-        jiekuanzhuangtai:'',
+        ordeShow:false,       //工单详情显隐
+        isCheckboxList:[],  //全选,反选
+        checked:false,      //全选,反选
+        tabSelect:"",
+        qudaozhibao:"",
         ziqudao:"",
-        date:"",          //日期范围
         gongdanhao:"",
         tel:"",
+        date:"",      //日期范围
         userInformation:[],//用户信息
         detailInformation:{},//详情信息
         createTimeInformation:[],//时间信息
@@ -127,103 +130,56 @@
                 {"id":"","name":"白雪"},
             ],
         dataList:[
-            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"已结款"},
-            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"已结款"},
-            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"已结款"},
-            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"已结款"},
-            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"已结款"},
-            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"已结款"},
-            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"已结款"},
-            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"已结款"},
-            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"已结款"},
+            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"80","h":"保内"},
+            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"80","h":"保内"},
+            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"80","h":"保内"},
+            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"80","h":"保内"},
+            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"80","h":"保内"},
+            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"80","h":"保内"},
+            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"80","h":"保内"},
+            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"80","h":"保内"},
+            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"80","h":"保内"},
         ]
       }
     },
     watch:{
     },
     created(){
-//      console.log(this.$store.state.trackAlterId)
-        let url = this.$apidomain+"/orderquery/findOrderTracking?mainOrderId="+this.trackAlterId;
-        this.$http.get(url).then(res=>{
-             this.detailInformation = res.data.result.order;
-             this.userInformation = res.data.result.coreMainOrderRecords;
-             this.userInformation.forEach(v=>{
-                if(!v.operateRemark){
-                          this.isShow = false;
-                }else{
-                   this.isShow =true;
-                }
-             })
-        })
+         this.getTableList();
     },
     methods: {
-      close(){ //传值给父亲组件
-        let isbool = false;
-         this.$emit("isClose",isbool)
-      }
-    },
+            //全选,反选start
+            checkbox(index){
+                        this.$queryFun.isCheckbox.call(this,this.dataList,index);
+                    },
+                    wholeSelector(item,currentState){
+                        this.$queryFun.wholeSelector.call(this,item,currentState);
+                    },
+                //全选反选end
+                getTableList(){
+                    this.isCheckboxList = [];
+                    this.dataList.forEach((v,i) =>{
+                        this.isCheckboxList.push(false);
+                        this.dataList[i].isCheckboxList = false;
+                    })
+                },
+                isClose(v){
+                   this.ordeShow= v;
+                },
+                skip(){
+                    this.ordeShow=true;
+                }
+            },
     mounted() {
-    },
+            },
     updated(){
 
-    }
+            }
   }
 </script>
 <style scoped lang="scss">
-  .trackAlert{
-    width: 100%;
-    background: black;
-    position: absolute;
-    top:0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    z-index:2007;
-    opacity: 0.2;
-  }
   .trackAlert_box{
-    width: 1280px;
-    height: 700px;
-    background-color: #fff;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin-left:-640px;   //往左上角移动元素的一半宽高
-    margin-top:-350px;
-    //left:-590px;
-    z-index:2008;
-    border-radius: 3px;
-    font-size: 16px;
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden
-  }
-  .content{
-      height: 641px;
-      overflow-y:auto;
-  }
-  .headBox{
     width: 100%;
-    height:60px;
-    position: relative;
-    background:rgba(243,243,243,1);
-    .el-message-box__close{
-      position: absolute;
-      right: 14px;
-      top:14px;
-    }
-    .el-message-box__close:hover{
-        cursor:pointer;
-    }
-    span{
-      width: 100%;
-      display: inline-block;
-      height:14px;
-      font-size:16px;
-      font-family:PingFangSC-Regular;
-      color:#393939;
-      line-height:60px;
-      text-align: center;
-    }
   }
   .center{
       margin-top:48px;
@@ -239,6 +195,11 @@
       .center_data{
           .ivu-input{
               height:36px;
+          }
+          ul li:nth-of-type(1){
+              .ivu-select-dropdown{
+                  left:0px !important;
+              }
           }
           li:nth-of-type(2){
               margin-left:42px;
@@ -261,13 +222,14 @@
       }
    .tableList{
       margin-top:45px;
-      //height:361px;
       border-bottom:1px solid #E0E6ED;
-      //overflow-y:auto;
+      .tableList table{
+        width:100%;
+        background:#FFFFFF;
+      }
   }
-  .tableList,.tableList table{
-      width:100%;
-      background:#FFFFFF;
+  .tableList table{
+      border-left:1px solid #E0E6ED;           
       font-size:14px;
       th,td{
           text-align:center;
@@ -318,23 +280,26 @@
               width:130px;
           }
         th:nth-of-type(8){
-              width:120px;
+              width:140px;
                img{
                 position: absolute;
                 top:15px;
-                right:1px;
+                right:5px;
               }
           }
         th:nth-of-type(9){
-              width:100px;
+              width:140px;
                img{
                 position: absolute;
                 top:15px;
-                right:1px;
+                right:5px;
               }
           }
         th:nth-of-type(10){
-              width:84px;
+              width:90px;
+          }
+        th:nth-of-type(11){
+              width:112px;
           }
      
       }

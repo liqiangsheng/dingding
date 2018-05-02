@@ -19,7 +19,7 @@
           <table border="0" cellspacing="0" >
               <thead>
                   <tr>
-                      <th><el-checkbox v-model="checked"></el-checkbox></th>
+                      <th><el-checkbox v-model="checked" @change="wholeSelector(dataList,checked)"></el-checkbox></th>
                       <th>记账周期<img src="../../../static/images/paixu.png"></th>
                       <th>预估收入<img src="../../../static/images/paixu.png"></th>
                       <th>已结收入</th>
@@ -30,32 +30,30 @@
               </thead>
               <tbody>
                   <tr v-for="(item,index) in dataList" :key="index">
-                      <td><el-checkbox v-model="checked"></el-checkbox></td>
+                      <td><el-checkbox v-model="isCheckboxList[index]" @change="checkbox(index)"></el-checkbox></td>
                       <td>{{item.date}}</td>
                       <td>{{item.money}}</td>
                       <td>{{item.billState}}</td>
                       <td>{{item.state}}</td>
                       <td>{{item.billDate}}</td>
                       <td>
-                          <span class="track" @click="queryClick(item,index)">查看明细</span>
+                          <!-- <span class="track" @click="queryClick(item,index)">查看明细</span> -->
+                          <span class="track" @click="jump()">查看明细</span>
                       </td>
                   </tr>
               </tbody>
           </table>
       </div>
-      <PoPup @isClose="isClose" v-if="queryShow"></PoPup>
   </div>
 </template>
 <script>
-    import PoPup from "./comPupop"
+    const isPushPath = (tabPathList,path) => !tabPathList.some( v => v.path === path);    
     export default{
-       components:{
-          PoPup
-       },
        data(){
            return{
-            checked:"",
-              date:"",          //日期范围
+            isCheckboxList:[],  //全选,反选
+            checked:false,      //全选,反选
+            date:"",          //日期范围
            // bill_state:"",    //账单状态
            // kont_state:"",   //结款状态
             orderLabel:"",
@@ -92,20 +90,36 @@
             ]
            }
        },
+       created(){
+           this.getTableList();
+       },
        methods:{
-            selectorOne(item){       //选中后的下拉列表
-                this.labeloptions2.forEach(v=>{
-                if(v.name==item){
-                    this.selone=v.id
-                }
+           //全选,反选start
+           checkbox(index){
+                    this.$queryFun.isCheckbox.call(this,this.dataList,index);
+                },
+                wholeSelector(item,currentState){
+                    this.$queryFun.wholeSelector.call(this,item,currentState);
+                },
+             //全选反选end
+             //请求表格数据
+             getTableList(){
+                this.isCheckboxList = [];
+                this.dataList.forEach((v,i) =>{
+                    this.isCheckboxList.push(false);
+                    this.dataList[i].isCheckboxList = false;
                 })
              },
-             queryClick(){
-                 this.queryShow = true;
-             },
-             isClose(v){
-                 this.queryShow = v;
-             }
+             //页签跳转
+            jump(state){
+                let path=`/finance/commission/commissionSettlementDetails`;
+                if(isPushPath(this.$store.state.tabPathList, path))this.$store.commit("pushTabPathList",{
+                            path:`/finance/commission/commissionSettlementDetails`,
+                            name:"提成结算明细"
+                        });
+                    this.$router.push({path});
+                }
+
        }
     }
 </script>
@@ -149,10 +163,11 @@
   .tableList,.tableList table{
       //margin-top:50px;
       width: 100%;
-      background:#FFFFFF;
+      background:#FFFFFF;     
   }
   .tableList table{
       border-color:#E0E6ED;
+      border-left:1px solid #E0E6ED;      
       //border-spacing: 1px;
       color:#393939;
       font-size: 14px;

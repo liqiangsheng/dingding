@@ -9,35 +9,97 @@
       <p><img :src="weachat.createCodeUrl" alt=""></p>
     </content>
     <footer>
-      <el-button type="primary" click="success">我已成功支付</el-button>
+      <el-button type="primary"  @click="success">我已成功支付</el-button>
     </footer>
-
+    <WorkOrderSubmission v-if="zhifuShow"  @isClose="isClose"></WorkOrderSubmission>
   </div>
 </template>
 <script>
+  import WorkOrderSubmission from "./WorkOrderSubmission.vue" //支付成功
   export default {
     props:["weachat"],
     components:{
+      WorkOrderSubmission
     },
     data() {
       return {
         clickShow:false, //支付问题电话
+        num:1, //3秒请求一次数据
+        id:"",
+        zhifuShow:false,
+        temp:"",
       }
     },
     methods: {
+      isClose(v){
+        this.zhifuShow =v;
+        location.reload();
+      },
       tel(){ //支付问题电话
         this.clickShow =!this.clickShow
       },
       success(){//成功支付
+        this.$emit("success",false)
+      },
+      query(){
+        let obj = {};
+          obj.id = this.id;
+        //      http://admin.test.dingdingkuaixiu.com/officialpartnercostflowController/findOne
+          let url = this.$apidomain+"/officialpartnercostflowController/findOne";
+            this.$http.post(url,obj).then(res=>{
+            if(res.data.code =="0000"){
+              if(res.data.result.payState == "2"){
+                let mainOrderIdObj={};
+                mainOrderIdObj.mainOrderId = JSON.parse(sessionStorage.getItem("mainOrderId"));
+                mainOrderIdObj.officialPartnerId = JSON.parse(sessionStorage.getItem("userInfo"))[0].channelId;
+                let mainOrderIdUrl=this.$apidomain+"/order/payCallback";
+                this.$http.post(mainOrderIdUrl,mainOrderIdObj).then(res1=>{
+                  console.log(res1)
+                  if(res1.data.code=="0000"){
+                    alert("支付成功")
+                    clearInterval(this.temp);
+                    this.zhifuShow = true;
 
-      }
+                  }else if(res1.data.code=="0902"){
+                    this.success();    //充值显示
+                  }else{
+                    return this.$queryFun.successAlert.call(this,res1.data.error)
+                  }
+                })
+              }else if(res.data.result.payState == "1"){
+                console.log("我掉自己了")
+              }
+            }else{
+              this.$queryFun.successAlert.call(this,res.data.error)
+            }
+          })
+      },
     },
     mounted() {
 
     },
     created(){
-   console.log(this.weachat)
-      console.log(this.$store.state.weachat)
+console.log(JSON.parse(sessionStorage.getItem("userInfo"))[0].channelId)
+      setTimeout(()=>{
+           this.id = this.weachat.officialPartnerCostFlowId;
+        console.log(this.weachat.officialPartnerCostFlowId)
+      },2000);
+      setTimeout(()=>{
+        this.query();
+      },3000)
+
+      setTimeout(()=>{
+        let that = this;
+        this.temp=setInterval(()=>{
+          that.num++;
+          if(that.num%5==0){
+            that.query();
+          }
+        },1000);
+
+      },3000)
+
+//      this.query();
     }
   }
 </script>

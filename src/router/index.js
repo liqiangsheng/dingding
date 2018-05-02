@@ -131,11 +131,12 @@ const orderManage = resolve => require(['@/canal_components/order/details/orderM
 
 //财务
 const finance = resolve => require(['@/canal_components/finance/finance'], resolve);
-const financeBill = resolve =>require(['@/canal_components/finance/finance_bill'],resolve);
-const financeCommission =resolve =>require(['@/canal_components/finance/finance_commission'],resolve)
+const financeBill = resolve =>require(['@/canal_components/finance/finance_bill'],resolve);                   //账单结算
+const financeCommission =resolve =>require(['@/canal_components/finance/finance_commission'],resolve)         //提成结算
+const billSettlementDetails = resolve =>require(['@/canal_components/finance/billSettlementDetails'],resolve);//账单结算明细
+const commissionSettlementDetails = resolve =>require(['@/canal_components/finance/commissionSettlementDetails'],resolve) //提成结算明细
 const accountOverview =resolve =>require(['@/canal_components/finance/accountOverview'],resolve)
 const accountRecharge =resolve =>require(['@/canal_components/finance/accountRecharge'],resolve)             //账号充值 /提现
-
 const transactionDetail =resolve =>require(['@/canal_components/finance/transactionDetail'],resolve)               //账号提现
 
 
@@ -416,7 +417,9 @@ let router = new Router({
         iconCls: 'iconfont detailed_icons biaobiao_icon channel_biaobiao_icon', // 图标样式class
         children: [
           {path:'/finance/bill',component:financeBill,name:"账单结算",menuShow:true},
-          {path:'/finance/commission',component:financeCommission,name:'提成管理',menuShow:true},
+          {path:'/finance/commission',component:financeCommission,name:'提成结算',menuShow:true},
+          {path:'/finance/bill/billSettlementDetails',component:billSettlementDetails,name:"账单结算明细",menuShow:false},
+          {path:'/finance/commission/commissionSettlementDetails',component:commissionSettlementDetails,name:"提成结算明细",menuShow:false},
           {path:'/finance/accountOverview',component:accountOverview,name:'账号概览',menuShow:true},
           {path:'/finance/accountRecharge/:state',component:accountRecharge ,name:'充值',menuShow:false},
           {path:'/finance/transactionDetail',component:transactionDetail,name:'交易明细',menuShow:true},

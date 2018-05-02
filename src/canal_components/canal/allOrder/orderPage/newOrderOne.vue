@@ -3,9 +3,9 @@
   <AddAlter @isClose="isClose" v-if="addShow" @pejianzengjia="pejianzengjia" :cityId="cityId"></AddAlter>
   <AddAlterOne @isClose="isClose" v-if="addShowONE" @pejianzengjia="pejianzengjia" :bianjiData1="bianjiData1" :cityId="cityId"></AddAlterOne>
   <BianjiAlter @isClose="isClose" v-if="bianjiShow" @pejianzengjia="pejianzengjia" :bianjiData="bianjiData"  :cityId="cityId"></BianjiAlter>
-  <CreditIsRunningLow v-if="chongzhiShow" @isClose="isClose" @isBool="isBool" :yujifei="yujifei"></CreditIsRunningLow>
+  <CreditIsRunningLow v-if="chongzhiShow" @isClose="isClose"  :yujifei="yujifei"></CreditIsRunningLow>
   <WorkOrderSubmission @isClose="isClose" v-if="chongzhiShow1"></WorkOrderSubmission>
-    <ZhifuAlter v-if="zhifuShow" @isClose1="isClose1"></ZhifuAlter>
+
   <div>
     <div class="yuyue">
       <p class="yuyueP"><span></span>预约信息</p><br>
@@ -145,10 +145,9 @@
   import BianjiAlter from "./alertInfos/bianjiAlert.vue"  //编辑
   import CreditIsRunningLow from "./alertInfos/creditIsRunningLow.vue" //余额不足
   import WorkOrderSubmission from "./alertInfos/WorkOrderSubmission.vue" //支付成功
-  import ZhifuAlter from "./alertInfos/zhifuAlter.vue" //支付
   export default {
     components:{
-      AddAlter,BianjiAlter,CreditIsRunningLow,WorkOrderSubmission,AddAlterOne,ZhifuAlter
+      AddAlter,BianjiAlter,CreditIsRunningLow,WorkOrderSubmission,AddAlterOne
     },
     data() {
       return {
@@ -204,7 +203,6 @@
         zongjia:0,
         fuwufei:0,
         yujifei:0,
-        zhifuShow:false, //支付显示
         mainOrderId:"",// 订单Id
       }
     },
@@ -281,6 +279,7 @@
 
         }
       },
+
       addTijiao(){ //提交
           this.ifElse();
 
@@ -320,15 +319,6 @@
           this.tableListData.push(obj)
         }else if(this.flagOne == 2){
               this.tableListData.push(obj)
-//          console.log(2632)
-//            if (this.tableListData.indexOf(obj) === -1) {
-//              this.tableListData.push(obj)
-//              console.log(2632)
-//             } else {
-////              obj.size += v.size;
-//              console.log(2632)
-//              this.tableListData.splice(this.tableListData.indexOf(obj), 1)
-//            }
 
         }else if(this.flagOne == 3){
             for(let i=0;i<this.tableListData.length;i++){
@@ -360,12 +350,8 @@
         this.chongzhiShow = val; //充值显示
         this.chongzhiShow1 = val; //充值显示成功
       },
-      isClose1(val){//充值弹框
-         this.zhifuShow = val;
-      },
-      isBool(val){//充值弹框
-        this.zhifuShow = val;
-      },
+
+
       addProduct1(){//添加产品
         this.flagOne = 2;
          this.xiaohui = false;
@@ -413,27 +399,26 @@
         };
       },
       getTableList(params){
+
+
         let url=this.$apidomain+"/order/submitByChannel";
         this.$http.post(url,params).then(res=>{
-                 console.log(res,"////////////////////")
 
               if(res.data.code == "0000"){
                 //充值显示
-                  this.mainOrderId = res.data.result;
-                  sessionStorage.removeItem("mainOrderId");
+                   this.mainOrderId = res.data.result;
+                   sessionStorage.removeItem("mainOrderId");
                    sessionStorage.setItem('mainOrderId', JSON.stringify(this.mainOrderId));
-                   let mainOrderIdObj={};
-                mainOrderIdObj.mainOrderId = this.mainOrderId;
-                mainOrderIdObj.officialPartnerId = this.chushiId[0].id;
+                    let mainOrderIdObj={};
+                    mainOrderIdObj.mainOrderId = this.mainOrderId;
+                    mainOrderIdObj.officialPartnerId = this.chushiId[0].id;
                 let mainOrderIdUrl=this.$apidomain+"/order/payCallback";
                 this.$http.post(mainOrderIdUrl,mainOrderIdObj).then(res1=>{
-                  console.log(res1)
                    if(res1.data.code=="0000"){
                      console.log(res1)
                        this.chongzhiShow1 = true;
 
                    }else if(res1.data.code=="0902"){
-                     console.log(res1)
                      this.chongzhiShow=true;    //充值显示
                    }else{
                      return this.$queryFun.successAlert.call(this,res1.data.error)
@@ -462,6 +447,7 @@
          this.jinjiduStr = "1";
         }
       },
+
 //
     },
     mounted() {

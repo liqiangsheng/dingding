@@ -12,18 +12,18 @@
         <ul>
           <li>充值账号:<span>{{this.xianshiData.officialPartnerName}}</span></li>
           <li>当前余额:<span>{{this.xianshiData.balance}}元</span></li>
-          <li>充值金额:<span style="color:rgba(230,88,49,1);font-size:20px;">{{this.price1}}元</span><a class="chongzhi" href="">修改充值金额</a></li>
+          <li>充值金额:<span style="color:rgba(230,88,49,1);font-size:20px;">{{this.price1}}元</span><a class="chongzhi" @click="modifyClick">修改充值金额</a></li>
         </ul>
       </section>
       <section id="el-tabs">
         <el-tabs type="border-card" @tab-click="tabClick">
 
           <el-tab-pane label="微信扫码充值" >
-            <WechatScavengingCater :weachat="weachat"></WechatScavengingCater>
+            <WechatScavengingCater :weachat="weachat"  @success="success"></WechatScavengingCater>
           </el-tab-pane>
 
           <el-tab-pane label="支付宝扫码充值">
-            <TransferAccountsCater :zhifubao="zhifubao"></TransferAccountsCater>
+            <TransferAccountsCater :zhifubao="zhifubao" @success="success"></TransferAccountsCater>
           </el-tab-pane>
 
 
@@ -50,34 +50,46 @@
         weachat:{}, //微信数据
         zhifubao:{}, //支付宝数据
         zhifubao2:{},//支付宝初始数据
+        weixinchushiOBJ:{},
+        data:{index:"0"},
+        results:{
+        }
       }
     },
     methods: {
-      //微信支付
-      weixin(){
-        let priceObj = {};
-        priceObj.faPayJournalAccountId=this.zhifuDataObj.faPayJournalAccountId; // 二维码id
-        priceObj.payAmount=this.price1; //价格
-        priceObj.paymentChannel=2;
-        priceObj.payType = 1; //1微信//2支付宝
-        let priceObjurl=this.$apidomain+"/officialpartnerpay/recharge"
-        this.$http.post(priceObjurl,priceObj).then(res=>{
-          console.log(res,"微信二次")
-          if(res.data.code == "0000"){
-            this.weachat = res.data.result;
-            this.$store.commit("weachat",this.weachat)
-          }else{
-            alert(res.data.error)
-          }
-        })
+      success(v){
+        console.log(v,"dsds")
+        this.close1();
+//        location.reload();
+      },
+      modifyClick(){
+        this.close1();
       },
       close1(){ //充值
         this.$emit("isClose1",false)
       },
       tabClick(eve){
-        if(eve.index == "0"){
-               this.weixin();
-        }else if(eve.index == "1"){
+//        this. weixinchushiData();
+        if(eve.index === "0"){
+          console.log(11111111111111)
+          console.log(this.weixinchushiOBJ,"sdfdsyfds反对发射点")
+          let priceObj = {faPayJournalAccountId:this.weixinchushiOBJ.faPayJournalAccountId};
+//            priceObj.faPayJournalAccountId=this.weixinchushiOBJ.faPayJournalAccountId; // 二维码id
+            priceObj.payAmount=this.price1; //价格
+            priceObj.paymentChannel=2;
+            priceObj.payType = 1; //1微信//2支付宝
+            let priceObjurl=this.$apidomain+"/officialpartnerpay/recharge"
+            this.$http.post(priceObjurl,priceObj).then(res=>{
+            console.log(res,"微信二次")
+            if(res.data.code === "0000"){
+              this.weachat = res.data.result;
+            }else{
+              alert(res.data.error)
+            }
+          })
+          sessionStorage.setItem("weachat",JSON.stringify(this.weachat))
+
+        }else if(eve.index === "1"){
           let priceObj1 = {};
           priceObj1.faPayJournalAccountId=this.zhifubao2.faPayJournalAccountId; // 二维码id
           priceObj1.payAmount=this.price1; //价格
@@ -85,63 +97,72 @@
           priceObj1.payType = 2; //1微信//2支付宝
           let priceObj1url=this.$apidomain+"/officialpartnerpay/recharge"
           this.$http.post(priceObj1url,priceObj1).then(res=>{
-            if(res.data.code == "0000"){
+            console.log(res,"支付宝二次")
+            if(res.data.code === "0000"){
                this.zhifubao = res.data.result;
+               sessionStorage.setItem("zhifubao",JSON.stringify(this.zhifubao))
             }else{
               alert(res.data.error)
             }
-            console.log(res,"777777777")
 
           })
         }
+      },
+      weixinchushiData(){
+         let priceObj = {};
+         priceObj.faPayJournalAccountId="";
+         priceObj.payAmount=JSON.parse(sessionStorage.getItem("price1")); //价格
+         priceObj.paymentChannel=2;
+         priceObj.payType = 1; //1微信//2支付宝
+         let urlweahat=this.$apidomain+"/officialpartnerpay/recharge"
+          this.$http.post(urlweahat,priceObj).then(res=>{
+
+           if(res.data.code === "0000"){
+             this.weixinchushiOBJ=res.data.result;
+           }else{
+             return this.$queryFun.successAlert.call(this,res.data.error)
+           }
+
+       })  //微信初始数据
+
       }
     },
     mounted() {
     },
     computed:{
-//      ...mapState([  //数据
-//        "zhifuDataObj",
-//      ])
-        a(){
-        return this.$store.state.zhifuDataObj;
-      }
     },
     created(){
-            console.log(this.a())
-//      console.log(this.$store.state.zhifuDataObj)
-          this.userInfo = JSON.parse(window.sessionStorage.getItem("userInfo"))  //客户信息
-          this.price1 = JSON.parse(window.sessionStorage.getItem("price1"));//价格
-          this.zhifuDataObj = JSON.parse(window.sessionStorage.getItem("zhifuData")); //初始支付价格
-          console.log(this.zhifuDataObj)
+      this.price1 = JSON.parse(sessionStorage.getItem("price1"));//价格
+      this.weixinchushiData();
 
-//      http://admin.test.dingdingkuaixiu.com/officialPartnerAccountInfo/findOne数据显示
-      let url=this.$apidomain+"/officialPartnerAccountInfo/findOne"
+
+      let url=this.$apidomain+"/officialPartnerAccountInfo/findOne";
       this.$http.post(url).then(res=>{
         console.log(res,"初始")
-        if(res.data.code == "0000"){
+        if(res.data.code === "0000"){
           this.xianshiData = res.data.result;
         }else{
-          alert(res.data.error)
+          return this.$queryFun.successAlert.call(this,res.data.error)
         }
-
-      })
-      this.weixin();
+      });
       let priceObj2 = {}; //支付宝
       priceObj2.faPayJournalAccountId=""; // 二维码id
-      priceObj2.payAmount=this.price1; //价格
+      priceObj2.payAmount=JSON.parse(sessionStorage.getItem("price1")); //价格
       priceObj2.paymentChannel=2;
       priceObj2.payType = 2; //1微信//2支付宝
       let priceObj2url=this.$apidomain+"/officialpartnerpay/recharge";
       this.$http.post(priceObj2url,priceObj2).then(res=>{
         console.log(res)
-        if(res.data.code == "0000"){
+        if(res.data.code === "0000"){
           this.zhifubao2 =res.data.result;
         }else{
           alert(res.data.res)
         }
-
       })
-
+      setTimeout(()=>{
+        this.tabClick(this.data)
+      },1000)
+//      this.tabClick(this.data)
     }
   }
 </script>
@@ -164,7 +185,7 @@
     background-color: #fff;
     position: absolute;
     left: 15%;
-    top:18%;
+    top:16%;
     z-index:2008;
     border-radius: 3px;
     font-size: 16px;

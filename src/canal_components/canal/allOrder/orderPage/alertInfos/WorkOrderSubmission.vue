@@ -31,9 +31,10 @@
     methods: {
       close(){ //传值给父级
         this.$emit("isClose",false)
+        location.reload()
       },
       knowClick(){ //知道了
-
+        location.reload()
       }
 
     },
