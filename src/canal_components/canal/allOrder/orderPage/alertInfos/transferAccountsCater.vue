@@ -11,15 +11,15 @@
     <footer>
       <el-button type="primary" @click="success">我已成功支付</el-button>
     </footer>
-    <WorkOrderSubmission v-if="zhifuShow"  @isClose="isClose"></WorkOrderSubmission>
+    <!--<WorkOrderSubmission v-if="zhifuShow"  @isClose="isClose"></WorkOrderSubmission>-->
   </div>
 </template>
 <script>
-  import WorkOrderSubmission from "./WorkOrderSubmission.vue" //支付成功
+//  import WorkOrderSubmission from "./WorkOrderSubmission.vue" //支付成功
   export default {
     props:["zhifubao"],
     components:{
-      WorkOrderSubmission
+//      WorkOrderSubmission
     },
     data() {
       return {
@@ -49,7 +49,6 @@
         //      http://admin.test.dingdingkuaixiu.com/officialpartnercostflowController/findOne
         let url = this.$apidomain+"/officialpartnercostflowController/findOne";
         this.$http.post(url,obj).then(res=>{
-          console.log(res,"00008888")
           if(res.data.code =="0000"){
             if(res.data.result.payState == "2"){
               let mainOrderIdObj={};
@@ -62,7 +61,8 @@
                   console.log(res1)
                   alert("支付成功")
                   clearInterval(this.temp);
-                  this.zhifuShow = true;
+//                  this.zhifuShow = true;
+                  this.$router.push({path:"./orderPage/alertInfos/WorkOrderSubmission"})
 
                 }else if(res1.data.code=="0902"){
                   this.success();    //充值显示
@@ -84,17 +84,8 @@
 
     },
     created(){
-      console.log(JSON.parse(sessionStorage.getItem("userInfo"))[0].channelId)
-      setTimeout(()=>{
         this.imgUrl = JSON.parse(sessionStorage.getItem('zhifubao')).createCodeUrl;
         this.id = JSON.parse(sessionStorage.getItem('zhifubao')).officialPartnerCostFlowId;
-        console.log( this.id)
-      },2000);
-//      setTimeout(()=>{
-//        this.query();
-//      },3000)
-
-      setTimeout(()=>{
         let that = this;
         this.temp=setInterval(()=>{
           that.num++;
@@ -102,10 +93,7 @@
             that.query();
           }
         },1000);
-//
-      },3000)
 
-//      this.query();
 
     }
   }
@@ -118,6 +106,7 @@
     header{
       width: 100%;
       height: 70px;
+      position: relative;
       p:nth-child(1){
         position: absolute;
         right:80px;

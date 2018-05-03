@@ -15,6 +15,20 @@
           </el-input>
         </div>
         <div class="list">
+          师傅姓名:
+          <el-input
+            placeholder="请输入内容"
+            v-model="masterName">
+          </el-input>
+        </div>
+        <div class="list">
+          师傅手机号:
+          <el-input
+            placeholder="请输入内容"
+            v-model="masterPhone">
+          </el-input>
+        </div>
+        <div class="list">
           绑定手机号 :
           <el-input
             placeholder="请输入内容"
@@ -63,6 +77,18 @@
             </el-option>
           </el-select>
           <!--下拉end-->
+        </div>
+        <!--工单类型-->
+        <div class="list">
+          工单类型 :
+          <el-select v-model="orderTypeOne" placeholder="请选择" @change="orderTypeOneClick(orderTypeOne)">
+            <el-option
+              v-for="item in orderType"
+              :key="item.id"
+              :label="item.name"
+              :value="item.name">
+            </el-option>
+          </el-select>
         </div>
         <!--城市-->
 
@@ -135,6 +161,10 @@
             <!--分类-->
             <td>
               {{item.fLabelBusiness|FLabelBusinessShow}}
+            </td>
+            <!--创建时间-->
+            <td>
+              {{item.createTime|moment('YYYY-MM-DD HH:mm:ss')}}
             </td>
             <!--预约时间-->
             <td>
@@ -399,6 +429,40 @@
     },
     data() {
       return {
+        masterPhone:"",//师傅电话
+        masterName:"",//师傅名字
+        orderName:"",
+        orderTypeOne:"", //工单类型
+        orderType:[
+          {
+            id:"",
+            name:"--请选择--"
+          },
+          {
+            id:"0",
+            name:"正常工单"
+          },
+          {
+            id:"1",
+            name:"返修工单"
+          },
+          {
+            id:"2",
+            name:"一口价工单"
+          },
+          {
+            id:"3",
+            name:"定价工单"
+          },
+          {
+            id:"4",
+            name:"预约工单"
+          },
+          {
+            id:"5",
+            name:"企业工单"
+          },
+        ],//工单类型
         selone:'',
         labeloptions2:[
           {
@@ -596,6 +660,11 @@
             key: "sourceId",
             SourceTypeValue: '', //选中后的
             SourceType: []
+          }, {
+            name: "工单状态",
+            key: "orderStatus",
+            SourceTypeValue: '', //选中后的
+            SourceType:this.$store.state.orderStatusOrderAll,
           }
         ],
         selectorBehindObj: {},
@@ -604,6 +673,7 @@
           '工单号',
           "工单类型",
           '分类',
+          '创建时间',
           '预约时间',
           '联系人',
           '联系人手机号',
@@ -677,6 +747,13 @@
       });
     },
     methods: {
+      orderTypeOneClick(item){ //工单类型
+        this.orderType.forEach((v,i)=>{
+          if(item === v.name){
+            this.orderName = v.id;
+          }
+        })
+      },
 
       selectorOne(item){       //选中后的下拉列表
 //        console.log(item);
@@ -765,6 +842,10 @@
           "createTimeStartStr":this.statisticsDateStartStr2, //师傅工号
           "createTimeEndStr":this.statisticsDateEndStr2, //师傅工号
           "fLabelBusiness" : this.selone, //分类
+          "type":this.orderName, //工单类型
+          "masterName":this.masterName, //师傅姓名
+          "masterPhoneNum":this.masterPhone, //师傅手机
+          "state":this.selectorBehindObj.orderStatus,      //工单状态
         }};
       },
       //显示新建工单；

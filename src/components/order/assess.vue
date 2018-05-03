@@ -11,6 +11,17 @@
           </el-input>
         </div>
         <div class="list">
+          主评分 :
+          <el-input
+            style="width: 195px"
+            type="number"
+            min="1"
+            max="5"
+            placeholder="请输入内容"
+            v-model="leaveID">
+          </el-input>
+        </div>
+        <div class="list">
           师傅手机号 :
           <el-input
             placeholder="请输入内容"
@@ -23,6 +34,16 @@
             placeholder="请输入内容"
             v-model="userPhoneNum">
           </el-input>
+        </div>
+        <div class="list">
+          完成时间 :
+          <el-date-picker
+            v-model="timeQuantum"
+            type="daterange"
+            align="right"
+            placeholder="选择日期范围"
+            :picker-options="pickerOptions2">
+          </el-date-picker>
         </div>
         <div class="list">
           工单类型 :
@@ -190,6 +211,33 @@ import { addDialingMaster } from "./js/pagingPages"
     },
     data() {
       return {
+        leaveID:1, //主评分
+        timeQuantum:[],
+        statisticsDateStartStr:"", //开始时间
+        statisticsDateEndStr:"", //结束时间
+        pickerOptions2: {
+          shortcuts: [
+            {
+              text: '最近一周',
+              onClick(picker) {
+                const end = new Date();
+                const start = new Date();
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 8);
+                end.setTime(end.getTime() - 3600 * 1000 * 24 * 1);
+                picker.$emit('pick', [start, end]);
+              }
+            }, {
+              text: '最近一个月',
+              onClick(picker) {
+                const end = new Date();
+                const start = new Date();
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 31);
+                end.setTime(end.getTime() - 3600 * 1000 * 24 * 1);
+                picker.$emit('pick', [start, end]);
+              }
+            }
+          ]
+        },
         isTooltip_show:false, //用于判断是否显示非客服的电话图标显示
         checked:false,
         isCheckboxList:[],
@@ -427,6 +475,10 @@ import { addDialingMaster } from "./js/pagingPages"
         this.$queryFun.wholeSelector.call(this,data,currentState)
       },
       quiry(){
+        if(this.timeQuantum.length>0){
+          this.statisticsDateStartStr = this.$moment(this.timeQuantum[0]).format('YYYY-MM-DD');
+          this.statisticsDateEndStr = this.$moment(this.timeQuantum[1]).format('YYYY-MM-DD');
+        }
         this.getTableList(this.paramsData());
       },
       paramsData(){
@@ -440,6 +492,9 @@ import { addDialingMaster } from "./js/pagingPages"
             "masterName":this.masterName,
             "orderLabel":this.selone,
             "orderType":this.selone1,
+            "completedTimeStartStr":this.statisticsDateStartStr, //完成开始时间
+            "completedTimeEndStr":this.statisticsDateEndStr, //完成结束时间
+            "level":this.leaveID,// 主评分
           }
         }
       },

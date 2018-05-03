@@ -15,21 +15,16 @@
           <li>充值金额:<span style="color:rgba(230,88,49,1);font-size:20px;">{{this.price1}}元</span><a class="chongzhi" @click="modifyClick">修改充值金额</a></li>
         </ul>
       </section>
-      <section id="el-tabs">
-        <el-tabs type="border-card" @tab-click="tabClick">
+      <div class="footer">
+        <ul id="list">
+          <li v-for="(item,index) in fangshi" @click="tabClick(item,index)" :class="{active:xianshiIndex==index}">{{item}}</li>
+        </ul>
+        <div>
+          <WechatScavengingCater :weachat="weachat"  @success="success" v-if="xianshiIndex == 0"></WechatScavengingCater>
+          <TransferAccountsCater :zhifubao="zhifubao" @success="success" v-if="xianshiIndex ==1"></TransferAccountsCater>
+        </div>
+      </div>
 
-          <el-tab-pane label="微信扫码充值" >
-            <WechatScavengingCater :weachat="weachat"  @success="success"></WechatScavengingCater>
-          </el-tab-pane>
-
-          <el-tab-pane label="支付宝扫码充值">
-            <TransferAccountsCater :zhifubao="zhifubao" @success="success"></TransferAccountsCater>
-          </el-tab-pane>
-
-
-
-        </el-tabs>
-      </section>
     </div>
   </div>
 </template>
@@ -43,9 +38,11 @@
     },
     data() {
       return {
+        xianshiIndex : 0,
         zhifuDataObj:{},//支付数据
         userInfo:"", //账号
         price1:"", //充值余额
+        fangshi:["微信扫码充值","支付宝扫码充值"],
         xianshiData:{}, //显示的数据
         weachat:{}, //微信数据
         zhifubao:{}, //支付宝数据
@@ -68,10 +65,11 @@
       close1(){ //充值
         this.$emit("isClose1",false)
       },
-      tabClick(eve){
+      tabClick(v,index){
+        console.log(index)
+        this.xianshiIndex = index;
 //        this. weixinchushiData();
-        if(eve.index === "0"){
-          console.log(11111111111111)
+        if(index === 0){
           console.log(this.weixinchushiOBJ,"sdfdsyfds反对发射点")
           let priceObj = {faPayJournalAccountId:this.weixinchushiOBJ.faPayJournalAccountId};
 //            priceObj.faPayJournalAccountId=this.weixinchushiOBJ.faPayJournalAccountId; // 二维码id
@@ -89,7 +87,7 @@
           })
           sessionStorage.setItem("weachat",JSON.stringify(this.weachat))
 
-        }else if(eve.index === "1"){
+        }else if(index === 1){
           let priceObj1 = {};
           priceObj1.faPayJournalAccountId=this.zhifubao2.faPayJournalAccountId; // 二维码id
           priceObj1.payAmount=this.price1; //价格
@@ -159,15 +157,48 @@
           alert(res.data.res)
         }
       })
-      setTimeout(()=>{
-        this.tabClick(this.data)
-      },1000)
-//      this.tabClick(this.data)
+
+      this.tabClick(1,0)
+
     }
   }
 </script>
 
 <style scoped lang="scss">
+  .footer{
+    width: 100%;
+    height: 70%;
+
+    #list{
+      width:100%;
+      height:42px ;
+      border: 1px solid #d1dbe5;
+      background: #f3f3f3;
+      border-bottom: none;
+      li{
+        float: left;
+        border-right: 1px solid #d1dbe5;
+        border-bottom: 1px solid #d1dbe5;
+        padding: 0 16px;
+        height:42px;
+        box-sizing:border-box;
+        line-height:42px;
+        display:inline-block;
+        list-style:none;
+        font-size:14px;
+        color:#8391a5;
+        position:relative;
+        font-family: MicrosoftYaHei;
+      }
+      li.active{
+        font-family: MicrosoftYaHei;
+        border-bottom: 0;
+        background: #FFFFFF;
+        color:#20a0ff;
+      }
+    }
+  }
+
   .creditIsRunningLow{
     width: 100%;
     background: black;
@@ -180,12 +211,12 @@
     opacity: 0.2;
   }
   .creditIsRunningLow_box{
-    width: 70%;
-    height: 70%;
+    width: 80%;
+    height: 75%;
     background-color: #fff;
     position: absolute;
-    left: 15%;
-    top:16%;
+    left: 11%;
+    top:12%;
     z-index:2008;
     border-radius: 3px;
     font-size: 16px;

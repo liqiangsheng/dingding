@@ -30,11 +30,13 @@
     },
     methods: {
       close(){ //传值给父级
-        this.$emit("isClose",false)
+//        this.$emit("isClose",false)
         location.reload()
+        this.$router.push({path:"../../newOrder"})
       },
       knowClick(){ //知道了
         location.reload()
+        this.$router.push({path:"../../newOrder"})
       }
 
     },

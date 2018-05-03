@@ -1,0 +1,220 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="./css/callcenter-component.css">
+    <style type="text/css">
+        table {
+            border: 1px;
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        table th {
+            border: 1px solid #ddd;
+            padding: 5px;
+            text-align: center;
+        }
+
+        table tbody td {
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<table>
+    <caption>
+        历史弹屏
+    </caption>
+    <thead>
+    <th>客户号码</th>
+    <th>通话类型</th>
+    <th>客服姓名</th>
+    <th>客服ID</th>
+    <th>来源队列</th>
+    <th>通话记录ID</th>
+    <th>归属地</th>
+    <th>振铃时间</th>
+    <th>Call ID</th>
+    <th>是否挂断</th>
+    </thead>
+    <tbody id="screen-pop-history">
+
+    </tbody>
+</table>
+<p>
+    <button onclick="destroyCallComponent();">销毁通话组件</button>
+    <button onclick="createCallComponent();">创建通话组件</button>
+</p>
+<h3>修改客服状态</h3>
+<div>
+    <button onclick="setWorkStatus('idle');">空闲</button>
+    <button onclick="setWorkStatus('busy');">忙碌</button>
+    <button onclick="setWorkStatus('resting');">小休</button>
+    <button onclick="setWorkStatus('offline');">离线</button>
+</div>
+<h3>修改客服在线方式</h3>
+<div>
+    <button onclick="setWorkingWay('fixed_voip_online');">IP话机</button>
+    <button onclick="setWorkingWay('phone_online');">手机</button>
+</div>
+<h3>挂断</h3>
+<div>
+    <button onclick="callComp.hangup();">挂断</button>
+</div>
+<h3>高级通话</h3>
+<input id="agent_id" placeholder="客服ID"/>
+<div>
+    <button onclick="transfer();">转接</button>
+    <button onclick="startConsult();">咨询</button>
+    <button onclick="stopConsult();">结束咨询</button>
+    <button onclick="startThreeWayCalling();">三方</button>
+</div>
+
+<script src="./callcenter-component.js"></script>
+<script>
+    var tbody = document.getElementById('screen-pop-history');
+
+    function createCallComponent() {
+        if (window.callComp && !window.callComp.isDestroyed) {
+            return;
+        }
+        window.callComp = new UdeskCallcenterComponent({
+            container: document.body,
+            token: 'xxxxx',  // 客服token
+            subDomain: 'xxxxx', // 您在udesk注册的二级域名,例如您的udesk域名是sample.udesk.cn,则此处填写sample
+            showManualScreenPop: true,
+            onScreenPop: function(conversation) {
+                var tr = document.createElement('tr');
+                tr.innerHTML =
+                    '<td><a href="javascript:;" onclick="makeCall(\'' + conversation.customer_phone_number + '\')">' +
+                    conversation.customer_phone_number + '</a></td>' +   //客户电话
+                    '<td>' + conversation.call_type + '</td>' + //呼入、呼出
+                    '<td>' + conversation.agent_name + '</td>' +  //客服姓名
+                    '<td>' + conversation.agent_id + '</td>' +  //客服ID
+                    '<td>' + (conversation.queue_name || '') + '</td>' +  //队列，仅呼入有值，呼出值为null
+                    '<td>' + conversation.conversation_id + '</td>' +  //conversation_id
+                    '<td>' + conversation.customer_phone_location + '</td>' + //客户手机号归属地
+                    '<td>' + conversation.ring_time + '</td>' + //振铃时间
+                    '<td>' + conversation.call_id + '</td>' +   //call_id
+                    '<td id="' + conversation.conversation_id + '"></td>';
+
+                tbody.prepend(tr);
+            },
+            onHangup: function(conversation) {
+                document.getElementById(conversation.conversation_id).innerText = '已挂断';
+                console.log('hangup', conversation);
+            },
+            onWorkStatusChange: function(status) {
+                console.log('客服当前状态:' + status);
+            },
+            onWorkWayChange: function(way) {
+                console.log('客服当前在线方式:' + way);
+            },
+            onDropCall: function(res) {
+                console.log('挂断结果：' + res.error_message);
+            },
+            onTransferResult: function(res) {
+                console.log('转接结果', JSON.stringify(res));
+            },
+            onConsultResult: function(res) {
+                console.log('咨询结果', JSON.stringify(res));
+            },
+            onThreeWayCallingResult: function(res) {
+                console.log('三方结果', JSON.stringify(res));
+            },
+//            onInitSuccess: function() {
+//                console.log('初始化成功');
+//            },
+//            onInitFailure: function() {
+//                console.log('初始化失败');
+//            }
+        });
+    }
+
+    function makeCall(phone_number) {
+        callComp.makeCall(phone_number, function() {
+            console.log('外呼成功');
+        }, function() {
+            console.log('外呼失败');
+        });
+    }
+
+    function destroyCallComponent() {
+        window.callComp.destroy();
+        window.callComp = null;
+    }
+
+    function setWorkStatus(status) {
+        if (window.callComp) {
+            window.callComp.setWorkStatus(status, function() {
+                console.log('修改状态成功');
+            }, function() {
+                console.log('修改状态失败');
+            });
+        }
+    }
+
+    function transfer() {
+        let targetId = document.getElementById('agent_id').value;
+        if (window.callComp) {
+            window.callComp.transfer(targetId, function() {
+                console.log('正在尝试转接...');
+            }, function(res) {
+                alert(JSON.stringify(res));
+            });
+        } else {
+            alert('请先创建通话组件');
+        }
+    }
+
+    function startConsult() {
+        let targetId = document.getElementById('agent_id').value;
+        if (window.callComp) {
+            window.callComp.startConsult(targetId, function() {
+                console.log('正在尝试咨询...');
+            }, function(res) {
+                alert(JSON.stringify(res));
+            });
+        }
+    }
+
+    function stopConsult() {
+        if (window.callComp) {
+            window.callComp.stopConsult(function() {
+                console.log('正在结束咨询...');
+            }, function(res) {
+                alert(JSON.stringify(res));
+            });
+        }
+    }
+
+    function startThreeWayCalling() {
+        let targetId = document.getElementById('agent_id').value;
+        if (window.callComp) {
+            window.callComp.startThreeWayCalling(targetId, function() {
+                console.log('正在尝试发起三方通话...');
+            }, function(res) {
+                alert(JSON.stringify(res));
+            });
+        }
+    }
+
+    function setWorkingWay(workingWay) {
+        if (callComp) {
+            callComp.setWorkingWay(workingWay, function() {
+                console.log('正在尝试修改客服在线方式');
+            }, function(res) {
+                alert(JSON.stringify(res));
+            });
+        }
+    }
+
+</script>
+</body>
+</html>

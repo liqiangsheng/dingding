@@ -907,6 +907,10 @@
     background:url(../assets/images/childer_icon_ch.png)center center no-repeat;
     background-size:100% 100%;
   }
+  .childer_channel_icon1{
+    background:url(../assets/images/product.png)center center no-repeat;
+    background-size:100% 100%;
+  }
   .amend_pass{
     position:absolute;
     right:8em;

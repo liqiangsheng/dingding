@@ -25,6 +25,27 @@
           </el-input>
         </div>
         <div class="list">
+          师傅姓名:
+          <el-input
+            placeholder="请输入内容"
+            v-model="masterName">
+          </el-input>
+        </div>
+        <div class="list">
+          师傅手机号:
+          <el-input
+            placeholder="请输入内容"
+            v-model="masterPhone">
+          </el-input>
+        </div>
+        <div class="list">
+          联系人:
+          <el-input
+            placeholder="请输入内容"
+            v-model="phoneName">
+          </el-input>
+        </div>
+        <div class="list">
           联系手机号 :
           <el-input
             placeholder="请输入内容"
@@ -108,6 +129,18 @@
             </el-option>
           </el-select>
         </div>
+        <!--工单类型-->
+        <div class="list">
+          工单类型 :
+          <el-select v-model="orderTypeOne" placeholder="请选择" @change="orderTypeOneClick(orderTypeOne)">
+            <el-option
+              v-for="item in orderType"
+              :key="item.id"
+              :label="item.name"
+              :value="item.name">
+            </el-option>
+          </el-select>
+        </div>
       </div>
       <!--下拉列表结束-->
       <!--查询按钮-->
@@ -116,7 +149,7 @@
       <div class="derive"  style="text-align: right">
         <el-button @click="downloadOrder" size="large" class="derive_btn" v-show="$isButtonObj('bn-order-all-new')">下载工单</el-button>
         <!--<el-button @click="batchOrder(tableList)" size="large">批量派单</el-button>-->
-        <el-button @click="addOrderIs" size="large" class="derive_btn" v-show="$isButtonObj('bn-order-all-new')">新建工单</el-button>
+        <!--<el-button @click="addOrderIs" size="large" class="derive_btn" v-show="$isButtonObj('bn-order-all-new')">新建工单</el-button>-->
         <!--------------------------------------------2017.11.29添加创建回访--------------------------------->
         <el-button @click="add_come_back_click_btn_show()" size="large" class="derive_btn" v-show="$isButtonObj('bn-order-all-new')">创建回访</el-button>
         <!--------------------------------------------------------------------------------------------->
@@ -415,7 +448,7 @@
   import changTime from "./orderAllCommonts/master_alert/changeTime"
   import drawback from "./orderAllCommonts/master_alert/drawback"
   import addRemarks from "./orderAllCommonts/master_alert/addRemarks"
-  import addOrder from "./orderAllCommonts/addOrder";
+//  import addOrder from "./orderAllCommonts/addOrder"; //新建工单
   import complainOrder from "@/components/order/orderAllCommonts/complain"
   import addseveProduct from "@/components/order/orderAllCommonts/addSaverProduct"
   import downloadOrder from "./orderAllCommonts/downloadOrder"
@@ -431,7 +464,7 @@
     components:{
       addRemarks,
       complainOrder,
-      addOrder,
+//      addOrder, // 新建工单
       addseveProduct,
       drawback,
       replaceMaster,
@@ -444,6 +477,41 @@
     },
     data() {
       return {
+        masterPhone:"",//师傅电话
+        masterName:"",//师傅名字
+        phoneName:"", //联系人
+        orderName:"",
+        orderTypeOne:"", //工单类型
+        orderType:[
+          {
+           id:"",
+            name:"--请选择--"
+          },
+          {
+            id:"0",
+            name:"正常工单"
+          },
+          {
+            id:"1",
+            name:"返修工单"
+          },
+          {
+            id:"2",
+            name:"一口价工单"
+          },
+          {
+            id:"3",
+            name:"定价工单"
+          },
+          {
+            id:"4",
+            name:"预约工单"
+          },
+          {
+            id:"5",
+            name:"企业工单"
+          },
+      ],//工单类型
         selone:'',
         labeloptions2:[
           {
@@ -732,12 +800,17 @@
 
     },
     methods: {
+      orderTypeOneClick(item){ //工单类型
+            this.orderType.forEach((v,i)=>{
+               if(item === v.name){
+                 this.orderName = v.id;
+               }
+            })
+      },
       selectorOne(item){       //选中后的下拉列表
-//        console.log(item);
         this.labeloptions2.forEach(v=>{
           if(v.name==item){
             this.selone=v.id
-//            console.log(this.selone)
           }
         })
 
@@ -799,11 +872,15 @@
             "state":this.selectorBehindObj.orderStatus,      //工单状态
             "officialPartnerId":this.selectorBehindObj.sourceId,  //渠道
             "masterId":this.selectorBehindObj.masterJobNumber, //师傅工号,
-            "appointmentDatetimeStartStr":this.statisticsDateStartStr, //师傅工号
-            "appointmentDatetimeEndStr":this.statisticsDateEndStr, //师傅工号
+            "appointmentDatetimeStartStr":this.statisticsDateStartStr,
+            "appointmentDatetimeEndStr":this.statisticsDateEndStr,
             "createTimeStartStr":this.statisticsDateStartStr2,
             "createTimeEndStr":this.statisticsDateEndStr2,
             "fLabelBusiness" : this.selone, //分类
+             "type":this.orderName, //工单类型
+              "linkmanName":this.phoneName, //联系人
+              "masterName":this.masterName, //师傅姓名
+              "masterPhoneNum":this.masterPhone, //师傅手机
           }
         };
       },

@@ -388,6 +388,7 @@ export let state={ //vueX初始化
   addDataCarter:{}, //渠道新增数据
   cityIdid:"",
 //  渠道端 财务 管理 弹框状态数据 start
+
   accountOverviewAlertData:{
     isShow:false,
     money:0,

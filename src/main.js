@@ -28,9 +28,11 @@ import queryFun from "@/components/commonJs/queryFun"
 import seqencingIcon from "@/components/commInfo/seqencingIcon"
 import inputs from "@/components/commInfo/inputs"
 import commAlerttext from "@/components/commInfo/commAlerttext"
+import commonAlert from "@/components/commInfo/commonAlert"
 import index from "@/canal_components/assets/index"
 
 Vue.component("seqencingIcon",seqencingIcon);
+Vue.component("commonAlert",commonAlert);
 Vue.component("inputsList",inputs);
 Vue.component("commAlerttext",commAlerttext);
 //缓存  start

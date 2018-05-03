@@ -11,15 +11,15 @@
     <footer>
       <el-button type="primary"  @click="success">我已成功支付</el-button>
     </footer>
-    <WorkOrderSubmission v-if="zhifuShow"  @isClose="isClose"></WorkOrderSubmission>
+    <!--<WorkOrderSubmission v-if="zhifuShow"  @isClose="isClose"></WorkOrderSubmission>-->
   </div>
 </template>
 <script>
-  import WorkOrderSubmission from "./WorkOrderSubmission.vue" //支付成功
+//  import WorkOrderSubmission from "./WorkOrderSubmission.vue" //支付成功
   export default {
     props:["weachat"],
     components:{
-      WorkOrderSubmission
+//      WorkOrderSubmission
     },
     data() {
       return {
@@ -43,10 +43,11 @@
       },
       query(){
         let obj = {};
-          obj.id = this.id;
+          obj.id = JSON.parse(sessionStorage.getItem("weachat")).officialPartnerCostFlowId;
         //      http://admin.test.dingdingkuaixiu.com/officialpartnercostflowController/findOne
           let url = this.$apidomain+"/officialpartnercostflowController/findOne";
             this.$http.post(url,obj).then(res=>{
+              console.log(res)
             if(res.data.code =="0000"){
               if(res.data.result.payState == "2"){
                 let mainOrderIdObj={};
@@ -58,8 +59,8 @@
                   if(res1.data.code=="0000"){
                     alert("支付成功")
                     clearInterval(this.temp);
-                    this.zhifuShow = true;
-
+//                    this.zhifuShow = true;
+                     this.$router.push({path:"./orderPage/alertInfos/WorkOrderSubmission"})
                   }else if(res1.data.code=="0902"){
                     this.success();    //充值显示
                   }else{
@@ -79,14 +80,7 @@
 
     },
     created(){
-console.log(JSON.parse(sessionStorage.getItem("userInfo"))[0].channelId)
-      setTimeout(()=>{
-           this.id = this.weachat.officialPartnerCostFlowId;
-        console.log(this.weachat.officialPartnerCostFlowId)
-      },2000);
-      setTimeout(()=>{
-        this.query();
-      },3000)
+
 
       setTimeout(()=>{
         let that = this;
@@ -97,10 +91,9 @@ console.log(JSON.parse(sessionStorage.getItem("userInfo"))[0].channelId)
           }
         },1000);
 
-      },3000)
 
-//      this.query();
-    }
+    })
+  }
   }
 </script>
 
@@ -111,6 +104,7 @@ console.log(JSON.parse(sessionStorage.getItem("userInfo"))[0].channelId)
   header{
     width: 100%;
     height: 70px;
+    position: relative;
     p:nth-child(1){
       position: absolute;
       right:80px;

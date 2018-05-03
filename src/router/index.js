@@ -21,11 +21,11 @@ if(locationUrl.includes('manage.')){
 
 }else if(locationUrl.includes('channel.')){
 
-  setSession("KEY", "1");
+  setSession("KEY", "3");
 
 }else{
 
-  setSession("KEY", "3");
+  setSession("KEY", "1");
 
 }
 function backstage() {
@@ -63,6 +63,7 @@ const leave = resolve => require(['@/components/master/leave'], resolve);
 const amap = resolve => require(['@/components/master/amap_distribution'], resolve); //lee 师傅分布图
 
 //工单管理；
+const OrderList0 = resolve => require(['@/components/order/newWorkList'], resolve); //新建工单
 const OrderList1 = resolve => require(['@/components/order/monitoring'], resolve); //工单监控
 const OrderList2 = resolve => require(['@/components/order/distribution'], resolve);//待分配
 const OrderList3 = resolve => require(['@/components/order/ongoing'], resolve);//进行中
@@ -90,6 +91,8 @@ const businessKeep = resolve => require(['@/components/finance/business/business
 const financeList = resolve => require(['@/components/finance/financeList/financeList'], resolve);
 const account = resolve => require(['@/components/finance/account/account'], resolve);
 const unusualAccount = resolve => require(['@/components/finance/unusualAccount/unusualAccount'], resolve);
+const abstract = resolve => require(['@/components/finance/abstract/abstract'], resolve);
+
 
 //运营管理
 const dataVisualization = resolve => require(['@/components/yunYing_busines/Data_display/DataPlay'], resolve);
@@ -145,6 +148,7 @@ const canalCensus = resolve => require(['@/canal_components/canal/canalCensus'],
 //每日工单   //新建工单
 const dayOrder = resolve => require(['@/canal_components/canal/allOrder/dayOrder'], resolve);
 const newOrder = resolve => require(['@/canal_components/canal/allOrder/newOrder'], resolve);
+const WorkOrderSubmission = resolve => require(['@/canal_components/canal/allOrder/orderPage/alertInfos/WorkOrderSubmission'], resolve);
 //工单统计
 const orderCensus = resolve => require(['@/canal_components/canal/childChannelCount'], resolve);
 //消息详情
@@ -321,6 +325,7 @@ let router = new Router({
             menuShow: backstage()&&isShowFunObj.isUserNavChild("fn-order-manage"),
             iconCls: 'iconfont detailed_icons order_icon',
             children: [
+               { path: '/order/list0', component: OrderList0, name: '新建工单', menuShow:true },
                 { path: '/order/monitoring', component: OrderList1, name: '工单监控', menuShow: isShowFunObj.isUserNavChild("sn-order-monitoring") },
                 { path: '/order/list2', component: OrderList2, name: '待分配工单', menuShow: isShowFunObj.isUserNavChild("sn-order-waitfordistribution") },
                 { path: '/order/list3', component: OrderList3, name: '进行中', menuShow: isShowFunObj.isUserNavChild("sn-order-underway") },
@@ -343,6 +348,8 @@ let router = new Router({
                 { path: '/finance/financeList', component: financeList, name: '交易对账单', menuShow: isShowFunObj.isUserNavChild("sn-finance-reconciliation") },
                 {path: '/finance/account', component: account, name: '资金账户管理', menuShow: isShowFunObj.isUserNavChild("sn-finance-account")},
                 {path: '/finance/unusualAccount', component: unusualAccount, name: '异常结算', menuShow: isShowFunObj.isUserNavChild("sn-finance-abnormalsettlement")},
+                {path: '/finance/abstract', component: abstract, name: '提成审批', menuShow: isShowFunObj.isUserNavChild("sn-finance-abnormalsettlement")}
+
                 // {path: '/canvas/list3', component: CanvasList3, name: '工单评价', menuShow: true},
             ]
         },
@@ -391,6 +398,7 @@ let router = new Router({
             // {path: '/user/unusual', component: UserUnusual, name: '异常用户', menuShow: true}
             { path: '/census/canalCensus', component: dayOrder, name: '每日工单', menuShow: true },
             { path: '/canal_components/canal/allOrder/newOrder', component: newOrder, name: '新建工单', menuShow: true },
+            { path: '/canal_components/canal/allOrder/orderPage/alertInfos/WorkOrderSubmission', component: WorkOrderSubmission, name: '支付', menuShow: false },
           ]
         },
       {
@@ -433,7 +441,7 @@ let router = new Router({
         name: '产品管理',
         menuShow: canal(), //渠道
         leaf: true, // 只有一个节点
-        iconCls: 'iconfont detailed_icons network_icon childer_channel_icon', // 图标样式class
+        iconCls: 'iconfont detailed_icons network_icon childer_channel_icon1', // 图标样式class
         children: [
           { path: '/product/product', component: product, name: '产品管理', menuShow: true },
 

@@ -23,6 +23,20 @@
             v-model="phoneNum">
           </el-input>
         </div>
+        <div class="list">
+          请假类型 :
+          <el-input
+            placeholder="请输入内容"
+            v-model="qingjia">
+          </el-input>
+        </div>
+        <div class="list">
+          申请状态 :
+          <el-input
+            placeholder="请输入内容"
+            v-model="stateNum">
+          </el-input>
+        </div>
       </div>
       <!--查询按钮-->
       <div class="btn_inquiry" @click="quiry">
@@ -142,6 +156,8 @@
         dialogTableVisible: false,
         //<!--禁用启用end-->
         //<!--搜索框筛选数据start-->
+        qingjia:"",
+        stateNum:"",
         masterId:'',
         name:'',
         phoneNum:'',
@@ -198,12 +214,30 @@
         this.getTableList(this.paramsData());
       },
       paramsData(){
+        let qingjiaNum="",stateNumOne ="";
+        if(this.qingjia =="事假"){
+          qingjiaNum = "1";
+        }else if(this.qingjia =="病假"){
+          qingjiaNum = "2";
+        }else if(this.qingjia =="其他"){
+          qingjiaNum = "3";
+        };
+        if(this.stateNum =="申请中"){
+          stateNumOne = "0";
+        }else if(this.stateNum =="通过"){
+          stateNumOne = "1";
+        }else if(this.stateNum =="驳回"){
+          stateNumOne = "2";
+        }
         return {params: {
+
           "pageNo":JSON.stringify(this.showPages),
           "pageSize":JSON.stringify(this.currentPageSize),
           "masterId":this.masterId,
           "name":this.name,
           "phoneNum":this.phoneNum,
+          "type":qingjiaNum,
+          "state":stateNumOne,
         }}
       },
       getTableList(params){

@@ -19,15 +19,16 @@
             </div>
           <div class="data_list_item">
                <p>待结款金额（元） <span>不含未出账</span></p>
-                <p class="sum">0.00</p>
+                <p class="sum">{{findPendingTotal.toFixed(2)}}</p>
               <div class="button_container">
                 <a href="javescript:;">查看账单记录>></a>
               </div>
             </div>
         </div>
       </nav>
+
 <!---->
-      <section class="nav_title" >
+      <section class="nav_title">
           <span>最近交易明细</span>
           <a style="color:#20A0FF" href="##">查看更多>></a>
       </section>
@@ -75,11 +76,13 @@
 
   const isPushPath = (tabPathList,path) => !tabPathList.some( v => v.path === path);
 
-  //  console.log(a,b);
   export default {
         data() {
             return {
+              valu:"",
+              positionList:[],
               creditCardMessage:this.$store.state.creditCardMessage,
+              findPendingTotal:0,
               //查询的date    数据  end
               theadsName:[
                 '序号',
@@ -107,39 +110,48 @@
           },
           getTableList(){
             let url=`${this.$apidomain}/officialpartnercostflowController/all`;
-            this.$http.post(url).then(r=>{
-              let data=r.data;
-              if(data.code==="0000"){
-                this.tableListData = data.result.list;
-              }else{
-                this.$queryFun.successAlert.call(this,data.error);
-              }
-            })
+            this.$http.post( url ).then( r => this.getFilter(r.data).then( res => this.tableListData = res.list ))
           },
+          getFilter (res) {
+           return new Promise((resolve, reject) => {
+              if(res.code==="0000"){
+                resolve(res.result)
+              }else{
+                reject(res);
+                this.$queryFun.successAlert.call(this,res.error);
+              }
+            });
+          }
         },
         created() {
+
+          const getFilterData= data => {
+
+                if(data.code==="0000"){
+                  return data.result;
+                }else{
+                  this.$queryFun.successAlert.call(this,data.error);
+                  return 0;
+                }
+          },findPendingTotalUrl = `${this.$common.apidomain}/officialPartnerAccountInfo/findPendingTotal`;
+
           this.getTableList();
-          const url = `${this.$common.apidomain}/officialPartnerAccountInfo/findOne`
-          this.$http.post(url).then(res=>{
-            const data= res.data;
-            if(data.code==="0000"){
-              for(let k in data.result){
-                this.$set(this.creditCardMessage,k,data.result[k]);
-              }
-              this.$store.commit("pushCreditCardMessage",data.result);
-            }else{
-              this.$queryFun.successAlert.call(this,data.error);
-            }
-          })
-          const _url = `${this.$common.apidomain}/officialPartnerAccountInfo/findExtractTotal`;
-          this.$http.post(_url).then(res=>{
-            const data=res.data;
-            if(data.code==="0000"){
-              this.findExtractTotal=data.result;
-            }else{
-              this.$queryFun.successAlert.call(this,data.error);
-            }
-          })
+          const url = `${this.$common.apidomain}/officialPartnerAccountInfo/findOne`,
+                _url = `${this.$common.apidomain}/officialPartnerAccountInfo/findExtractTotal`;
+
+          this.$http.post(url).then(res => this.getFilter(res.data).then(res=>{
+            for(let k in res ){ this.$set(this.creditCardMessage,k,res[k] ) }
+            this.$store.commit("pushCreditCardMessage",res);
+          }) );
+
+          this.$http.post( findPendingTotalUrl ).then( res => this.findPendingTotal = getFilterData(res.data)-0 )
+
+          this.$http.post(_url).then( res => this.findExtractTotal = getFilterData(res.data) );
+
+
+
+
+
         }
     }
 </script>

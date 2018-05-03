@@ -26,6 +26,27 @@
           </el-input>
         </div>
         <div class="list">
+          师傅姓名:
+          <el-input
+            placeholder="请输入内容"
+            v-model="masterName">
+          </el-input>
+        </div>
+        <div class="list">
+          师傅手机号:
+          <el-input
+            placeholder="请输入内容"
+            v-model="masterPhone">
+          </el-input>
+        </div>
+        <div class="list">
+          联系人:
+          <el-input
+            placeholder="请输入内容"
+            v-model="phoneName">
+          </el-input>
+        </div>
+        <div class="list">
           绑定手机号 :
           <el-input
             placeholder="请输入内容"
@@ -33,7 +54,7 @@
           </el-input>
         </div>
         <div class="list">
-          联系手机号 :
+          联系人手机号 :
           <el-input
             placeholder="请输入内容"
             v-model="inputParams.userPhoneNum">
@@ -47,7 +68,7 @@
           </el-input>
         </div>
         <div class="list">
-           预约时间 :
+           创建时间 :
           <el-date-picker
             v-model="timeQuantum"
             type="daterange"
@@ -96,7 +117,7 @@
           </el-select>
         </div>
         <div class="list">
-          区域 :
+          服务区域 :
           <el-cascader
                        @change="changeSelector"
                        :options="areaoptions1"
@@ -448,6 +469,9 @@
     },
     data() {
       return {
+        masterPhone:"",//师傅电话
+        masterName:"",//师傅名字
+        phoneName:"", //联系人
         selone:'',
         labeloptions2:[
           {
@@ -673,7 +697,7 @@
           '师傅姓名',
 //          '用户编号',
           '师傅手机号',
-          '区域',
+          '服务区域',
           '创建时间',
           '状态',
           '操作'
@@ -810,7 +834,10 @@
             "createTimeStartStr":this.statisticsDateStartStr2, //师傅工号
             "createTimeEndStr":this.statisticsDateEndStr2, //师傅工号
             "fLabelBusiness" : this.selone, //分类
-            type:"1"
+            "type":"1",
+            "linkmanName":this.phoneName, //联系人
+            "masterName":this.masterName, //师傅姓名
+            "masterPhoneNum":this.masterPhone, //师傅手机
           }
         };
       },
@@ -994,6 +1021,7 @@
       },
       changeSelector(value){      //区域
         this.areaoptions1.forEach((v,i)=>{
+          console.log(v)
           if(value[0]===v.label){
             this.areaId=v.id;    //选择区
             v.cities.forEach((e,i)=>{

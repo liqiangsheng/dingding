@@ -17,6 +17,12 @@
                      </li>
 
                    </ul>
+                   <div v-show="yesShow1" style="position: absolute;left: 30%;top: 30%;width: 40%;height:30%;border: 1px solid #CCCCCC;border-radius: 10px">
+                     <p style="width: 100%;text-align: center;line-height:150px;font-size: 16px;">确定删除</p>
+                     </br>
+                     <el-button @click="addClick1" style="border-left:0;background: #ffffff;position: absolute;right:0;bottom:0;width: 50%;order-radius: 10px">确定</el-button>
+                     <el-button @click="quxiaoClick1" style="color:#FFFFFF;border-right:0;background:#279447;position: absolute;right: 49%;bottom: 0;width: 51%;order-radius: 10px">取消</el-button>
+                   </div>
                    <div v-show="yesShow" style="position: absolute;left: 30%;top: 30%;width: 40%;height:30%;border: 1px solid #CCCCCC;border-radius: 10px">
                      <p style="width: 100%;text-align: center;line-height:150px;font-size: 16px;">确定修改</p>
                    </br>
@@ -48,12 +54,14 @@
     data(){
       return{
         yesShow:false,
+        yesShow1:false,
         vItem :"",
         iIndex:"",
         biaoqianName : "",  //输入的标签
         biaoqianArray : [],//显示的标签
         spanIndex:-1,  //选中的下标
         lableID : "",  // 单选选中的id
+        shanchuObj:{},
 
       }
     },
@@ -88,7 +96,6 @@
                    }else{
                              this.biaoqianName = "";
                                return this.$queryFun.successAlert.call(this,res.data.error);
-
                            }
                        }).catch((error)=>{
                           console.log(error)
@@ -128,25 +135,31 @@
          this.lableID = v.id;
       },
       shanchu(v,i){
-        let shanchuObj = {}
-        shanchuObj.state = "1";
-        shanchuObj.id = v.id;
-        let url = common.apidomain+"/userLabel/updateUserLabel";
-         this.$http.post(url,shanchuObj).then((res)=>{
-           if(res.data.code === "0000"){
-             this.$queryFun.successAlert.call(this,"标签删除成功","1")
-              this.chushihua();
-           }
+        this.yesShow1 = true;
+//        let shanchuObj = {}
+        this.shanchuObj.state = "1";
+        this.shanchuObj.id = v.id;
 
-          }).catch((error)=>{
-                console.log(error)
-          })
       },
       blurClick(v,i){
         this.vItem = v;
         this.iIndex = i;
 //        alert("我是去焦点了")
         this.yesShow = true;
+
+      },
+      addClick1(){
+        let url = common.apidomain+"/userLabel/updateUserLabel";
+        this.$http.post(url,this.shanchuObj).then((res)=>{
+          if(res.data.code === "0000"){
+            this.$queryFun.successAlert.call(this,"标签删除成功","1");
+            this.yesShow1 = false;
+            this.chushihua();
+          }
+
+        }).catch((error)=>{
+          console.log(error)
+        })
 
       },
       addClick(){
@@ -172,6 +185,11 @@
           console.log(error)
         })
         this.yesShow = false;
+      },
+      quxiaoClick1(){
+        this.yesShow1 = false;
+        this.$queryFun.successAlert.call(this,"标签取消删除","1")
+        this.chushihua();
       },
       quxiaoClick(){
         this.yesShow = false;

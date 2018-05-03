@@ -21,7 +21,7 @@
         <upload-files :images="images" :delFilesImage="delFilesImage" :onchangeFile="onchangeFile"></upload-files>
       </section>
       <section class="submit">
-        <el-button type="primary" @click="submit" style="margin:0 auto;"> 确认提交</el-button>
+        <el-button type="primary" @click="submit( images)" style="margin:0 auto;"> 确认提交</el-button>
       </section>
 
     </div>
@@ -64,22 +64,33 @@
             this.$http.post(url,param,{headers: {'Content-Type': 'multipart/form-data'}}).then(res=>{
               let data=res.data;
               if(data.error===0){
-                this.images.push(data);   //参数是ajax返回的图片地址
+                this.images.push(data.url);   //参数是ajax返回的图片地址
               }else{
                 this.$queryFun.successAlert.call(this,"上传失败")
               }
             });
           },
-          submit(){
-            setTimeout(()=>{
-              let params={
+          submit(e){
+            if(e.length){
+
+              const url = `${this.$common.apidomain}/officialpartnerpay/underLineRecharge`;
+              this.$http.post(url,{"idPhotos":e.join(","),"payAmount": this.$store.state.accountOverviewAlertData.money}).then(res=>{
+                const data=res.data;
+                if(data.code==="0000"){
+                  let params={
                   successTitle:"转账信息已提交",
                   image:"rechar_wait",
                   successDescribe:"以银行到账时间为准，1-3个工作日内为您处理",
               }
               this.$store.commit("changeAccountAlertData",params);
               this.parentData.isShow=true;
-            },2000)
+                }else{
+                  this.$queryFun.successAlert.call(this,data.error)
+                }
+              })
+            }else{
+              this.$queryFun.successAlert.call(this,"请上传凭证")
+            }
           }
         },
         created() {

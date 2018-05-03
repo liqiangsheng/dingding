@@ -11,7 +11,7 @@
         <div class="center">
                <p><img src="/static/images/tanchuangDENG.png"></p>
                <p>您的账户余额不足，导致无法下单，请及时充</p>
-               <p>您需要支付的工单金额为{{yujifei}}元，请正确选择充值金额，充值金额将预存到您的账户上。</p>
+               <p>您需要支付的工单金额为{{yujifei?yujifei:detailDataOrderTotal}}元，请正确选择充值金额，充值金额将预存到您的账户上。</p>
         </div>
         <div class="footer">
                <p>请选择充值金额</p>
@@ -27,16 +27,16 @@
 <script>
   import ZhifuAlter from "./zhifuAlter.vue" //支付
   export default {
-    props:["yujifei"],
+    props:["yujifei","detailDataOrderTotal"],
     components:{
       ZhifuAlter
     },
     data() {
       return {
-        price:[1,200,300,500,1000,2000,5000],
+        price:[100,200,300,500,1000,2000,5000],
         price3:[{
           disabled:false,
-          num:1},{
+          num:100},{
           disabled:false,
           num:200},{
           disabled:false,
@@ -87,7 +87,7 @@
       this.chushiId = JSON.parse(sessionStorage.getItem("userInfo"));
       this.qudaoNaem = this.chushiId[0].fullName;
       this.price3.forEach((v,i)=>{
-        if(this.yujifei+0.01 > v.num){
+        if(this.yujifei+100 > v.num||this.detailDataOrderTotal+100>v.num){
           v.disabled = true;
         }
       });
@@ -112,12 +112,12 @@
     opacity: 0.2;
   }
   .creditIsRunningLow_box{
-    width: 50%;
-    height: 70%;
+    width: 80%;
+    height: 75%;
     background-color: #fff;
     position: absolute;
-    left: 25%;
-    top:16%;
+    left: 11%;
+    top:12%;
     z-index:2008;
     border-radius: 3px;
     font-size: 16px;
@@ -171,7 +171,7 @@
   }
   .footer{
     width: 100%;
-    height: 50%;
+    height: 40%;
     padding: 0 10%;
     p{
       width:100%;
@@ -194,7 +194,7 @@
         /*color:rgba(255,255,255,1);*/
         /*background:rgba(216,216,216,1);*/
         border-radius: 4px ;
-        margin-top: 5%;
+        margin-top: 3%;
         .el-button{
           width: 100%;
           height: 50px;

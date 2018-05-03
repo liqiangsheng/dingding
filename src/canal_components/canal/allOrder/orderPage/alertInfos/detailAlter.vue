@@ -88,20 +88,26 @@
                              <div class="userInformation3">
                                <p @click="weibaiClick">申请维保？<img src="/static/images/wenhao.png" style="width: 18px;height: 18px"></p>
                                <p v-show="shenqingweibao">致电客服热线：400-999-1891</p>
+                               <el-button type="primary" v-show="fukuanShow" @click="fukuanClcik">{{fukuan}}</el-button>
                              </div>
                          </div>
                    </div>
             </div>
-
+      <CreditIsRunningLow v-if="CreditIsRunningLowShow" :detailDataOrderTotal="detailData.orderTotal" @isClose="isClose"></CreditIsRunningLow>
   </div>
 </template>
 <script>
+  import CreditIsRunningLow from "./creditIsRunningLow.vue"
   export default {
     components:{
+      CreditIsRunningLow,
     },
     props:["detailAlterId"],
     data() {
       return {
+        fukuan:"去支付",
+        fukuanShow:false,
+        CreditIsRunningLowShow:false,
         listShow:false,  //服务类型 配件费
         peijian:[], //配件列表
         detailData:{}, //详情数据
@@ -112,13 +118,18 @@
       }
     },
     created(){
-//          console.log(this.$store.state.detailAlterId,"vuex异步")
       let url = this.$apidomain +"/orderquery/findOneDetails?id="+this.$store.state.detailAlterId;
       this.$http.get(url).then(res=>{
-        console.log(res,"详情数据")
         this.detailData = res.data.result.coreMainOrder;
         if(this.detailData.emergencyDegree =="1"){
           this.isStyle = {background:"red",color:"#ffffff"}
+        }
+        if(this.detailData.state =="01"){
+            this.fukuan ="去付款";
+            this.fukuanShow = true;
+        }else if(this.detailData.state =="11"){
+          this.fukuan ="去付尾款";
+          this.fukuanShow = true;
         }
 
         this.chanpingleixing = res.data.result.coreMainOrderServices;
@@ -137,6 +148,12 @@
       })
     },
     methods: {
+      isClose(){
+        this.CreditIsRunningLowShow =false;
+      },
+      fukuanClcik(){//去结款
+        this.CreditIsRunningLowShow =true;
+      },
        close(){ //传值给父亲组件
         let isbool = false;
         this.$emit("isClose1",isbool)
@@ -393,8 +410,14 @@
   .userInformation3{
     width: 100%;
     padding: 20px;
+    position: relative;
+    .el-button{
+      position: absolute;
+      right: 20px;
+      bottom: -10px;
+    }
     p:nth-child(1){
-      width: 100%;
+      /*width: 100%;*/
       font-size:14px;
       font-family:PingFangSC-Regular;
       color:rgba(32,160,255,1);
@@ -402,9 +425,15 @@
       padding: 0 10px;
       line-height:39px;
       cursor: pointer;
+      float: left;
+      img{
+        transform: translateY(4px);
+      }
     }
     p:nth-child(2){
+      transform: translateY(-10px);
       height: 59px;
+      float: left;
       font-size:14px;
       background:rgba(255,247,204,1);
       font-family:PingFangSC-Regular;

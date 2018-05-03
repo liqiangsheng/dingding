@@ -8,7 +8,7 @@
             <div class="selector_list">
               <div  v-for="(item,index) in optionList" :key="index" class="list">
                 {{item.name}} :
-                <el-select
+                <el-select :disabled="item.disabled"
                   v-model="item.SourceTypeValue" placeholder="请选择" @change="selector(item,item.SourceType,item.SourceTypeValue)">
                   <el-option
                   v-for="items in item.SourceType"
@@ -167,6 +167,7 @@ import {getThis,forbiddenMsg,recover,getTableData} from "@/components/commonJs/a
     },
     data() {
       return {
+        prohibit:false, //禁止
         biaoqianShow : false, //打标签
         placeholderTel:"未绑定",
         inputsList:[
@@ -251,6 +252,7 @@ import {getThis,forbiddenMsg,recover,getTableData} from "@/components/commonJs/a
         optionList:[     //下拉列表数据
                      {
                       name:"状态",
+                       disabled:false,
                       key:"state",
                       SourceTypeValue: '', //选中后的
                       SourceType:[
@@ -268,6 +270,7 @@ import {getThis,forbiddenMsg,recover,getTableData} from "@/components/commonJs/a
                       },     {
                       name:"性别",
                       key:"sex",
+                      disabled:false,
                       SourceTypeValue: '', //选中后的
                       SourceType:[
                                     {     //来源类型
@@ -282,14 +285,44 @@ import {getThis,forbiddenMsg,recover,getTableData} from "@/components/commonJs/a
                                     }
                                  ]
                       },
-          {
+             {
                       name:"渠道",
                       key:"sourceId",
+                      disabled:false,
                       SourceTypeValue: '', //选中后的
                       SourceType:[]
                       },
+          {
+            name:"子渠道",
+            disabled:false,
+            key:"ziSourceId",
+            SourceTypeValue: '', //选中后的
+            SourceType:[]
+          },
+          {
+            name:"关注状态",
+            key:"guanzhuState",
+            disabled:false,
+            SourceTypeValue: '', //选中后的
+            SourceType:[
+              {     //来源类型
+                value: '---请选择---',
+                id:""
+              }, {
+                value: '未关注',
+                id:"0"
+              }, {
+                value: '已关注',
+                id:"1"
+              }, {
+                value: '已取关',
+                id:"2"
+              }
+            ]
+          },
                    {
                           name:"来源类型",
+                          disabled:false,
                           key:"sourceType",
                           SourceTypeValue: '', //选中后的
                           SourceType:[
@@ -320,8 +353,10 @@ import {getThis,forbiddenMsg,recover,getTableData} from "@/components/commonJs/a
           {
                           name:"城市",
                           key:"cityId",
+                          disabled:false,
                           SourceTypeValue: '', //选中后的
-                          SourceType:[]
+                          SourceType:[],
+                          ziqudaoId:"",
                         }
                    ],
         selectorBehindObj:{},
@@ -460,8 +495,34 @@ import {getThis,forbiddenMsg,recover,getTableData} from "@/components/commonJs/a
         values.forEach((v,i)=>{
           if(v.value===SourceTypeValue){
               this.selectorBehindObj[key]=v.id;
+              this.ziqudaoId = v.id;
+              console.log(this.ziqudaoId)
+
+
           }
         })
+        if("sourceId"==key){
+          //子渠道
+          this.optionList.forEach((v)=>{
+            if("ziSourceId"==v.key) {
+              v.disabled = false;
+            }
+          });
+          let url1 = this.$apidomain+"/officialPartnerSubsetInfo/findlistOfficialPartnerSubsetInfo?officialPartnerId="+this.ziqudaoId;
+          this.$http.get(url1).then(res=> {
+            console.log(res)
+            this.optionList.forEach((v) => {
+              if ("ziSourceId" == v.key) {
+                v.SourceType = [];
+                    v.SourceType.push({"id": "", "value": "---请选择---"});
+                res.data.result.forEach((v2) => {
+
+                    v.SourceType.push({"id": v2.id, "value": v2.name});
+                })
+              }
+            })
+          })
+        }
       },
       quiry(){
         this.getTableList(this.paramsData());
@@ -491,6 +552,8 @@ import {getThis,forbiddenMsg,recover,getTableData} from "@/components/commonJs/a
           "channelId":this.selectorBehindObj.sourceId,
           "sourceType":this.selectorBehindObj.sourceType,
           "cityId":this.selectorBehindObj.cityId,
+          "attentionState":this.selectorBehindObj.guanzhuState,
+          "channelId":this.selectorBehindObj.ziSourceId,
         }}
       },
       getTableList(params){
@@ -502,7 +565,11 @@ import {getThis,forbiddenMsg,recover,getTableData} from "@/components/commonJs/a
 
     },
     created(){
-      console.log(this.tableListData.userInfos)
+      this.optionList.forEach((v)=>{
+          if("ziSourceId"==v.key) {
+            v.disabled = true;
+          }
+        });
       getThis(this);
       let urlCount=common.apidomain+"/userInfo/countList";
       this.$http.get(urlCount).then(r=>{

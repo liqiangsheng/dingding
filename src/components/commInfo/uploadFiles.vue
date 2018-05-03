@@ -4,7 +4,7 @@
         <div class="files_cover">
           <i class="el-icon-delete2 files_del_icon cursor" @click="delFilesImage(item,index)"></i>
         </div>
-        <div class="images_background" :style="{backgroundImage:'url('+item.url+')'}"></div>
+        <div class="images_background" :style="{backgroundImage:'url('+item+')'}"></div>
       </div>
       <a href="javascript:;" class="file">
         上传凭证

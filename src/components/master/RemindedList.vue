@@ -3,6 +3,7 @@
 
     <div class="container" style="width: 101%">
       <div class="selector_list">
+
         <div  v-for="(item,index) in optionList" :key="index" class="list">
           {{item.name}} :
           <el-select
@@ -24,6 +25,13 @@
                        @active-item-change="handleItemChange"
                        :props="props"
           ></el-cascader>
+        </div>
+        <div class="list">
+          费用类别 :
+          <el-input
+            placeholder="请输入内容"
+            v-model="moneyNum">
+          </el-input>
         </div>
       </div>
       <!--查询按钮-->
@@ -118,6 +126,7 @@
     },
     data() {
       return {
+        moneyNum:"",
         edit:{
           isShow:false,
           title:"师傅提点设置"
@@ -269,6 +278,7 @@
           "masterLevel":this.selectorBehindObj.level,
           "areaId":this.selectorBehindObj.cityId,
           "labelId":this.selectorBehindObj.skillId,
+          "feeType":this.moneyNum,
         }}
       },
       getTableList(params){

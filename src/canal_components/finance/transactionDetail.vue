@@ -1,7 +1,6 @@
 <template>
   <div id="app">
     <div class="container">
-
       <div class="selector_list">
         <div class="list">
           <div class="list_name">
@@ -114,7 +113,7 @@
           </tbody>
         </table>
         <div class="paging">
-          <p class="home">总页数{{tableListData.pageNo}}/{{tableListData.pageTotal}}</p>
+          <p class="home">总页数{{tableListData.pageNum}}/{{tableListData.pageSize}}</p>
           <el-pagination
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
@@ -230,7 +229,6 @@
         currentPageSize:20,
         total:0,
         pageTotal:0,
-
       }
     },
     created(){
@@ -248,29 +246,21 @@
       },
       derive(){        //导出事件
         let data=[];
-//        this.tableListData.forEach(v => {
-//          if (v.isCheckboxList) data.push(v.masterId);
-//        });
+        this.tableListData.list.forEach(v => {
+          if (v.isCheckboxList) data.push(v.id);
+        });
         if(data.length){
-//          const dataStr=data.join(",");
-//          const url=`${this.$common.apidomain}/statisticsMasterOneDay/createMasterExcel`,
-//            param={
-//              params:{
-//                statisticsDateStartStr:this.statisticsDateStartStr,
-//                statisticsDateEndStr:this.statisticsDateEndStr,
-//                masterId:dataStr,
-//                time:this.time
-//              }
-//            };
-//          this.$http.get(url,param).then(res=>{
-//            const data=res.data;
-//            if(data.code==="0000"){
-//              window.location=data.result;
-//              this.$queryFun.successAlert.call(this,"导出成功","1");
-//            }else{
-//              this.$queryFun.successAlert.call(this,data.error);
-//            }
-//          })
+          const ids=data.join(",");
+          const url=`${this.$common.apidomain}/officialpartnercostflowController/exportFile`;
+          this.$http.post(url,{ids}).then(res=>{
+            const data=res.data;
+            if(data.code==="0000"){
+              window.location=data.result;
+              this.$queryFun.successAlert.call(this,"导出成功","1");
+            }else{
+              this.$queryFun.successAlert.call(this,data.error);
+            }
+          })
         }else{
           this.$queryFun.successAlert.call(this,"请选择需要导出的选项");
         }
@@ -286,8 +276,10 @@
 
       },
       paramsData(){
-        const filterDate = e => this.$moment(this.selectorBehindObj.date[e]).format("YYYY-MM-DD")==="Invalid date"?'':this.$moment(this.selectorBehindObj.date[e]).format("YYYY-MM-DD");
-        this.statisticsDateStartStr = filterDate(0)
+        const filterDate = e => this.$moment( this.selectorBehindObj.date[e] ).format("YYYY-MM-DD")==="Invalid date"?'':this.$moment( this.selectorBehindObj.date[e] ).format("YYYY-MM-DD");
+
+        this.statisticsDateStartStr = filterDate(0);
+
         this.statisticsDateEndStr = filterDate(1);
 
         return {
@@ -314,6 +306,7 @@
           let data=r.data;
           if(data.code==="0000"){
             this.tableListData = data.result;
+            console.log(this.tableListData);
             this.showPages = data.result.pageNo;
             this.currentPageSize = data.result.pageSize;
             this.total = data.result.total;
@@ -360,12 +353,8 @@
           if(v.value===SourceTypeValue){
             this.selectorBehindObj[key]=v.id;
           }
-
         })
       },
-
-    },
-    mounted() {
     }
   }
 </script>

@@ -6,7 +6,15 @@
     <DaoDetail v-if="daoruShow2" @isClose="isClose"></DaoDetail>
     <DaoruBianji v-if="daoruShow3" @isClose="isClose"></DaoruBianji>
      <ul class="OrderDaoruList">
-       <li><el-button type="primary" @click="chanpinClick">导入工单</el-button></li>
+       <li id="prodress">
+         <!--<el-button type="primary" @click="chanpinClick">导入工单</el-button>-->
+         <Upload :action="file">
+           <Button style="color: #FFFFFF;background: #20a0ff;height: 36px;" type="ghost" icon="ios-cloud-upload-outline" v-model="file"  @click="chanpinClick">导入工单</Button>
+         </Upload>
+         <a ref="fileBackground" href="javascript:;" class="file">
+           <input type="file" @change="onchangeFile($event)">
+         </a>
+       </li>
        <li><el-button>下载模版</el-button></li>
         <li>上传格式建议xlsx、xls、csv、xml等，文件大小限制10M以内</li>
      </ul>
@@ -109,6 +117,8 @@ import DaoruBianji from "./alertInfos/daoruBianji.vue" //导入编辑
     },
     data() {
       return {
+        url1:"",
+        file:this.$apidomain+"/orderquery/upload", // 文件
         theadsName:["产品名称","品牌","型号","数量","检测费","服务费","联系人","手机","地址","渠道质保","操作"],
         tableListData:["1","2","3","4","5","6","7","8","9","0","8"],
 //        tableListData: {},          //表格数据
@@ -126,6 +136,39 @@ import DaoruBianji from "./alertInfos/daoruBianji.vue" //导入编辑
     created(){
     },
     methods: {
+      onchangeFile(event,keyImg){
+        console.log(event)
+        let filesObj=event.target.files[0],
+          filesName=event.target.value,
+//          URLobj=event.target.parentElement,
+          url=this.$apidomain+"/orderquery/upload",
+        nameSize = filesName.substring(filesName.lastIndexOf("."),filesName.length).toLowerCase();
+        console.log(nameSize)
+        console.log(filesObj)
+//        xlsx、xls、csv、xml
+        if(nameSize === ".xlsx" ||nameSize === ".xls"||nameSize === ".csv"||nameSize === ".xml"){
+         let param = new FormData(); // 创建form对象
+          //        param.append('file',filesObj, filesName);  // 通过append向form对象添加数据
+          param.append('file',filesObj);  // 通过append向form对象添加数据
+          console.log(param);
+          this.$http.post(url,param,{headers: {'Content-Type': 'multipart/form-data'}}).then(res=>{
+            console.log(res);
+            let data=res.data;
+
+            if(data.error==0){
+              console.log(data);
+//            img.style.background= "url("+data.url+") center center no-repeat";
+//            img.style.backgroundSize= "100% 100%";
+//            this.url1=data.url;   //参数是ajax返回的图片地址
+            }else{
+//            alert("上传失败")
+            }
+          })
+        }else{
+          return alert("请上传 .xlsx、.xls、.csv、.xml文件")
+        }
+      ;
+      },
       bianjiClick(){//编辑
         this.daoruShow3 = true;
       },
@@ -136,7 +179,15 @@ import DaoruBianji from "./alertInfos/daoruBianji.vue" //导入编辑
          this.daoruShow = true;
       },
       chanpinClick(){ //导入产品
-        this.daoruShow1 = true;
+
+        let url = this.$apidomain+"/orderquery/upload";
+        this.$http.post(url).then(res=>{
+          console.log(res)
+          if(res.data.code === "0000"){
+            //        this.daoruShow1 = true;
+          }
+        })
+
       },
       isClose(v){ //接收子组件值关闭提交窗口
         this.daoruShow = v;
@@ -163,6 +214,7 @@ import DaoruBianji from "./alertInfos/daoruBianji.vue" //导入编辑
     },
   }
 </script>
+
 <style lang="scss">
   #shijian .ivu-input{
     height: 36px !important;
@@ -173,7 +225,9 @@ import DaoruBianji from "./alertInfos/daoruBianji.vue" //导入编辑
       line-height: 36px !important;
     }
   }
-
+  #prodress .ivu-upload-list-file{
+    display:none ;
+  }
 </style>
 <style scoped lang="scss">
   .OrderDaoru{

@@ -24,7 +24,7 @@
         },
         methods: {
           webPay(){
-            const url=`${this.$common.apidomain}/officialpartnerpay/rechargeWeb?paymentChannel=3&payType=2&openId=1&token=${this.$getLocalStorage("enrolleeinfo")[0].token}&payAmount=${this.$store.state.accountOverviewAlertData.money}&faPayJournalAccountId=${this.params.faPayJournalAccountId}`;
+            const url=`${this.$common.apidomain}/officialpartnerpay/rechargeWeb?paymentChannel=3&payType=2&openId=1&token=${this.$getLocalStorage("enrolleeinfo")[0].token}&payAmount=${this.$store.state.accountOverviewAlertData.money}&faPayJournalAccountId=${this.params.faPayJournalAccountId}&t=${new Date().getTime()}`;
             window.open(url)
           },
           success(){

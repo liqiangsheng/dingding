@@ -88,6 +88,7 @@
         const url = `${this.$common.apidomain}/officialpartnerpay/recharge`,
               params={
                 paymentChannel: "2",
+                t: new Date().getTime(),
                 payAmount: this.$store.state.accountOverviewAlertData.money,
               };
 
