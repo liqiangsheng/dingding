@@ -22,9 +22,9 @@
               <!--<p class="position_icon"><i></i>查看师傅当前位置</p>-->
               <!--<p class="position_icon"><i></i>查看师傅当前位置</p>-->
             </li>
-            <li>渠道名称:{{dataObj.name}}</li>
-            <li>渠道编号:{{dataObj.id}}</li>
             <li>渠道类型:{{dataObj.type|channelTypeShow}}</li>
+            <li>渠道编号:{{dataObj.id}}</li>
+            <li>渠道名称:{{dataObj.name}}</li>
             <li>登陆账号:{{dataObj.account}}</li>
             <li>联系人:
               <span v-if="!isEdit()">
@@ -37,7 +37,7 @@
                  </el-input>
               </span>
             </li>
-            <li>联系手机号:
+            <li>联系手机:
               <span v-if="!isEdit()">
                 {{dataObj.linkmanTelephone}}
               </span>
@@ -48,7 +48,7 @@
                  </el-input>
               </span>
             </li>
-            <li>公司电话:
+            <li>座机:
               <span v-if="!isEdit()">
                 {{dataObj.companyTelephone}}
               </span>
@@ -59,14 +59,44 @@
                  </el-input>
               </span>
             </li>
-            <li>总部地址:
+            <li id="channelDetaiLis" style="width: 100%">总部地址:
+              <span v-if="!isEdit()">
+                {{dataObj.areaName}}
+              </span>
+              <span v-else>
+                <el-cascader
+                  expand-trigger="hover"
+                  :options="options"
+                  :props="props"
+                  style="margin-left: 30px"
+                  placeholder="请选择城市"
+                  v-model="selectedOptions2"
+                  @change="handleChange">
+          </el-cascader>
+           区域：
+          <el-cascader id="city"
+                       :disabled="disabled"
+                       @change="changeSelector($event)"
+                       ref="one"
+                       :options="serveAreas"
+                       placeholder="请选择区域"
+                       v-model="selectedOptions1"
+                       :props="props2"
+          ></el-cascader>
+                  <!--<el-input-->
+                    <!--placeholder="请输入内容"-->
+                    <!--v-model="dataObj.headquarterAddress">-->
+                 <!--</el-input>-->
+              </span>
+            </li>
+            <li>详细地址:
               <span v-if="!isEdit()">
                 {{dataObj.headquarterAddress}}
               </span>
               <span v-else>
                   <el-input  style="float:right"
-                    placeholder="请输入内容"
-                    v-model="dataObj.headquarterAddress">
+                             placeholder="请输入内容"
+                             v-model="dataObj.headquarterAddress">
                  </el-input>
               </span>
             </li>
@@ -93,10 +123,36 @@
                  </el-input>
               </span>
             </li>
-            <li>子类数量:{{dataObj.subclassCount}}</li>
-            <li>已完成单数:{{dataObj.completeCount}}
+            <li> 结算方式:
+              <span v-if="!isEdit()">
+                {{dataObj.settle_type|settleType}}
+              </span>
+              <span v-else>
+                <el-radio class="radio" v-model="dataObj.settle_type" label="0">渠道先结</el-radio>
+                <el-radio class="radio" v-model="dataObj.settle_type" label="1">渠道后结</el-radio>
+              </span>
+
+            </li>
+            <li>账单日:
+              <span v-if="!isEdit()">
+                每月{{dataObj.settle_day}}号
+              </span>
+              <span v-else>
+                 <el-select v-model="dataObj.settle_day" placeholder="请选择">
+                <el-option
+                  v-for="(item,index) in 30"
+                  :key="index"
+                  :label="item"
+                  :value="item">
+                </el-option>
+              </el-select>
+              </span>
+
+            </li>
+            <li>子渠道数量:{{dataObj.subclassCount}}</li>
             <li>用户数:{{dataObj.userNumber}}人</li>
             <li>总订单量:{{dataObj.totalOrders}}</li>
+            <li>已完成单数:{{dataObj.completeCount}}
             <li>状态:{{dataObj.state|userState}}</li>
           </ul>
 
@@ -138,7 +194,7 @@
                     {{item.createDate|moment('YYYY-MM-DD HH:mm:ss')}}
                   </td>
                   <td>
-                  <a href="javascript:;" @click="copy(item,index)" v-if="!!item.link">复制链接</a>
+                    <a href="javascript:;" @click="copy(item,index)" v-if="!!item.link">复制链接</a>
                     <a v-if="item.wechatQrCode" style="display: inline-block;height:100%" :href="item.wechatQrCode" target="_black" download="图片">下载二维码</a>
                     <a href="javascript:;" style="display: inline-block;height:100%" @click="handleDelete(index,item)">删除</a>
                   </td>
@@ -169,18 +225,43 @@
       <add :isAdd="isAdd" :findOne="findOne">
       </add>
     </div>
+    <Psaaword v-if="psaawordShow" @isClose="isClose" :dataObjID="dataObj.id" @password="password"></Psaaword>
   </div>
 </template>
 
 <script>
   import add from './addsubchannel.vue'
+  import Psaaword from './password.vue'
   export default {
     components:{
-      add
+      add,Psaaword
     },
     props:["isDetailed","quiry"],
     data(){
       return{
+        psaawordShow:false,
+        //区域start
+        linkmanAreaId:"",//街道ID
+        linkmanName:"", //街道名字
+        disabled:true,
+        cityId:"",
+        selectedOptions2: [], //城市选择
+        selectedOptions1: [],//区域选择
+        options: [],
+        props: {
+          value: 'id',
+          label: 'label',
+          children: 'cities'
+        },
+        serveAreas: [],
+        props2: {
+          value: 'id',
+          label: 'label',
+          children: 'cities',
+        },
+        //区域end
+        Datevalue:1,
+        radio:false,
         theadsName:[
           "城市",
           "子渠道",
@@ -201,9 +282,36 @@
       }
     },
     created(){
+
       this.findOne();
+//      城市数据
+      let cityurl = `${this.$apidomain}/common/findprovinceandcitylist`;
+      this.$http.get(cityurl).then(res=>{
+        if (res.data.code === '0000') {
+          this.options =res.data.result;
+        }
+      });
     },
     methods: {
+      password(v){
+        this.dataObj.password = v;
+      },
+      isClose(v){
+        this.psaawordShow = v;
+      },
+      changeSelector($event) {//街道
+        this.linkmanAreaId = this.selectedOptions1[this.selectedOptions1.length - 1];
+        this.linkmanName =this.$refs.one.currentLabels[1];
+      },
+      handleChange(value) { //街道
+        this.cityId = value[value.length - 1];
+        //选择区域街道
+        let cityIdurl=this.$apidomain+"/common/findareaandstreetoptions?cityId="+ this.cityId;//获取区域
+        this.$http.get(cityIdurl).then(res=>{
+          this.serveAreas = res.data.result;
+        })
+        this.disabled = false;
+      },
   // 复制链接
       copy(item,index){
         let inputDom=this.$refs.link[index]
@@ -255,11 +363,14 @@
         }
         let o = {};
         o.id = this.dataObj.id;
-        o.linkmanName = this.dataObj.linkmanName;
+        o.areaName = this.linkmanName;
+        o.areaId = this.linkmanAreaId
         o.linkmanTelephone = this.dataObj.linkmanTelephone;
         o.companyTelephone = this.dataObj.companyTelephone;
         o.bankOfDeposit = this.dataObj.bankOfDeposit;
         o.cardNumber = this.dataObj.cardNumber;
+        o.settle_type =this.dataObj.settle_type;
+        o.settle_day = this.dataObj.settle_day;
         let url=this.$apidomain+"/officialpartnerinfo/updateOfficialPartnerInfo";
         this.$http.post(url,o).then(res=>{
           let data = res.data;
@@ -274,33 +385,34 @@
       },
       //初始化密码操作 start
       open3() {
-        this.$prompt('请输入密码', '提示', {
-        }).then(({ value }) => {
-          if(value.length<6){
-            alert("密码不能少于6位");
-            return;
-          }
-          let o = {"id":this.dataObj.id,"password":md5(value)};
-          let urlR=this.$apidomain+"/officialpartnerinfo/updatePassword";
-          this.$http.post(urlR,o).then(r=>{
-            let data=r.data;
-            if(data.code=='0000'){
-              this.$message({
-                type: 'success',
-                message: '操作成功'
-              });
-              this.close();
-            }else{
-              alert(data.error);
-            }
-          });
-          this.dataObj.password=value
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '取消输入'
-          });
-        });
+           this.psaawordShow = true;
+//        this.$prompt('请输入密码', '提示', {
+//        }).then(({ value }) => {
+//          if(value.length<6){
+//            alert("密码不能少于6位");
+//            return;
+//          }
+//          let o = {"id":this.dataObj.id,"password":md5(value)};
+//          let urlR=this.$apidomain+"/officialpartnerinfo/updatePassword";
+//          this.$http.post(urlR,o).then(r=>{
+//            let data=r.data;
+//            if(data.code=='0000'){
+//              this.$message({
+//                type: 'success',
+//                message: '操作成功'
+//              });
+//              this.close();
+//            }else{
+//              alert(data.error);
+//            }
+//          });
+//          this.dataObj.password=value
+//        }).catch(() => {
+//          this.$message({
+//            type: 'info',
+//            message: '取消输入'
+//          });
+//        });
       },
       //初始化密码操作end
       edit(){  //编辑
@@ -373,6 +485,11 @@
     }
   }
 </script>
+<style>
+  #channelDetaiLis .el-cascader__label{
+    line-height: 46px !important;
+  }
+</style>
 
 <style scoped lang="scss">
   @import "../../../assets/styles/commButton";

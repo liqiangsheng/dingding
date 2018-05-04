@@ -89,10 +89,12 @@
       this.price3.forEach((v,i)=>{
         if(this.yujifei+100 > v.num||this.detailDataOrderTotal+100>v.num){
           v.disabled = true;
+          this.chongzhiPrice = this.price3[i+1].num;
+          this.ActiveIndex= i+1;
         }
       });
-      this.ActiveIndex =this.price3.length-1;
-      this.chongzhiPrice = 5000;
+//      this.ActiveIndex =this.price3.length-1;
+//      this.chongzhiPrice = 5000;
       sessionStorage.setItem("price1",JSON.stringify(this.chongzhiPrice))
     },
 
@@ -217,7 +219,7 @@
       margin-top: 40px;
       text-align: center;
       .el-button{
-        width: 30%;
+        width: 200px;
       }
     }
   }

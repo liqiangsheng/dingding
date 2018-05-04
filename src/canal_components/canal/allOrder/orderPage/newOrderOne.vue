@@ -6,18 +6,18 @@
   <CreditIsRunningLow v-if="chongzhiShow" @isClose="isClose"  :yujifei="yujifei"></CreditIsRunningLow>
   <WorkOrderSubmission @isClose="isClose" v-if="chongzhiShow1"></WorkOrderSubmission>
 
-  <div style="overflow-y: auto">
+  <div style="overflow-y: auto;padding: 20px;">
     <div class="yuyue">
       <p class="yuyueP"><span></span>预约信息（带<b style="color: #EA5413">*</b>为必填）</p><br>
       <ul>
         <li>　　联系人<span>*</span><el-input v-model="input1" placeholder="请输入联系人" style="width: 200px"></el-input></li>
-        <li>联系人手机<span>*</span><el-input v-model="input2" placeholder="请输入正确手机号码" style="width: 200px"></el-input> 　　　<b style="font-weight:100; margin: 0 20px">座机</b><el-input v-model="input6" placeholder="请输入正确座机（非必填）" style="width: 20%"></el-input></li>
+        <li>联系人手机<span>*</span><el-input v-model="input2" placeholder="请输入正确手机号码" style="width: 200px"></el-input> 　　　<b style="font-weight:100; margin: 0 20px">座机</b><el-input v-model="input6" placeholder="请输入正确座机（非必填）" style="width: 200px"></el-input></li>
         <li id="citycity">　服务地区<span>*</span>
           <el-cascader
             expand-trigger="hover"
             :options="options"
             :props="props"
-            style="width:200px;"
+            style="width:200px;transform: translateX(-4px)"
             placeholder="请选择城市"
             v-model="selectedOptions2"
             @change="handleChange">
@@ -33,10 +33,10 @@
           ></el-cascader>
         </li>
         <li>　详细地址<span>*</span><el-input v-model="input4" placeholder="请填写详细地址" style="width: 200px"></el-input></li>
-        <li id="shijian">　预约时间<span>*</span>
+        <li id="shijian" style="position: relative">　预约时间<span>*</span>
           <!--<Col span="12" style="display: inline-block">-->
           <!--<DatePicker type="date" placeholder="请选择日期" style="width: 24.6%;height: 36px" v-model="input5"></DatePicker>-->
-          <DatePicker type="datetime" v-model="input5" format="yyyy-MM-dd HH:mm:ss" placeholder="请选择预约日期" style="width: 200px;height: 36px"></DatePicker><!--</Col>-->
+          <DatePicker type="datetime" v-model="input5" format="yyyy-MM-dd HH:mm:ss" placeholder="请选择预约日期" style="width: 200px;height: 36px;"></DatePicker><!--</Col>-->
         </li>
 
       </ul>
@@ -44,8 +44,8 @@
 
     <div class="chanpin">
       <p class="chanpinP"><span></span>产品信息</p><br>
-      <el-button type="success" @click="addProduct" v-if="xiaohui">添加产品</el-button>
-      <el-button type="success" @click="addProduct1" v-if="xiaohui1">新增产品</el-button>
+      <el-button type="success" @click="addProduct" v-if="xiaohui"style="transform: translateX(47px)">添加产品</el-button>
+      <el-button type="success" @click="addProduct1" v-if="xiaohui1"style="transform: translateX(47px)">新增产品</el-button>
       <div class="alertOne" v-if="peijiankuang">
         <!--表格数据-->
         <table>
@@ -115,7 +115,7 @@
 
     </ul>
     <div class="ziqudao">
-      <p class="ziqudaoP">　子渠道
+      <p class="ziqudaoP">　　子渠道
         <el-select v-model="value" placeholder="请选择子渠道" @change="ziqudaoA(value)">
           <el-option
             v-for="(item,index) in ziqudao"
@@ -126,7 +126,7 @@
         </el-select>
       </p>
       <br>
-      <p class="qitaP"><span>　　　其他</span><el-input
+      <p class="qitaP"><span style="transform: translateY(12px)">　　　其他</span><el-input
         type="textarea"
         placeholder="请输入其他备注"
         v-model="qita">
@@ -245,7 +245,6 @@
       changeSelector($event) {
         this.linkmanAreaId = this.selectedOptions1[this.selectedOptions1.length - 1];
         this.linkmanName =this.$refs.one.currentLabels[1];
-
        },
       ifElse(){  //
         if(this.input1 == ""){
@@ -485,7 +484,10 @@
 <style lang="scss">
   #shijian .ivu-input{
     height: 36px !important;
-    border: 1px solid #bfcbd9
+    border: 1px solid #bfcbd9;
+    position: absolute;
+    left: -3px;
+    top:-10px;
   }
   #citycity {
     .el-cascader__label {
@@ -745,8 +747,8 @@
         .el-textarea{
           display: inline-block;
           float: left;
-          width: 25%;
-          margin-left: 20px;
+          width: 400px;
+          margin-left: 22px;
         }
       }
       .ziqudaoP{
@@ -755,7 +757,7 @@
         width: 100%;
         .el-select{
           margin-left: 20px;
-          width: 25%;
+          width:200px;
         }
 
       }

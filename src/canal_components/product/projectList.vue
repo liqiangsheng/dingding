@@ -261,6 +261,12 @@
         line-height:52px;
         text-align: center;
       };
+      th:nth-child(4){
+        flex-grow: 3;
+      }
+      th:nth-child(2){
+        flex-grow: 2;
+      }
     };
   }
   .productList table tbody{
@@ -269,9 +275,9 @@
       width: 100%;
       display: flex;
       border-left: 1px solid #bfcbd9;
+      background:rgba(255,255,255,1);
       td{
         height:46px;
-        background:rgba(255,255,255,1);
         flex: 1;
         line-height:46px;
         text-align: center;
@@ -279,8 +285,14 @@
         border-bottom: 0;
         border-left: 0;
       }
+      td:nth-child(4){
+        flex-grow: 3;
+      }
+      td:nth-child(2){
+        flex-grow: 2;
+      }
     }
-    td:hover{
+    tr:hover{
       background: #DBF0FF;
     }
     tr:last-child{

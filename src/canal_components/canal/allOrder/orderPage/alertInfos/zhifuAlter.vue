@@ -157,8 +157,10 @@
           alert(res.data.res)
         }
       })
+      this.fangshi.forEach((item,index)=>{
+             this.tabClick(item,0);
+      })
 
-      this.tabClick(1,0)
 
     }
   }

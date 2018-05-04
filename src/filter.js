@@ -1018,4 +1018,12 @@ Vue.filter('payState',function(input){
   }
   return "无"
 });
+Vue.filter('settleType',function(input){
+  if("0"==input){
+    return "渠道先结";
+  }else if("1"==input){
+    return "渠道后结";
+  }
+  return "无"
+});
 

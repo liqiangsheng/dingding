@@ -102,12 +102,7 @@
           </div>
         </div>
 
-        <ul class="zhibao">
-          <li class="zhibaoP"><span></span><b style="float: left;font-weight: 100">质保状态</b>
-            <p @click="danxuan2(item,index)" v-for="(item,index) in zhibao"><el-button>{{item}}</el-button><img src="/static/images/danxuan.png"  v-show="jinjiduIndex1 == index"></p>
-          </li>
 
-        </ul>
         <ul class= "jinji">
           <li class="jinjiduP"><span></span><b style="float: left;font-weight: 100">紧急程度</b>
             <p @click="danxuan3(item,index)" v-for="(item,index) in jinjidu"><el-button>{{item}}</el-button><img src="/static/images/danxuan.png" v-show="jinjiduIndex == index"></p>
@@ -134,8 +129,16 @@
               </el-option>
             </el-select>
           </p>
-          <br>
-          <p class="qitaP"><span>　　　其他</span><el-input
+
+        </div>
+        <ul class="zhibao" v-show="qudaoShow">
+          <li class="zhibaoP"><span></span><b style="float: left;font-weight: 100">渠道质保</b>
+            <p @click="danxuan2(item,index)" v-for="(item,index) in zhibao"><el-button>{{item}}</el-button><img src="/static/images/danxuan.png"  v-show="jinjiduIndex1 == index"></p>
+          </li>
+        </ul>
+        <div>
+          <p id="beizhu" class="qitaP" style="width: 100%;height: 100px;position: relative"><span>　　　其他</span>
+            <el-input
             type="textarea"
             placeholder="请输入其他备注"
             v-model="qita">
@@ -159,6 +162,7 @@
     },
     data() {
       return {
+        qudaoShow:false,
         disabled:true,
         zhuqudao:[],//主渠道
         zhuqudaoId:"",//主渠道ID
@@ -262,6 +266,7 @@
             this.xiaoqudaoId = v.id;
           }
         })
+        this.qudaoShow = true;
       },
       handleChange(value) {
         this.cityId = value[value.length - 1];
@@ -460,6 +465,7 @@
           if(res.data.code == "0000"){
             //充值显示
            this.$queryFun.successAlert.call(this,"恭喜工单新建成功","1");
+           location.reload();
            return this.$router.push({path:"/order/list2"})
 
           }else{
@@ -493,6 +499,12 @@
   }
 </script>
 <style lang="scss">
+  #beizhu .el-textarea__inner{
+    width: 400px;
+    position: absolute;
+    /*float: left;*/left:98px;
+    top:0;
+  }
   #shijian .ivu-input{
     height: 36px !important;
     border: 1px solid #bfcbd9
@@ -674,7 +686,6 @@
       font-family:PingFangSC-Regular;
       color:rgba(136,136,136,1);
       line-height:22px;
-      margin-bottom: 15px;
       span{
         display:inline-block;
         width:4px;
@@ -746,21 +757,7 @@
     width: 100%;
     padding: 0  0 0 15px;
 
-    .qitaP{
-      span{
-        display: inline-block;
-        float: left;
-      }
-      width: 100%;
-      overflow: hidden;
-      margin-bottom: 15px;
-      .el-textarea{
-        display: inline-block;
-        float: left;
-        width: 25%;
-        margin-left: 20px;
-      }
-    }
+
     .ziqudaoP{
       overflow: hidden;
       margin-bottom: 15px;
@@ -772,7 +769,14 @@
 
     }
   }
+  .qitaP{
+    margin-bottom: 15px;
+    span{
+      display: inline-block;
+      transform: translateY(12px);
+    }
 
+  }
 </style>
 
 

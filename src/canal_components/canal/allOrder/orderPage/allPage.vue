@@ -115,7 +115,7 @@
              {{item.fLabelBusiness|FLabelBusiness}}
            </td>
            <!--下单时间-->
-           <td>
+           <td style="flex-grow: 1.5">
            {{item.appointmentDatetime|moment('YYYY-MM-DD HH:mm:ss')}}
            </td>
            <!--子渠道-->
@@ -385,6 +385,9 @@
       };
       th:nth-child(2){
         flex-grow:2;
+      }
+      th:nth-child(6){
+        flex-grow:1.5;
       }
     };
   }

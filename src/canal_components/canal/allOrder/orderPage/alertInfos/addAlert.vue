@@ -9,7 +9,7 @@
           </div>
           <ul class="list" id="addAlertList">
               <li>分类<span>*</span>
-                <el-select v-model="fenlei" placeholder="请选择" style="width: 80%" @change="yijifenlei2">
+                <el-select v-model="fenlei" placeholder="请选择" style="width: 200px" @change="yijifenlei2">
                   <el-option
                     v-for="(item,index) in fenleiOptions"
                     :key="index"
@@ -20,7 +20,7 @@
               </li>
               <li id="productNub">产品<span>*</span>
                 <el-cascader
-                  style="width: 80%"
+                  style="width: 200px"
                   @change="changeSelector2"
                   :options="labeloptions"
                   :disabled="isKeXuan"
@@ -29,7 +29,7 @@
                   :props="props"
                   filterable></el-cascader>
               </li>
-              <li>品牌<el-input v-model="input1" placeholder="选填" style="width: 35%;margin:0 5% 0 12px" ></el-input>型号<el-input v-model="input2" placeholder="选填" style="width: 35%"></el-input></li>
+              <li>品牌<el-input v-model="input1" placeholder="选填" style="width: 200px;margin:0 5% 0 12px" ></el-input>型号<el-input v-model="input2" placeholder="选填" style="width: 200px"></el-input></li>
               <li></li>
               <li id="nunber">数量<span>*</span>
                 <el-input-number v-model="num" @change="handleChange" :min="1"></el-input-number>
@@ -257,7 +257,7 @@
       left: 0;
       text-align: center;
       .el-button{
-        width: 30%;
+        width: 200px;
       }
     }
   }

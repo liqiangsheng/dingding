@@ -1,12 +1,12 @@
 <template>
   <div id="app">
     <div class="container">
-      <h3 class="alert_title">{{isAdd.title}} <p class="closeX" id="closeX" @click="closeMove"></p></h3>
+      <h3 class="alert_title">{{isAdd.title}}(带<span style="color: #E65831;margin:0 2px">*</span>为必填项) <p class="closeX" id="closeX" @click="closeMove"></p></h3>
       <div class="scrollbar content">
         <div class="left_info">
           <ul>
             <li>
-              <span class="list_name">  渠道类型 :</span>
+              <span class="list_name">  渠道类型<span style="color: #E65831;margin:0 2px">*</span> :</span>
               <el-select
                 v-model="type.SourceTypeValue" placeholder="请选择" @change="selector(type,type.SourceType,type.SourceTypeValue)">
                 <el-option
@@ -27,7 +27,7 @@
 
             </li>
             <li>
-              <span class="list_name">  开户行:</span>
+              <span class="list_name">  开户行<span style="color: #E65831;margin:0 2px">*</span>:</span>
               <el-select
                 v-model="bank.bankValue" placeholder="请选择" @change="selector1(bank,bank.bankName,bank.bankValue)">
                 <el-option
@@ -37,7 +37,45 @@
                 >
                 </el-option>
               </el-select>
+            </li>
 
+            <li>
+              <span class="list_name">总部地址<span style="color: #E65831;margin:0 2px">*</span>:</span>
+                <el-cascader
+                  expand-trigger="hover"
+                  :options="options"
+                  :props="props"
+                  placeholder="请选择城市"
+                  v-model="selectedOptions2"
+                  @change="handleChange">
+          </el-cascader>
+           区域<span style="color: #E65831;margin:0 2px">*</span>：
+          <el-cascader id="city"
+                       :disabled="disabled"
+                       @change="changeSelector($event)"
+                       ref="one"
+                       :options="serveAreas"
+                       placeholder="请选择区域"
+                       v-model="selectedOptions1"
+                       :props="props2"
+          ></el-cascader>
+
+            </li>
+
+            <li><span class="list_name"> 结算方式:</span>
+              <el-radio class="radio" v-model="radio" label="0">渠道先结</el-radio>
+              <el-radio class="radio" v-model="radio" label="1">渠道后结</el-radio>
+            </li>
+            <li><span class="list_name">  账单日:</span>
+              <el-select v-model="Datevalue" placeholder="请选择">
+                <el-option
+                  v-for="(item,index) in 30"
+                  :key="index"
+                  :label="item"
+                  :value="item">
+                </el-option>
+              </el-select>
+              <b style="font-weight: 100;font-size:14px;font-family:PingFangSC-Regular;color:rgba(136,136,136,1)">注：选择后的日期将会设置为每月的账单日，账单将会到这天发送。</b>
             </li>
           </ul>
         </div>
@@ -62,6 +100,28 @@
     },
     data(){
       return{
+        //区域start
+        linkmanAreaId:"",//街道ID
+        linkmanName:"", //街道名字
+        disabled:true,
+        cityId:"",
+        selectedOptions2: [], //城市选择
+        selectedOptions1: [],//区域选择
+        options: [],
+        props: {
+          value: 'id',
+          label: 'label',
+          children: 'cities'
+        },
+        serveAreas: [],
+        props2: {
+          value: 'id',
+          label: 'label',
+          children: 'cities',
+        },
+        //区域end
+        Datevalue:1,
+        radio:"0",
         selectorBehindObj:{},
         type:{
           name: "渠道类型",
@@ -111,12 +171,13 @@
             key:"companyTelephone",
             value:"",
             type:"text"
-          },{
-            name:"总部地址",
-            key:"headquarterAddress",
-            value:"",
-            type:"text"
           },
+//          {
+//            name:"总部地址",
+//            key:"headquarterAddress",
+//            value:"",
+//            type:"text"
+//          },
 //          {
 //            name:"开户行",
 //            key:"bankOfDeposit",
@@ -180,8 +241,29 @@
 //        let data=r.data;
 //        this.labeloptions2 = data.result;
 //      })
+      //      城市数据
+      let cityurl = `${this.$apidomain}/common/findprovinceandcitylist`;
+      this.$http.get(cityurl).then(res=>{
+        if (res.data.code === '0000') {
+          this.options =res.data.result;
+        }
+      });
     },
     methods: {
+      changeSelector($event) {//街道
+        this.linkmanAreaId = this.selectedOptions1[this.selectedOptions1.length - 1];
+        this.linkmanName =this.$refs.one.currentLabels[1];
+      },
+      handleChange(value) { //街道
+        this.cityId = value[value.length - 1];
+        console.log(value);
+        //选择区域街道
+        let cityIdurl=this.$apidomain+"/common/findareaandstreetoptions?cityId="+ this.cityId;//获取区域
+        this.$http.get(cityIdurl).then(res=>{
+          this.serveAreas = res.data.result;
+        })
+        this.disabled = false;
+      },
       submitAdd(){
         this.inputs.forEach(v=>{
           this.selectorBehindObj[v.key]=v.value;
@@ -201,6 +283,10 @@
           });
         }
         if(this.$testReg(RegData,this,"channel")){
+          this.selectorBehindObj.settle_type =this.radio;
+          this.selectorBehindObj.settle_day = this.Datevalue+"";
+          this.selectorBehindObj.areaName = this.linkmanName;
+          this.selectorBehindObj.areaId = this.linkmanAreaId;
         let url=this.$apidomain+"/officialpartnerinfo/saveOfficialPartnerInfo";
         this.$http.post(url,this.selectorBehindObj).then(res=>{
           let data = res.data;

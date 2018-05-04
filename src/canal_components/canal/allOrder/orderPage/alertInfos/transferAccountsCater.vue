@@ -84,15 +84,20 @@
 
     },
     created(){
+      setTimeout(()=>{
         this.imgUrl = JSON.parse(sessionStorage.getItem('zhifubao')).createCodeUrl;
         this.id = JSON.parse(sessionStorage.getItem('zhifubao')).officialPartnerCostFlowId;
-        let that = this;
-        this.temp=setInterval(()=>{
-          that.num++;
-          if(that.num%5==0){
-            that.query();
-          }
-        },1000);
+      },1000);
+        setTimeout(()=>{
+            let that = this;
+            this.temp=setInterval(()=>{
+              that.num++;
+              if(that.num%5==0){
+                that.query();
+              }
+            },1000);
+       },1500)
+
 
 
     }

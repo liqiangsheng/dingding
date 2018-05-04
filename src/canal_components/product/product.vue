@@ -2,7 +2,7 @@
   <div id="app" class="product">
     <div class="content">
       <el-menu theme="dark" class="el-menu-demo" mode="horizontal" >
-        <el-menu-item  v-for="(item,index) in productIndex" :key="index" @click="product(index)" >
+        <el-menu-item :class="{active:productNum==index}" v-for="(item,index) in productIndex" :key="index" index="index" @click="product(index)" >
           {{item}}
         </el-menu-item>
       </el-menu>
@@ -74,6 +74,13 @@
       border-bottom: 5px solid transparent;
     }
     .el-menu-item:hover{
+      background: #FFFFFF;
+      font-size:14px;
+      font-family:PingFangSC-Medium;
+      color:rgba(230,88,49,1);
+      border-bottom: 5px solid rgba(230,88,49,1);
+    }
+    .el-menu-item.active{
       background: #FFFFFF;
       font-size:14px;
       font-family:PingFangSC-Medium;

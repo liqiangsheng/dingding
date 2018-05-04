@@ -25,7 +25,7 @@ if(locationUrl.includes('manage.')){
 
 }else{
 
-  setSession("KEY", "1");
+  setSession("KEY", "3");
 
 }
 function backstage() {

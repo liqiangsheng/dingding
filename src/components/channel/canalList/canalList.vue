@@ -45,9 +45,14 @@
             <td>
               {{item.name}}
             </td>
+            <!--结算方式-->
+            <td>
+              {{item.settleType|settleType}}
+            </td>
             <td>
               {{item.subclassCount}}
             </td>
+
             <td>
               {{item.userNumber}}
             </td>
@@ -168,6 +173,7 @@
           '序号',
           '渠道编号',
           '渠道名称',
+          '结算方式',
           '子类数量',
           '用户量',
           '总订单量',
@@ -233,6 +239,7 @@
         this.$http.get(url,params).then(r=>{
           let data=r.data;
           this.tableListData = data.result;
+          console.log(this.tableListData)
           this.showPages = data.result.pageNo;
           this.currentPageSize = data.result.pageSize;
           this.total = data.result.total;

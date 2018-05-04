@@ -80,7 +80,8 @@
       })
     },
     created(){
-      if(getSession("KEY")[0]==="3"&&window.location.href.indexOf("http://localhost")===-1&&false){
+//      if(getSession("KEY")[0]==="3"&&window.location.href.indexOf("http://localhost")===-1&&false){
+      if(getSession("KEY")[0]==="3"&&window.location.href.indexOf("http://localhost")===-1){
         setTimeout(()=>{
           window.location.href=this.$common.channelLogin;
         },1000);

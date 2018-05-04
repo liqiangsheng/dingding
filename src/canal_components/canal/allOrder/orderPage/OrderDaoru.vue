@@ -8,7 +8,7 @@
      <ul class="OrderDaoruList">
        <li id="prodress">
          <!--<el-button type="primary" @click="chanpinClick">导入工单</el-button>-->
-         <Upload :action="file">
+         <Upload :action="file" :headers="header">
            <Button style="color: #FFFFFF;background: #20a0ff;height: 36px;" type="ghost" icon="ios-cloud-upload-outline" v-model="file"  @click="chanpinClick">导入工单</Button>
          </Upload>
          <a ref="fileBackground" href="javascript:;" class="file">
@@ -117,6 +117,7 @@ import DaoruBianji from "./alertInfos/daoruBianji.vue" //导入编辑
     },
     data() {
       return {
+        header:{'Content-Type': 'multipart/form-data'},
         url1:"",
         file:this.$apidomain+"/orderquery/upload", // 文件
         theadsName:["产品名称","品牌","型号","数量","检测费","服务费","联系人","手机","地址","渠道质保","操作"],

@@ -242,9 +242,9 @@
       width: 100%;
       display: flex;
       border-left: 1px solid #bfcbd9;
+      background:rgba(255,255,255,1);
       td{
         height:46px;
-        background:rgba(255,255,255,1);
         flex: 1;
         line-height:46px;
         text-align: center;
@@ -253,7 +253,7 @@
         border-left: 0;
       }
     }
-    td:hover{
+    tr:hover{
       background: #DBF0FF;
     }
     tr:last-child{

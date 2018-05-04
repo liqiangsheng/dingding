@@ -21,7 +21,7 @@
    </div>
   <div class="tab">
     <el-menu theme="dark" class="el-menu-demo" mode="horizontal" >
-      <el-menu-item  v-for="(item,index) in tabList" index="index" :key="index" @click="tabClick(item,index)" >
+      <el-menu-item  :class="{active:tabIndex==index}" v-for="(item,index) in tabList" index="index" :key="index" @click="tabClick(item,index)" >
         {{item}}
       </el-menu-item>
     </el-menu>
@@ -154,12 +154,19 @@ import WaitForService from "./orderPage/waitForService.vue"
      color:rgba(136,136,136,1);
      border-bottom: 5px solid transparent;
    }
-   .el-menu-item:hover{
+   .el-menu-item.active{
      background: #FFFFFF;
      font-size:14px;
      font-family:PingFangSC-Medium;
      color:rgba(230,88,49,1);
      border-bottom: 5px solid rgba(230,88,49,1);
+   }
+   .el-menu-item:hover {
+     background: #FFFFFF;
+     font-size: 14px;
+     font-family: PingFangSC-Medium;
+     color: rgba(230, 88, 49, 1);
+     border-bottom: 5px solid rgba(230, 88, 49, 1);
    }
  }
 </style>
