@@ -148,10 +148,6 @@
 
           this.$http.post(_url).then( res => this.findExtractTotal = getFilterData(res.data) );
 
-
-
-
-
         }
     }
 </script>

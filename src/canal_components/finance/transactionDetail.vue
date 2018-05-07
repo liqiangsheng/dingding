@@ -113,15 +113,16 @@
           </tbody>
         </table>
         <div class="paging">
-          <p class="home">总页数{{tableListData.pageNum}}/{{tableListData.pageSize}}</p>
+          <p class="home">总页数{{tableListData.pageNum}}/{{tableListData.pages}}</p>
+          <!--<p class="home">总页数{{tableListData.pageNum}}/{{tableListData.pageSize}}</p>-->
           <el-pagination
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :page-sizes='[20,50,100,200]'
             layout="total, sizes, prev, pager, next, jumper"
-            :current-page="showPages"
+            :current-page="startRow"
             :total="total"
-            :page-size="currentPageSize"
+            :page-size="size"
             :page-count="pageTotal"
           >
           </el-pagination>
@@ -219,14 +220,15 @@
           max:""
         },
         tableListData:{
-          pageNo:1,
-          pageSize:20,
-          total:0,
+          page:1,
+          rows:20,
+          startRow:0,
           pageTotal: 1,
           list:[]
         },
-        showPages:1,
-        currentPageSize:20,
+
+        size:20,
+        startRow:0,
         total:0,
         pageTotal:0,
       }
@@ -271,7 +273,6 @@
       */
       //      <!--分页查询数据对象功能组合start-->
       quiry(){
-
         this.getTableList(this.paramsData());
 
       },
@@ -281,10 +282,9 @@
         this.statisticsDateStartStr = filterDate(0);
 
         this.statisticsDateEndStr = filterDate(1);
-
         return {
-          "pageNo":JSON.stringify(this.showPages),
-          "pageSize":JSON.stringify(this.currentPageSize),
+          "page":JSON.stringify(this.startRow),
+          "rows":JSON.stringify(this.size),
           "startDate":filterDate(0),
           "endDate":filterDate(1),
           "minFee":this.selectorBehindObj.min,
@@ -293,8 +293,6 @@
           "payState":this.selectorBehindObj.payState,
           "journalAccountNum":this.selectorBehindObj.streamNumber,
           "paySource":this.selectorBehindObj.paySource,
-
-
 //          "statisticsDateStartStr":
 //          "statisticsDateEndStr":filterDate(1),
         }
@@ -306,11 +304,8 @@
           let data=r.data;
           if(data.code==="0000"){
             this.tableListData = data.result;
-            console.log(this.tableListData);
-            this.showPages = data.result.pageNo;
-            this.currentPageSize = data.result.pageSize;
             this.total = data.result.total;
-            this.pageTotal = data.result.pageTotal;
+            this.pageTotal = data.result.pages;
             this.isCheckboxList=[];
             data.result.list.forEach((v,i)=>{
               this.isCheckboxList.push(false);
@@ -325,25 +320,27 @@
 
 
       handleSizeChange(val) {      //每页显示多少条
-        this.currentPageSize=val;
+        this.size=val;
         this.getTableList(this.paramsData());
       },
       handleCurrentChange(val) {
-        this.showPages=val;
+        this.startRow=val;
         this.getTableList(this.paramsData());
       },
       firstPage(){
-        if(  this.showPages===1 ){
+        if(  this.startRow===1 ){
           return alert("已经是第一页")
         }
-        this.showPages=1;     //第一页
+        this.startRow=1;     //第一页
         this.getTableList(this.paramsData());
       },
       lasePage(){
-        if(this.showPages===this.pageTotal){
+        console.log(this.pageTotal);
+        if(this.startRow===this.pageTotal){
           return alert("已经是最后一页")
         }
-        this.showPages=this.pageTotal; //最后一页
+
+        this.startRow=this.pageTotal; //最后一页
         this.getTableList(this.paramsData());
       },
 

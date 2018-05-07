@@ -65,6 +65,7 @@
       <section class="query_button_box">
         <el-button @click="quiry('')"  class="query_button"> 查询 </el-button>
       </section>
+
       <section class="button_derive_box">
         <el-button @click="derive" size="large" class="derive_btn">导出</el-button>
       </section>
@@ -109,17 +110,10 @@
             <td>
               {{item.rechargeSum}}
             </td>
-            <td>
-              {{item.cardNumber}}
-            </td>
+
             <td>
               {{item.accountSum}}
             </td>
-
-            <td>
-              {{item.bankName}}
-            </td>
-
             <td>
               {{item.availableSum}}
             </td>
@@ -128,8 +122,8 @@
             </td>
             <td class="table_operate cursor">
 
-              <span v-if="item.state" v-for="(ite,index) in ['通过','驳回']"  @click="operate(index)">{{ite}}</span>
-              <p v-if="!item.state">已驳回</p>
+              <span v-if="item.state" v-for="(ite,index) in ['凭证','通过','驳回',]"  @click="operate(index)">{{ite}}</span>
+              <p v-if="!item.state">已通过</p>
             </td>
           </tr>
           </tbody>
@@ -209,9 +203,7 @@
           '对象编号',
           '对象类型',
           '对象名称',
-          '开户行',
-          '卡号',
-          '提现金额（元）',
+          '充值金额（元）',
           '账户余额（元）',
           '可用余额（元）',
           '创建时间',
@@ -237,8 +229,6 @@
               objName:"华侨城",
               rechargeSum:10,
               accountSum:55,
-              bankName:"中国银行",
-              cardNumber:12121212555555551,
               availableSum:20,
               state:0,
               createdTime:1515151515,
@@ -249,8 +239,6 @@
               objName:"华侨城",
               rechargeSum:10,
               accountSum:55,
-              bankName:"中国银行",
-              cardNumber:12121212555555551,
               availableSum:20,
               state:1,
               createdTime:1515151515,
@@ -261,8 +249,6 @@
               objName:"华侨城",
               rechargeSum:10,
               accountSum:55,
-              bankName:"中国银行",
-              cardNumber:12121212555555551,
               availableSum:20,
               state:0,
               createdTime:1515151515,
@@ -273,8 +259,6 @@
               objName:"华侨城",
               rechargeSum:10,
               accountSum:55,
-              bankName:"中国银行",
-              cardNumber:12121212555555551,
               availableSum:20,
               state:1,
               createdTime:1515151515,
@@ -302,10 +286,11 @@
       },
       operate(i){
         /*
-        0 通过
-        1 驳回
+        1 通过
+        2 驳回
+        0 凭证
         * */
-        if(!i){
+        if(i===1){
           this.$queryFun.confirm.call(this,{
             text:"通过前，请确认已将该提现金额打款至该渠道",
             title:"确认通过",
@@ -313,8 +298,10 @@
 
             }
           })
-        }else{
+        }else if(i===2){
           this.data.isShow=true;
+        }else{
+          alert("凭证")
         }
       },
       /*
@@ -438,6 +425,7 @@
   }
 </script>
 <style scoped lang="scss">
+
   @import "../../../assets/styles/comminStyle2";
   /*@import "../../../assets/styles/Ch_comminStyle";*/
   #app{
@@ -531,40 +519,38 @@
   .el-dialog__wrapper{
     z-index: 999999;
   }
-#app{
-  .table.dable_lsit {
-    margin-top:2em;
-    >table{
-      tr{
-        >td{
-          border-left:1px solid #ccc;
-        }
-        >td:first-of-type{
-          border-left:none;
-        }
-        >.table_operate{
-          min-width: 155px;
-         > span{
-            font-size: 1em;
-            display: inline-block;
-            padding-top:0;
-            width:46%;
-           color:#20A0FF;
+  #app{
+    .table.dable_lsit {
+      margin-top:2em;
+      >table{
+        tr{
+          >td{
+            border-left:1px solid #ccc;
           }
-          >p{
-            margin: 0 auto;
-            float:none;
+          >td:first-of-type{
+            border-left:none;
           }
-          >span:last-of-type{
-            color:#E65831;
+          >.table_operate{
+            min-width: 155px;
+            > span{
+              font-size: 1em;
+              display: inline-block;
+              padding-top:0;
+              width:33%;
+              color:#20A0FF;
+            }
+            >p{
+              margin: 0 auto;
+              float:none;
+            }
+            >span:last-of-type{
+              color:#E65831;
+            }
           }
         }
       }
     }
   }
-}
-
-
 
 </style>
 

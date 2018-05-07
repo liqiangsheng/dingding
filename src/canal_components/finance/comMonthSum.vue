@@ -15,7 +15,7 @@
                   </ul>
               </div>
               <div class="btn">
-                  <el-button type="primary">查询</el-button>
+                  <el-button type="primary" @click="primary">查询</el-button>
               </div>
           </div>
       </div>
@@ -23,7 +23,7 @@
           <table border="0" cellspacing="0" >
               <thead>
                   <tr>
-                      <th><el-checkbox v-model="checked" @change="wholeSelector(dataList,checked)"></el-checkbox></th>
+                      <th><el-checkbox v-model="checked" @change="wholeSelector(tableListData.list,checked)"></el-checkbox></th>
                       <th>记账周期<img src="../../../static/images/paixu.png"></th>
                       <th>预估收入<img src="../../../static/images/paixu.png"></th>
                       <th>已结收入</th>
@@ -33,36 +33,53 @@
                   </tr>
               </thead>
               <tbody>
-                  <tr v-for="(item,index) in dataList" :key="index">
+                  <tr v-for="(item,index) in tableListData.list" :key="index">
                       <td><el-checkbox v-model="isCheckboxList[index]" @change="checkbox(index)"></el-checkbox></td>
-                      <td>{{item.date}}</td>
-                      <td>{{item.money}}</td>
-                      <td>{{item.billState}}</td>
-                      <td>{{item.state}}</td>
-                      <td>{{item.billDate}}</td>
+                      <td>{{item.bookkeepingTime}}</td>
+                      <td>{{item.forecastIncomeFee}}</td>
+                      <td>{{item.earnedIncomeFee}}</td>
+                      <td>{{item.transactionSize}}</td>
+                      <td>{{item.createTime}}</td>
                       <td>
                           <!-- <span class="track" @click="queryClick(item,index)">查看明细</span> -->
-                          <span class="track" @click="jump()">查看明细</span>                          
+                          <span class="track" @click="jump(item)">查看明细</span>                          
                       </td>
                   </tr>
               </tbody>
           </table>
+          <!-- 分页 -->
+          <div class="paging">
+          <p class="home">总页数{{tableListData.pageNo}}/{{tableListData.pageTotal}}</p>
+          <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :page-sizes='[20,50,100,200]'
+            layout="total, sizes, prev, pager, next, jumper"
+            :current-page="showPages"
+            :total="total"
+            :page-size="currentPageSize"
+            :page-count="pageTotal"
+          >
+          </el-pagination>
+          <p class="home last_page" @click="lasePage">尾页</p>
+          <p class="home" @click="firstPage">首页</p>
+        </div>
       </div>   
   </div>
 </template>
 <script>
     const isPushPath = (tabPathList,path) => !tabPathList.some( v => v.path === path);        
     export default{
+       components:{
+
+       },
+       props:["typeState"],
        data(){
            return{
             isCheckboxList:[],  //全选,反选
             checked:false,      //全选,反选
             date_state:"",   //年份选择
-            //bill_state:"",    //账单状态
-            //kont_state:"",   //结款状态
-            orderLabel:"",
-            queryShow:false,   //查询明细
-             dateState:[  //分类
+            dateState:[  //分类
                 {"id":"","name":"2015"},
                 {"id":"","name":"2016"},
                 {"id":"","name":"2017"},
@@ -78,44 +95,98 @@
                 {"id":"","name":"未结款"},
                 {"id":"","name":"已结款"},
             ],
-            dataList:[
-                {"date":"2018/10/11","money":"120","billState":"222","state":"60","billDate":"2018/04/05 12:12:00","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","billState":"222","state":"60","billDate":"2018/04/05 12:12:00","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","billState":"222","state":"60","billDate":"2018/04/05 12:12:00","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","billState":"222","state":"60","billDate":"2018/04/05 12:12:00","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","billState":"222","state":"60","billDate":"2018/04/05 12:12:00","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","billState":"222","state":"60","billDate":"2018/04/05 12:12:00","operation":"查看明细"},
-            ]
+                //分页
+                tableListData:{
+                pageNo:1,
+                pageSize:20,  //每页显示多少条
+                total:0,
+                pageTotal: 1,
+                list:[]
+                },
+                showPages:1,
+                currentPageSize:20,
+                total:0,
+                pageTotal:0,
            }
        },
         created(){
-           this.getTableList();
+           this.getTableList(this.paramsData());
        },
        methods:{
            //全选,反选start
            checkbox(index){
-                    this.$queryFun.isCheckbox.call(this,this.dataList,index);
+                    this.$queryFun.isCheckbox.call(this,this.tableListData.list,index);
                 },
                 wholeSelector(item,currentState){
                     this.$queryFun.wholeSelector.call(this,item,currentState);
                 },
              //全选反选end
-             getTableList(){
+             //传回后台参数
+            paramsData(){
+              const dataTime = !this.date?"":this.data.getFullYear()
+              return{
+                  "dateTime":dataTime,
+                  "type":this.typeState
+              }
+            },
+            //请求列表数据
+             getTableList(params){
+                const url = `${this.$common.apidomain}/officialPartnerExtractSettlementController/all`
+                this.$http.post(url,params).then(res=>{
+                    let data = res.data;
+                    if(data.code="0000"){
+                        this.tableListData = data.result;
+                    }else{
+                        this.$queryFun.successAlert.call(this,data.error);
+                    }
+                })
+
                 this.isCheckboxList = [];
-                this.dataList.forEach((v,i) =>{
+                this.tableListData.list.forEach((v,i) =>{
                     this.isCheckboxList.push(false);
-                    this.dataList[i].isCheckboxList = false;
+                    this.tableListData.list[i].isCheckboxList = false;
                 })
              },
              //页签跳转
              jump(state){
+                let comData={};
+                comData.comTime = state.bookkeepingTime;
+                comData.comType = this.typeState;
                 let path=`/finance/commission/commissionSettlementDetails`;
                 if(isPushPath(this.$store.state.tabPathList, path))this.$store.commit("pushTabPathList",{
                             path:`/finance/commission/commissionSettlementDetails`,
                             name:"提成结算明细"
                         });
                     this.$router.push({path});
-                }
+                    this.$store.dispatch("comDateTime",comData);
+                },
+            
+            //年份查询
+            primary(){
+               this.getTableList(this.paramsData()) 
+            },
+            handleSizeChange(val) {      //每页显示多少条
+                    this.currentPageSize=val;
+                    this.getTableList(this.paramsData());
+                },
+             handleCurrentChange(val) {
+                    this.showPages=val;
+                    this.getTableList(this.paramsData());
+                },
+             firstPage(){
+                    if(  this.showPages===1 ){
+                    return alert("已经是第一页")
+                    }
+                    this.showPages=1;     //第一页
+                    this.getTableList(this.paramsData());
+                },
+             lasePage(){
+                    if(this.showPages===this.pageTotal){
+                    return alert("已经是最后一页")
+                    }
+                    this.showPages=this.pageTotal; //最后一页
+                    this.getTableList(this.paramsData());
+                },
        }
     }
 </script>
@@ -158,6 +229,8 @@
   }
   .tableList table{
       border-color:#E0E6ED;
+      border-left:1px solid #E0E6ED; 
+      border-bottom:1px solid #E0E6ED; 
       //border-spacing: 1px;
       color:#393939;
       font-size: 14px;
@@ -221,5 +294,31 @@
       }
      
   }
+.paging{
+      font-size: 14px;
+      text-align:right;
+      width:100%;
+      line-height:50px;
+      >input,select{
+        width:42px;
+        height:20px;
+        padding:0;
+      }
+      >.link_page{
+        background: #1C5B94;
+        color:#fff;
+      }
+      .home{
+        float:right;
+      }
+      .last_page{
+        color:blue;
+        margin-left:10px;
+      }
+      .el-pagination{
+        float:right;
+        padding-top:12px;
+      }
+    }
 </style>
 

@@ -14,16 +14,15 @@
               <li>状态</li>
         </ul>
         <ul class="center">
-          <li>{{}}</li>
-          <li>{{}}</li>
-          <li>{{}}</li>
+          <li>{{valueObj.name}}</li>
+          <li>{{valueObj.size}}</li>
+          <li>{{valueObj.state}}</li>
         </ul>
         <div class="progress">
-          <el-progress :text-inside="true" :stroke-width="18" :percentage="0"></el-progress>
+          <el-progress :text-inside="true" :stroke-width="24" :percentage="num"></el-progress>
         </div>
         <div class="footer">
-               <p><el-button type="primary" @click="OKClick">查看所有工单</el-button></p>
-
+               <p><el-button type="primary" @click="OKClick">完成</el-button></p>
         </div>
     </div>
   </div>
@@ -34,22 +33,36 @@
     },
     data() {
       return {
-
+             num:0,
+             valueObj:{
+               name:"",
+               size:"",
+               state:"上传中...",
+             }
        }
     },
     methods: {
       close(){ //传值给父级
         this.$emit("isClose",false)
       },
-      OKClick(){ //查看所有工单
-        this.$emit("isClose",false)
+      OKClick(){ //查看完成
+        if(this.valueObj.state == "已完成"){
+          this.$emit("centerShow",true);
+          this.$emit("isClose",false)
+        }else{
+         return alert("上传中,请等待...");
+        }
+
       },
 
     },
     mounted() {
     },
     created(){
-
+      setTimeout(()=>{
+        this.num = 100;
+        this.valueObj.state = "已完成";
+      },3000)
 
     },
 
@@ -117,6 +130,7 @@
   .center{
     width: 100%;
     display: flex;
+    margin-bottom: 20px;
     li{
       text-align: center;
       flex: 1;

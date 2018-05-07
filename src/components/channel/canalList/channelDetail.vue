@@ -125,20 +125,20 @@
             </li>
             <li> 结算方式:
               <span v-if="!isEdit()">
-                {{dataObj.settle_type|settleType}}
+                {{dataObj.settleType|settleType}}
               </span>
               <span v-else>
-                <el-radio class="radio" v-model="dataObj.settle_type" label="0">渠道先结</el-radio>
-                <el-radio class="radio" v-model="dataObj.settle_type" label="1">渠道后结</el-radio>
+                <el-radio class="radio" v-model="dataObj.settleType" label="0">渠道先结</el-radio>
+                <el-radio class="radio" v-model="dataObj.settleType" label="1">渠道后结</el-radio>
               </span>
 
             </li>
             <li>账单日:
               <span v-if="!isEdit()">
-                每月{{dataObj.settle_day}}号
+                每月{{dataObj.settleDay}}号
               </span>
               <span v-else>
-                 <el-select v-model="dataObj.settle_day" placeholder="请选择">
+                 <el-select v-model="dataObj.settleDay" placeholder="请选择">
                 <el-option
                   v-for="(item,index) in 30"
                   :key="index"
@@ -322,6 +322,7 @@
       findOne(){
         let url=this.$apidomain+"/officialpartnerinfo/findonedetails?id="+this.isDetailed.id;
         this.$http.get(url).then(r=>{
+          console.log(r)
           let data=r.data;
           this.dataObj = data.result.info;
           this.subsetInfos = data.result.subsetInfos;

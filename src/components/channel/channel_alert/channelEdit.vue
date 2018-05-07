@@ -19,6 +19,17 @@
                 </el-option>
               </el-select>
             </li>
+            <li id="listName">
+              <span class="list_name">  分类  :</span>
+                <el-cascader id="labelId"
+                             :disabled="isKeXuan"
+                             @change="changeSelector2"
+                             :options="labeloptions2"
+                             change-on-select
+                             @active-item-change="handleItemChange"
+                             :props="props1"
+                ></el-cascader>
+            </li>
           </ul>
           <ul v-else>
             <li>渠道 :{{selectorBehindObj.officialPartnerName}}</li>
@@ -92,6 +103,13 @@
     props:["edit","quiry"],
     data(){
       return{
+        labeloptions2: [],
+        isKeXuan:true,
+        props1: {
+          value: 'a',
+          label: "b",
+          children: 'beans'
+        },
         isAdd:true,
         optionList:[
           {
@@ -105,7 +123,7 @@
             SourceTypeValue: '',
             SourceType: []
           },{
-            name: "分类",
+            name: "一级分类",
             key: "labelId",
             SourceTypeValue: '',
             SourceType: []
@@ -204,6 +222,9 @@
       }
     },
     methods: {
+      handleItemChange(){
+
+      },
       preserve(item,index){        //保存
         console.log(item);
         let url=this.$apidomain+"/officialPartnerCommissionConfig/updateOfficialPartnerCommissionConfig";
@@ -295,6 +316,23 @@
       refuse(){
         return this.$store.state.refuse
       },
+      changeSelector2(value){
+        if(value.length === 1){
+          this.selectorBehindObj.labelId=value[0];
+        }else if(value.length === 2){
+          this.selectorBehindObj.labelId=value[1];
+        }else if(value.length === 3){
+          this.selectorBehindObj.labelId=value[2];
+        }else if(value.length === 4){
+          this.selectorBehindObj.labelId=value[3];
+        }else if(value.length === 5){
+          this.selectorBehindObj.labelId=value[4];
+        }else if(value.length === 6){
+          this.selectorBehindObj.labelId=value[5];
+        }else if(value.length === 7){
+          this.selectorBehindObj.labelId=value[6];
+        }
+      },
       selector(item,values,SourceTypeValue){       //选中后的下拉列表
         var key=item.key;
         values.forEach((v,i)=>{
@@ -305,6 +343,18 @@
             }
             if("labelId"===key){
               this.selectorBehindObj.labelName = v.value;
+              values.forEach((item,index)=>{
+                if(SourceTypeValue ==item.value){
+                  let urlTwo=this.$common.apidomain+'/articleinfo/findlabelbusinessbyflabel?id='+item.id;
+                  this.$http.get(urlTwo).then(res=>{
+                    if(res.data.code === "0000"){
+                      this.isKeXuan = false;
+                      this.labeloptions2=[]
+                      this.labeloptions2.push(res.data.result)
+                    }
+                  })
+                }
+              })
             }
             if("officialPartnerId"===key){
               this.selectorBehindObj.officialPartnerName = v.value;
@@ -332,6 +382,11 @@
     },
   }
 </script>
+<style>
+  #listName .el-cascader__label {
+   line-height: 40px !important;
+  }
+</style>
 
 <style scoped lang="scss">
   @import "../../../assets/styles/commButton";

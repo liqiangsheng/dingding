@@ -11,4 +11,13 @@ export let actions={ //异步处理VUEX
   addDataCarter(store,data){
     store.commit("addDataCarter",data)
   },
+  billDateTime(store,data){
+    store.commit("billDateTime",data)
+  },
+  comDateTime(store,data){
+    store.commit("comDateTime",data)
+  },
+  accountId(store,data){
+    store.commit("accountId",data)
+  }
 };

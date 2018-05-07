@@ -37,8 +37,8 @@
                   </ul>
               </div>
               <div class="btn">
-                  <el-button type="primary">查询</el-button>
-                  <el-button>重置</el-button>
+                  <el-button type="primary" @click="query">查询</el-button>
+                  <el-button @click="reset">重置</el-button>
               </div>
           </div>
       </div>
@@ -46,7 +46,7 @@
           <table border="0" cellspacing="0" >
               <thead>
                   <tr>
-                      <th><el-checkbox v-model="checked" @change="wholeSelector(dataList,checked)"></el-checkbox></th>
+                      <th><el-checkbox v-model="checked" @change="wholeSelector(tableListData.list,checked)"></el-checkbox></th>
                       <th>记账日期<img src="../../../static/images/paixu.png"></th>
                       <th>账单金额 (元)<img src="../../../static/images/paixu.png"></th>
                       <th>待结金额 (元)<img src="../../../static/images/paixu.png"></th>
@@ -56,16 +56,16 @@
                   </tr>
               </thead>
               <tbody>
-                  <tr v-for="(item,index) in dataList" :key="index">
+                  <tr v-for="(item,index) in tableListData.list" :key="index">
                       <td><el-checkbox v-model="isCheckboxList[index]" @change="checkbox(index)"></el-checkbox></td>
-                      <td>{{item.date}}</td>
-                      <td>{{item.money}}</td>
-                      <td>{{item.daijie}}</td>
-                      <td>{{item.billState}}</td>
-                      <td>{{item.state}}</td>
+                      <td>{{item.createTime}}</td>
+                      <td>{{item.operationFee}}</td>
+                      <td>{{item.pendingFee}}</td>
+                      <td>{{item.billState|billState}}</td>
+                      <td>{{item.junctionsState|kontState}}</td>
                       <td>
                           <!-- <span class="track" @click="queryClick()">查看明细</span> -->
-                          <span class="track" @click="jump()">查看明细</span>
+                          <span class="track" @click="jump(item)">查看明细</span>
                       </td>
                   </tr>
               </tbody>
@@ -75,7 +75,11 @@
 </template>
 <script>   
     const isPushPath = (tabPathList,path) => !tabPathList.some( v => v.path === path);    
-    export default{    
+    export default{ 
+       components:{
+
+       },
+       props:["typeState"],   
        data(){
            return{
             isCheckboxList:[],  //全选,反选
@@ -83,63 +87,115 @@
             date_state:"",   //年份选择
             bill_state:"",    //账单状态
             kont_state:"",   //结款状态
-            orderLabel:"",
-            queryShow:false,   //查询明细
              dateState:[  //分类
                 {"id":"","name":"2015"},
                 {"id":"","name":"2016"},
                 {"id":"","name":"2017"},
                 {"id":"","name":"2018"},
                 ] ,
-            billState:[  //分类
-                {"id":"","name":"旭日"},
-                {"id":"","name":"凤舞"},
-                {"id":"","name":"清瑶"},
-                {"id":"","name":"碧血"},
+            billState:[  //账单状态
+                {"id":"","name":"所有"},
+                {"id":"","name":"已出账"},
+                {"id":"","name":"未出账"},
                 ] ,
-            kontState:[
-                {"id":"","name":"武庚"},
-                {"id":"","name":"仓木"},
-                {"id":"","name":"白雪"},
+            kontState:[ //结款状态
+                {"id":"","name":"所有"},
+                {"id":"","name":"已结款"},
+                {"id":"","name":"未结款"},
             ],
-            dataList:[
-                {"date":"2018/10/11","money":"120","daijie":"200","billState":"出账","state":"已结款","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","daijie":"200","billState":"出账","state":"已结款","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","daijie":"200","billState":"出账","state":"已结款","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","daijie":"200","billState":"出账","state":"已结款","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","daijie":"200","billState":"出账","state":"已结款","operation":"查看明细"},
-                {"date":"2018/10/11","money":"120","daijie":"200","billState":"出账","state":"已结款","operation":"查看明细"},
-            ]
+            //分页
+             tableListData:{
+                pageNo:1,
+                pageSize:20,
+                total:0,       //总条目数
+                pageTotal: 1,
+                list:[]
+                },
+                showPages:1,        //当前页数
+                currentPageSize:20, //每页显示的条目个数
+                total:0,
+                pageTotal:0,        //总页数
            }
        },
        created(){
-         this.getTableList();
+         this.getTableList(this.paramsData());
        },
        methods:{
             //全选,反选start
            checkbox(index){
-                    this.$queryFun.isCheckbox.call(this,this.dataList,index);
+                    this.$queryFun.isCheckbox.call(this,this.tableListData.list,index);
                 },
                 wholeSelector(item,currentState){
                     this.$queryFun.wholeSelector.call(this,item,currentState);
                 },          
              //全选反选end
+             //传给后台参数
+             paramsData(){
+                const dateTime = !this.date?"":this.date.getFullYear() + '-0' + (this.date.getMonth() + 1) ;
+                 let billState,kontState
+                 if(this.bill_state=="未出账"){
+                     billState=1;
+                 }else if(this.bill_state=="已出账"){
+                     billState=2;
+                 }else{
+                     billState="";
+                 }
+                 if(this.kont_state=="未结款"){
+                     kontState=1;
+                 }else if(this.kont_state=="已结款"){
+                     kontState=2;
+                 }else{
+                     kontState="";
+                 }
+                 return{
+                     "dateTime":dateTime,              //日期范围
+                     "billState":billState,      //账单状态
+                     "junctionsState":kontState,  //结款状态
+                     "type":this.typeState              //汇总类型
+                 }
+             },
              //表格数据请求
-             getTableList(){
-                this.isCheckboxList = [];
-                this.dataList.forEach((v,i) =>{
-                    this.isCheckboxList.push(false);
-                    this.dataList[i].isCheckboxList = false;
+             getTableList(params){
+                const url = `${this.$apidomain}/officialPartnerBillSettlementController/all`;
+                this.$http.post(url,params).then(res =>{
+                    let data = res.data;
+                    //console.log(data,"渠道账单结算流水列表");
+                    if(data.code=="0000"){
+                        this.tableListData = data.result;
+                    }else{
+                        this.$queryFun.successAlert.call(this,data.error);
+                    }
                 })
+
+                this.isCheckboxList = [];
+                this.tableListData.list.forEach((v,i) =>{
+                    this.isCheckboxList.push(false);
+                    this.tableListData.list[i].isCheckboxList = false;
+                })
+             },
+             //查询
+             query(){
+              // console.log("参数",this.paramsData())
+               this.getTableList(this.paramsData());
+             },
+             //重置
+             reset(){
+               this.bill_state="";
+               this.date_state="";
+               this.kont_state="";
              },
              //页签跳转
              jump(state){
+                let billData={};
+                billData.billTime = state.createTime;
+                billData.billType = this.typeState;
                 let path=`/finance/bill/billSettlementDetails`;
                 if(isPushPath(this.$store.state.tabPathList, path))this.$store.commit("pushTabPathList",{
                             path:`/finance/bill/billSettlementDetails`,
                             name:"账单结算明细"
                         });
                     this.$router.push({path});
+                    this.$store.dispatch("billDataTime",billData);
                 }
        }
     }

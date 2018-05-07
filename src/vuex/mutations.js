@@ -14,6 +14,15 @@ export let mutations={//同步处理vueX
   detailAlterId(state,data){
      state.detailAlterId = data;
   },
+  comDateTime(state,data){
+     state.comDateTime = data;
+  },
+  billDateTime(state,data){
+    state.billDateTime = data;
+  },
+  accountId(state,data){
+    state.accountId = data;
+  },
   trackAlterId(state,data){
      state.trackAlterId = data;
   },
@@ -55,8 +64,6 @@ export let mutations={//同步处理vueX
   },
   isChannelPass(state){
     state.isChannelPassword=!state.isChannelPassword;
-  },
-  kk(state){
   },
   addRightTableList(state,dataObj){
     state.rightTableList=state.rightTableList.concat(dataObj.newArray);

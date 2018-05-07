@@ -464,9 +464,10 @@
           console.log(res)
           if(res.data.code == "0000"){
             //充值显示
-           this.$queryFun.successAlert.call(this,"恭喜工单新建成功","1");
+            this.$queryFun.successAlert.call(this,"恭喜工单新建成功","1");
+            this.$router.push({path:"/order/list2"})
            location.reload();
-           return this.$router.push({path:"/order/list2"})
+           return
 
           }else{
             return this.$queryFun.successAlert.call(this,res.data.error)

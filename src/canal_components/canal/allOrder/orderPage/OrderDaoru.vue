@@ -2,23 +2,26 @@
 
   <div class="OrderDaoru" ref="OrderDaoru">
     <DaoRuGongDan v-if="daoruShow" @isClose="isClose"></DaoRuGongDan>
-    <DaoRuChanPin v-if="daoruShow1" @isClose="isClose"></DaoRuChanPin>
-    <DaoDetail v-if="daoruShow2" @isClose="isClose"></DaoDetail>
+    <DaoRuChanPin v-if="daoruShow1" @isClose="isClose" @centerShow="centerShow"></DaoRuChanPin>
+    <DaoDetail v-if="daoruShow2" @isClose="isClose" :dexIndex="dexIndex" @isNum="isNum"></DaoDetail>
     <DaoruBianji v-if="daoruShow3" @isClose="isClose"></DaoruBianji>
      <ul class="OrderDaoruList">
        <li id="prodress">
          <!--<el-button type="primary" @click="chanpinClick">导入工单</el-button>-->
-         <Upload :action="file" :headers="header">
-           <Button style="color: #FFFFFF;background: #20a0ff;height: 36px;" type="ghost" icon="ios-cloud-upload-outline" v-model="file"  @click="chanpinClick">导入工单</Button>
-         </Upload>
-         <a ref="fileBackground" href="javascript:;" class="file">
-           <input type="file" @change="onchangeFile($event)">
+         <!--<Upload :action="file" :headers="header">-->
+           <!--<Button style="color: #FFFFFF;background: #20a0ff;height: 36px;" type="ghost" icon="ios-cloud-upload-outline" v-model="file"  @click="chanpinClick">导入工单</Button>-->
+         <!--</Upload>-->
+         <el-button style="position: relative" type="primary">产品导入
+           <a ref="fileBackground" href="javascript:;" class="file" style="position: absolute;left: 0;top: 0;opacity:0;">
+           <input type="file" @change="onchangeFile($event)" style="width: 100%;height: 36px">
          </a>
+         </el-button>
+
        </li>
-       <li><el-button>下载模版</el-button></li>
+       <li><el-button @click="downModel">下载模版</el-button></li>
         <li>上传格式建议xlsx、xls、csv、xml等，文件大小限制10M以内</li>
      </ul>
-    <div class="OrderDaoru" >
+    <div class="OrderDaoru"  v-show="OrderDaoruShow">
            <p class="xinxi"><span></span>产品信息</p>
            <p class="xinxiOne">导入后，请点击底部提交工单</p>
       <table>
@@ -29,45 +32,49 @@
         </thead>
         <tbody>
         <tr v-for="(item,index) in tableListData">
+          <!--序号-->
+          <td>
+            {{index+1}}
+          </td>
           <!--产品名称-->
           <td style="flex-grow:2">
-            {{}}
+            {{item.fLabelBusiness}}
           </td>
           <!--品牌-->
           <td>
-            {{}}
+            {{item.serviceBrand}}
           </td>
           <!--型号-->
           <td>
-            {{}}
+            {{item.serviceModel}}
           </td>
           <!--数量-->
           <td>
-            {{}}
+            {{item.serviceModel}}
           </td>
           <!--检测费-->
           <td>
-            {{}}
+            {{item.channelWarranty}}
           </td>
           <!--服务费-->
           <td>
-            {{}}
+            {{item.channelWarranty}}
           </td>
           <!--联系人-->
           <td>
-            {{}}
+            {{item.linkmanName}}
           </td>
           <!--手机-->
           <td>
-            {{}}
+            {{item.linkmanPhoneNum}}
           </td>
           <!--地址-->
           <td>
-           {{}}
+            {{item.linkmanDetails}}
           </td>
           <!--渠道质保-->
           <td>
-            {{}}
+            {{item.channelWarranty}}
           </td>
           <!--操作-->
           <td>
@@ -84,7 +91,7 @@
         </ul>
     </div>
     <!--分页组件-->
-    <div class="paging">
+    <div class="paging"   v-show="OrderDaoruShow">
       <p class="home">总页数{{tableListData.pageNo}}/{{tableListData.pageTotal}}</p>
       <el-pagination
         @size-change="handleSizeChange"
@@ -102,7 +109,7 @@
 
     </div>
     <!--分页组件结束-->
-    <div class="tijiao"><el-button type="primary"  @click="daoClick">提交工单</el-button></div>
+    <div class="tijiao"  v-show="OrderDaoruShow"><el-button type="primary"  @click="daoClick">提交工单</el-button></div>
   </div>
 
 </template>
@@ -120,9 +127,10 @@ import DaoruBianji from "./alertInfos/daoruBianji.vue" //导入编辑
         header:{'Content-Type': 'multipart/form-data'},
         url1:"",
         file:this.$apidomain+"/orderquery/upload", // 文件
-        theadsName:["产品名称","品牌","型号","数量","检测费","服务费","联系人","手机","地址","渠道质保","操作"],
-        tableListData:["1","2","3","4","5","6","7","8","9","0","8"],
-//        tableListData: {},          //表格数据
+        theadsName:["序号","产品名称","品牌","型号","数量","检测费","服务费","联系人","手机","地址","渠道质保","操作"],
+//        tableListData:["1"],
+        OrderDaoruShow:false,//导入显示
+        tableListData: [],          //表格数据
         showPages: 1,  //分页
         currentPageSize: 20,//分页
         total: 0,//分页
@@ -131,12 +139,23 @@ import DaoruBianji from "./alertInfos/daoruBianji.vue" //导入编辑
         daoruShow1:false,// 导入产品
         daoruShow2:false, //删除
         daoruShow3:false,// 导入编辑
+        dexIndex:"", //删除的下标
 
       }
     },
     created(){
     },
     methods: {
+      centerShow(v){
+              this.OrderDaoruShow =v;
+      },
+      isNum(v){//删除
+           this.tableListData.splice(v,1);
+         this.isClose();
+      },
+      downModel(){//下载模板
+            window.location = this.$apiModel;
+      },
       onchangeFile(event,keyImg){
         console.log(event)
         let filesObj=event.target.files[0],
@@ -144,25 +163,19 @@ import DaoruBianji from "./alertInfos/daoruBianji.vue" //导入编辑
 //          URLobj=event.target.parentElement,
           url=this.$apidomain+"/orderquery/upload",
         nameSize = filesName.substring(filesName.lastIndexOf("."),filesName.length).toLowerCase();
-        console.log(nameSize)
-        console.log(filesObj)
 //        xlsx、xls、csv、xml
         if(nameSize === ".xlsx" ||nameSize === ".xls"||nameSize === ".csv"||nameSize === ".xml"){
          let param = new FormData(); // 创建form对象
           //        param.append('file',filesObj, filesName);  // 通过append向form对象添加数据
           param.append('file',filesObj);  // 通过append向form对象添加数据
-          console.log(param);
           this.$http.post(url,param,{headers: {'Content-Type': 'multipart/form-data'}}).then(res=>{
-            console.log(res);
-            let data=res.data;
-
-            if(data.error==0){
-              console.log(data);
-//            img.style.background= "url("+data.url+") center center no-repeat";
-//            img.style.backgroundSize= "100% 100%";
-//            this.url1=data.url;   //参数是ajax返回的图片地址
+            if(res.data.code == "0000"){
+               this.daoruShow1 = true;
+              this.tableListData = res.data.result;
+              this.tableListData = JSON.parse(this.tableListData);
+             console.log(this.tableListData);
             }else{
-//            alert("上传失败")
+            alert(res.data.error)
             }
           })
         }else{
@@ -173,21 +186,22 @@ import DaoruBianji from "./alertInfos/daoruBianji.vue" //导入编辑
       bianjiClick(){//编辑
         this.daoruShow3 = true;
       },
-      detailClick(){//删除
+      detailClick(item,index){//删除
         this.daoruShow2 = true;
+        this.dexIndex = index;
       },
       daoClick(){ // 导入
          this.daoruShow = true;
       },
       chanpinClick(){ //导入产品
 
-        let url = this.$apidomain+"/orderquery/upload";
-        this.$http.post(url).then(res=>{
-          console.log(res)
-          if(res.data.code === "0000"){
-            //        this.daoruShow1 = true;
-          }
-        })
+//        let url = this.$apidomain+"/orderquery/upload";
+//        this.$http.post(url).then(res=>{
+//          console.log(res)
+//          if(res.data.code === "0000"){
+//            //        this.daoruShow1 = true;
+//          }
+//        })
 
       },
       isClose(v){ //接收子组件值关闭提交窗口

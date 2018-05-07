@@ -23,7 +23,7 @@
                           </el-select>
                     </li>
                     <li>子渠道：
-                      <el-select v-model="ziqudao" filterable placeholder="所有" @change="zhibaoqudao(ziqudao)">
+                      <el-select v-model="ziqudao" filterable placeholder="请选择" @change="zhibaoqudao(ziqudao)">
                         <el-option
                           v-for="(item,index) in ziqudaoData"
                           :key="index"
@@ -33,7 +33,7 @@
                       </el-select>
                     </li>
                     <li>渠道质保：
-                      <el-select v-model="ziqudaozhibao" filterable placeholder="所有">
+                      <el-select v-model="ziqudaozhibao" filterable placeholder="请选择">
                         <el-option
                           v-for="item in options1"
                           :key="item.value"
@@ -48,7 +48,7 @@
         <div class="centerDateOne">
            <ul>
              <li>紧急度：
-               <el-select v-model="jinjidu" filterable placeholder="所有">
+               <el-select v-model="jinjidu" filterable placeholder="请选择">
                  <el-option
                    v-for="item in options2"
                    :key="item.value"
@@ -264,7 +264,7 @@
         this.trackShow1 = true;
 //        this.$store.commit("detailAlterId",vItem1.id)
          this.$store.dispatch("detailAlterId",vItem1.id);
-        this.detailAlterId = vItem1.id;
+         this.detailAlterId = vItem1.id;
       },
       zhibaoqudao(value){
             this.ziqudaoData.forEach(item=>{

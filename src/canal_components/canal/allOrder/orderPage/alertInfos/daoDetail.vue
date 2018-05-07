@@ -19,6 +19,7 @@
 </template>
 <script>
   export default {
+    props:["dexIndex"],
     components:{
     },
     data() {
@@ -34,7 +35,7 @@
         this.$emit("isClose",false)
       },
       OKClick(){//确定删除
-
+        this.$emit("isNum",this.dexIndex)
       },
 
     },

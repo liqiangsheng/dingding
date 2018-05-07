@@ -1,4 +1,4 @@
-<template>
+,  <template>
   <div id="app">
     <div class="container">
       <h3 class="alert_title relative">{{isDetailed.title}}  <p class="closeX" id="closeX" @click="close(isDetailed)"></p> </h3>

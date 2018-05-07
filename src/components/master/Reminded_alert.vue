@@ -19,14 +19,21 @@
                 </el-option>
               </el-select>
             </li>
-            <li>
-              服务工种 :
-              <el-cascader id="skill"
-                           @change="changeSelector2"
+            <li>　　分类 :
+              <!--<el-cascader id="skill"-->
+                           <!--@change="changeSelector2"-->
+                           <!--:options="labeloptions2"-->
+                           <!--change-on-select-->
+                           <!--@active-item-change="handleItemChange"-->
+                           <!--:props="props"-->
+              <!--&gt;</el-cascader>-->
+              <el-cascader id="labelId"
+                           :disabled="isKeXuan"
+                           @change="changeSelectorTwo"
                            :options="labeloptions2"
                            change-on-select
                            @active-item-change="handleItemChange"
-                           :props="props"
+                           :props="props1"
               ></el-cascader>
             </li>
           </ul>
@@ -103,6 +110,13 @@
     props:["edit","quiry"],
     data(){
       return{
+        labeloptions2: [],
+        isKeXuan:true,
+        props1: {
+          value: 'a',
+          label: "b",
+          children: 'beans'
+        },
         isAdd:true,
         optionList:[
           {
@@ -142,7 +156,12 @@
             key: "areaId",
             SourceTypeValue: '',
             SourceType: []
-          },
+          },{
+            name: "服务工种",
+            key: "labelId",
+            SourceTypeValue: '',
+            SourceType: []
+          }
         ],
         number:"",
         Reminded:[
@@ -191,7 +210,7 @@
           value: 'label',
           children: 'cities',
         },
-        labeloptions2: [],
+//        labeloptions2: [],
       }
     },
     created(){
@@ -202,12 +221,12 @@
         this.selectorBehindObj.feeTypeKey = "";
         this.queryData();
       }else{
-        let url=this.$apidomain+"/common/findlabelbusinessoptions";
-        this.$http.get(url).then(r=>{
-          let data=r.data;
-          this.labeloptions2 = data.result;
-        });
-        url=this.$apidomain+"/common/findcitylistareainfo";
+//        let url=this.$apidomain+"/common/findlabelbusinessoptions";
+//        this.$http.get(url).then(r=>{
+//          let data=r.data;
+//          this.labeloptions2 = data.result;
+//        });
+        let  url=this.$apidomain+"/common/findcitylistareainfo";
         this.$http.get(url).then(r=>{
           let data=r.data;
           this.optionList.forEach((v)=>{
@@ -218,9 +237,37 @@
             }
           });
         });
+        url=this.$apidomain+"/common/findflabelbusinessname";
+        this.$http.get(url).then(r=>{
+          let data=r.data;
+          this.optionList.forEach((v)=>{
+            if("labelId"==v.key){
+              data.result.forEach((v2)=>{
+                v.SourceType.push({"id":v2.id,"value":v2.name});
+              })
+            }
+          });
+        });
       }
     },
     methods: {
+      changeSelectorTwo(value){
+        if(value.length === 1){
+          this.selectorBehindObj.labelId=value[0];
+        }else if(value.length === 2){
+          this.selectorBehindObj.labelId=value[1];
+        }else if(value.length === 3){
+          this.selectorBehindObj.labelId=value[2];
+        }else if(value.length === 4){
+          this.selectorBehindObj.labelId=value[3];
+        }else if(value.length === 5){
+          this.selectorBehindObj.labelId=value[4];
+        }else if(value.length === 6){
+          this.selectorBehindObj.labelId=value[5];
+        }else if(value.length === 7){
+          this.selectorBehindObj.labelId=value[6];
+        }
+      },
       changeSelector2(value){
         this.labeloptions2.forEach((v,i)=>{
           this.selectorBehindObj.labelName=value[0];
@@ -358,6 +405,21 @@
             }
             if("feeTypeKey"===key){
               this.selectorBehindObj.feeType = v.value;
+            }
+            if("labelId"==key) {
+              this.selectorBehindObj.labelName = v.value;
+              values.forEach((item,index)=>{
+                if(SourceTypeValue ==item.value){
+                  let urlTwo=this.$common.apidomain+'/articleinfo/findlabelbusinessbyflabel?id='+item.id;
+                  this.$http.get(urlTwo).then(res=>{
+                    if(res.data.code === "0000"){
+                      this.isKeXuan = false;
+                      this.labeloptions2=[];
+                      this.labeloptions2.push(res.data.result)
+                    }
+                  })
+                }
+              })
             }
           }
         })

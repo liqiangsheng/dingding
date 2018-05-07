@@ -148,6 +148,7 @@
       <!--查询按钮结束-->
       <div class="derive"  style="text-align: right">
         <el-button @click="downloadOrder" size="large" class="derive_btn" v-show="$isButtonObj('bn-order-all-new')">下载工单</el-button>
+        <el-button @click="exportOrder" size="large" class="derive_btn" v-show="$isButtonObj('bn-order-all-new')">导出</el-button>
         <!--<el-button @click="batchOrder(tableList)" size="large">批量派单</el-button>-->
         <!--<el-button @click="addOrderIs" size="large" class="derive_btn" v-show="$isButtonObj('bn-order-all-new')">新建工单</el-button>-->
         <!--------------------------------------------2017.11.29添加创建回访--------------------------------->
@@ -889,6 +890,43 @@
         this.isAddorder.isShow=true;
       },
       //显示新建工单；end
+      //导出start
+      exportOrder(){
+            console.log(this.tableList)
+            let newArr = [];
+            this.tableList.forEach((item,index)=>{
+              if(item.isCheckboxList == true){
+                newArr.push(item.id)
+              }
+            });
+            if(newArr.length>0){
+               let str = newArr.join(",");
+               let strUrl = this.$apidomain+"/orderquery/createOrderExcel?orderId="+str;
+               this.$http.get(strUrl).then((res)=>{
+//                     console.log(res);
+                     if(res.data.code == "0000"){
+                         window.location=res.data.result;
+//                       var url1=res.data.result;
+//                       try{
+//                         var elemIF = document.createElement("iframe");
+//                         console.log(elemIF)
+//                         elemIF.src = url1;
+//                         elemIF.style.display = "none";
+//                         document.body.appendChild(elemIF);
+//                       }catch(e){
+//                         console.log(e);
+//                         this.$queryFun.successAlert.call(this,e)
+//                       }
+
+                     }else{
+                       this.$queryFun.successAlert.call(this,res.data.error)
+                     }
+               })
+            }else{
+              this.$queryFun.successAlert.call(this,"请选择需要导出工单")
+            }
+
+      },  //导出end
       //下载工单；
       downloadOrder(){
         this.isDownloadOrder.isShow=true;

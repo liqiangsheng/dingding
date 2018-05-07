@@ -147,5 +147,7 @@ export default {
       if(obj.error)obj.error.call(this);
       this.$queryFun.successAlert.call(this,`已取消${obj.title}操作`);
     });
-  }
+  },
+   Trim:str => str.replace(/\s/g,""),
 }
+

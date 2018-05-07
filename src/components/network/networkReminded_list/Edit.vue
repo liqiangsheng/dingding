@@ -31,7 +31,17 @@
                 </el-option>
               </el-select>
             </li>
-
+            <li id="listName">
+              <span class="list_name">  分类  :</span>
+              <el-cascader id="labelId"
+                           :disabled="isKeXuan"
+                           @change="changeSelectorTwo"
+                           :options="labeloptions2"
+                           change-on-select
+                           @active-item-change="handleItemChange"
+                           :props="props1"
+              ></el-cascader>
+            </li>
           </ul>
           <ul v-else>
             <li>所属城市 :{{selectorBehindObj.site}}</li>
@@ -102,6 +112,13 @@
     props:["edit","quiry"],
     data(){
       return{
+        labeloptions2: [],
+        isKeXuan:true,
+        props1: {
+          value: 'a',
+          label: "b",
+          children: 'beans'
+        },
         isAdd:true,
         skillIdList:[
           {
@@ -109,7 +126,7 @@
             key: "labelId",
             SourceTypeValue: '',
             SourceType: []
-          },
+          }
         ],
         optionList:[
           {
@@ -200,6 +217,26 @@
 //网点名 end
     },
     methods: {
+      handleItemChange(){
+
+      },
+      changeSelectorTwo(value){
+        if(value.length === 1){
+          this.selectorBehindObj.labelId=value[0];
+        }else if(value.length === 2){
+          this.selectorBehindObj.labelId=value[1];
+        }else if(value.length === 3){
+          this.selectorBehindObj.labelId=value[2];
+        }else if(value.length === 4){
+          this.selectorBehindObj.labelId=value[3];
+        }else if(value.length === 5){
+          this.selectorBehindObj.labelId=value[4];
+        }else if(value.length === 6){
+          this.selectorBehindObj.labelId=value[5];
+        }else if(value.length === 7){
+          this.selectorBehindObj.labelId=value[6];
+        }
+      },
       changeSelector2(value){
         this.labeloptions2.forEach((v,i)=>{
           if(value[0]===v.label){
@@ -315,6 +352,18 @@
             }
             if("labelId"==key){
               this.selectorBehindObj.labelName = v.value;
+              values.forEach((item,index)=>{
+                if(SourceTypeValue ==item.value){
+                  let urlTwo=this.$common.apidomain+'/articleinfo/findlabelbusinessbyflabel?id='+item.id;
+                  this.$http.get(urlTwo).then(res=>{
+                    if(res.data.code === "0000"){
+                      this.isKeXuan = false;
+                      this.labeloptions2=[];
+                      this.labeloptions2.push(res.data.result)
+                    }
+                  })
+                }
+              })
             }
           }
         })

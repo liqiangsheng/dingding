@@ -1018,6 +1018,52 @@ Vue.filter('payState',function(input){
   }
   return "无"
 });
+//账单结算,提成结算
+Vue.filter('billState',function(input){
+  if ("1"===input) {
+    return "未出账"
+  } else {
+    return "已出账"
+  }
+});
+Vue.filter('kontState',function(input){
+  if ("1"===input) {
+    return "未结款"
+  } else {
+    return "已结款"
+  }
+})
+//账单查询明细
+Vue.filter('channelWarranty',function(input){
+  if("1"===input){
+    return "保内"
+  }else{
+    return "保外"
+  }
+})
+
+//账号管理
+Vue.filter('roles',function(input){
+  if("SuperAdmin"===input){
+    return "超级管理员"
+  }else{
+    return "管理员"
+  }
+})
+Vue.filter("states",function(input){
+  if("1"===input){
+    return "正常";
+  }else{
+    return "禁用"
+  }
+})
+Vue.filter("enable",function(input){
+  if ("1"===input) {
+    return "禁用"
+  } else {
+    return "启用"
+  }
+})
 Vue.filter('settleType',function(input){
   if("0"==input){
     return "渠道先结";

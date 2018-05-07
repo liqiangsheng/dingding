@@ -15,8 +15,6 @@
           <el-input
             style="width: 195px"
             type="number"
-            min="1"
-            max="5"
             placeholder="请输入内容"
             v-model="leaveID">
           </el-input>
@@ -99,7 +97,7 @@
           <tbody>
           <tr v-for="(item,index) in tableList.evaluates">
             <td>
-              <el-checkbox v-model="isCheckboxList[index]"   @change="isCheckbox(item,index)"></el-checkbox>
+              <el-checkbox v-model="isCheckboxList[index]"   @change="isCheckbox(tableList.evaluates,index)"></el-checkbox>
             </td>
             <td>
               {{index+1}}
@@ -211,7 +209,7 @@ import { addDialingMaster } from "./js/pagingPages"
     },
     data() {
       return {
-        leaveID:1, //主评分
+        leaveID:"", //主评分
         timeQuantum:[],
         statisticsDateStartStr:"", //开始时间
         statisticsDateEndStr:"", //结束时间
@@ -468,6 +466,7 @@ import { addDialingMaster } from "./js/pagingPages"
 
       },
       isCheckbox(data,index){   //列表单选
+        console.log(data,index)
         this.$queryFun.isCheckbox.call(this,data,index);
       },
 //      <!--分页查询数据对象功能组合start-->
@@ -521,26 +520,26 @@ import { addDialingMaster } from "./js/pagingPages"
           if(v===true){
             newArr.push( this.tableList.evaluates[i].id)
           }
+
         });
 
 //        console.log(newArr,"12132");
         if(newArr.length>=1){
           let str=newArr.join(",");
           let url = this.$apidomain+"/orderquery/orderEvaluateExcel?evaluateId="+str;
-//          console.log(url)
           this.$http.get(url).then(r=>{
             let data=r.data;
-
             if(data.code=="0000"){
-                var url1=data.result;
-              try{
-                var elemIF = document.createElement("iframe");
-                elemIF.src = url1;
-                elemIF.style.display = "none";
-                document.body.appendChild(elemIF);
-              }catch(e){
-                console.log(e);
-              }
+//                var url1=data.result;
+                 window.location=data.result;
+//              try{
+//                var elemIF = document.createElement("iframe");
+//                elemIF.src = url1;
+//                elemIF.style.display = "none";
+//                document.body.appendChild(elemIF);
+//              }catch(e){
+//                console.log(e);
+//              }
             }else{
               alert(data.error)
             }

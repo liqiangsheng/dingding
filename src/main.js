@@ -42,6 +42,7 @@ Vue.prototype._$=index;
 const common =window.common;
 // Vue.prototype.$apiIM = common;  //IM客服系统
 Vue.prototype.$apidomain = common.apidomain;
+Vue.prototype.$apiModel = common.apiModel;
 Vue.prototype.$masterTest = common.masterTest;
 Vue.prototype.$apiupdate = common.apiupdate;
 Vue.prototype.$apiGps = common.apiGps;

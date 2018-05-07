@@ -26,9 +26,9 @@
                       </li>
                       <li>
                           <span>子渠道</span>
-                          <el-select v-model="ziqudao" placeholder="请选择" >
+                          <el-select v-model="ziqudao" placeholder="请选择"  @change="selectChild(ziqudao)">
                             <el-option
-                              v-for="(item,index) in kontState"
+                              v-for="(item,index) in ziqudaoList"
                               :key="index"
                               :label="item.name"
                               :value="item.name">
@@ -50,7 +50,7 @@
                   </ul>
               </div>
               <div class="btn">
-                  <el-button type="primary">查询</el-button>
+                  <el-button type="primary" @click="primary">查询</el-button>
                   <el-button>重置</el-button>
               </div>
           </div>
@@ -60,7 +60,7 @@
             <table border="0" cellspacing="0" >
                 <thead>
                     <tr>
-                        <th><el-checkbox v-model="checked" @change="wholeSelector(dataList,checked)"></el-checkbox></th>
+                        <th><el-checkbox v-model="checked" @change="wholeSelector(tableListData.list,checked)"></el-checkbox></th>
                         <th>序号</th>
                         <th>创建时间 <img src="../../../static/images/paixu.png"></th>
                         <th>工单号</th>
@@ -74,19 +74,19 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(item,index) in dataList" :key="index">
+                    <tr v-for="(item,index) in tableListData.list" :key="index">
                         <td><el-checkbox v-model="isCheckboxList[index]" @change="checkbox(index)"></el-checkbox></td>
                         <td>{{index+1}}</td>
-                        <td>{{item.a}}</td>
-                        <td>{{item.b}}</td>
-                        <td>{{item.c}}</td>
-                        <td>{{item.d}}</td>
-                        <td>{{item.e}}</td>
-                        <td>{{item.f}}</td>
-                        <td>{{item.g}}</td>
-                        <td>{{item.h}}</td>
+                        <td>{{item.createTime}}</td>      <!--创建时间 -->
+                        <td>{{item.mainOrderId}}</td>     <!-- 工单号-->
+                        <td>{{item.linkmanName }}</td>   <!--联系人 -->
+                        <td>{{item.linkmanPhoneNum}}</td>               <!-- 联系人手机号-->
+                        <td>{{item.linkmanArea}}</td>                <!--服务区域 -->
+                        <td>{{item.mainOrderTotalFee}}</td> <!-- 工单总费用-->
+                        <td>{{item.pendingFee}}</td>        <!-- 代付款-->
+                        <td>{{item.channelWarranty|channelWarranty}}</td> <!--渠道质保 -->
                         <td>
-                            <span class="track" @click="skip()">工单详情</span>
+                            <span class="track" @click="skip(item)">工单详情</span>
                         </td>
                     </tr>
                 </tbody>
@@ -111,6 +111,8 @@
         tabSelect:"",
         qudaozhibao:"",
         ziqudao:"",
+        ziqudaoId:"",
+        ziqudaoList:[],
         gongdanhao:"",
         tel:"",
         date:"",      //日期范围
@@ -119,49 +121,104 @@
         createTimeInformation:[],//时间信息
         isShow:false,  //备注显示消失
         billState:[  //分类
-                {"id":"","name":"唐三"},
-                {"id":"","name":"凤舞"},
-                {"id":"","name":"清瑶"},
-                {"id":"","name":"碧血"},
+                {"id":"","name":"所有"},
+                {"id":"","name":"保内"},
+                {"id":"","name":"保外"},
                 ] ,
-            kontState:[
-                {"id":"","name":"武庚"},
-                {"id":"","name":"仓木"},
-                {"id":"","name":"白雪"},
-            ],
-        dataList:[
-            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"80","h":"保内"},
-            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"80","h":"保内"},
-            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"80","h":"保内"},
-            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"80","h":"保内"},
-            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"80","h":"保内"},
-            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"80","h":"保内"},
-            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"80","h":"保内"},
-            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"80","h":"保内"},
-            {"a":"2018/03/02 12:30:00","b":"20015894616536","c":"小明","d":"123456789100","e":"康佳大厦","f":"666.00","g":"80","h":"保内"},
-        ]
+        //分页
+        tableListData:{
+        pageNo:1,
+        pageSize:20,  //每页显示多少条
+        total:0,
+        pageTotal: 1,
+        list:[]
+        },
+        showPages:1,
+        currentPageSize:20,
+        total:0,
+        pageTotal:0,
       }
     },
     watch:{
     },
     created(){
-         this.getTableList();
+         let parameter = this.paramsData();
+         parameter.dateTime = this.$store.state.billDateTime.billTime;
+         parameter.type =  this.$store.state.billDateTime.billType; 
+         console.log(parameter,"参数")
+         this.getTableList(parameter);
+         let chiId = JSON.parse(sessionStorage.getItem('userInfo'))
+         const url = this.$common.apidomain+'/officialPartnerSubsetInfo/findlistOfficialPartnerSubsetInfo?officialPartnerId='+chiId[0].id;
+         this.$http.post(url).then(res=>{
+             let data = res.data
+             if(data.code==="0000"){
+                 this.ziqudaoList=data.result;
+             }else{
+                 this.$queryFun.successAlert.call(this,data.error)
+             }
+         })
     },
     methods: {
             //全选,反选start
             checkbox(index){
-                        this.$queryFun.isCheckbox.call(this,this.dataList,index);
+                        this.$queryFun.isCheckbox.call(this,this.tableListData.list,index);
                     },
                     wholeSelector(item,currentState){
                         this.$queryFun.wholeSelector.call(this,item,currentState);
                     },
                 //全选反选end
-                getTableList(){
-                    this.isCheckboxList = [];
-                    this.dataList.forEach((v,i) =>{
-                        this.isCheckboxList.push(false);
-                        this.dataList[i].isCheckboxList = false;
+                //传回后台的参数
+                paramsData(){
+                    const filterDate = e => this.$moment(this.date[e]).format("YYYY-MM-DD")==="Invalid date"?'':this.$moment(this.date[e]).format("YYYY-MM-DD");
+                    const startTime = !this.date?"":filterDate(0);
+                    const endTime = !this.date?"":filterDate(1);
+                    let quality =''
+                    if(this.qudaozhibao==="保内"){
+                        quality=1;
+                    }else if(this.qudaozhibao==="保外"){
+                        quality=2;
+                    }else{
+                        quality='';
+                    }
+                    return{
+                        "startDate":startTime,                  //开始时间
+                        "endDate ":endTime,                      //结束时间
+                        "channelWarranty":quality,              //渠道质保
+                        "officialPartnerSubsetId":this.ziqudaoId,  //子渠道Id
+                        "mainOrderId":this.gongdanhao,              //工单号
+                        "phoneLastNumber":this.tel,                   //联系人手机号
+                        "type":null, //日汇总,月汇总
+                        "dateTime":null
+                    }
+                },
+                getTableList(params){
+                    const url = `${this.$common.apidomain}/billSettlementFlowing/all`
+                    this.$http.post(url,params).then(res=>{
+                        let data = res.data;
+                        //console.log('账单结算明细',data)
+                        if(data.code==="0000"){
+                            this.tableListData = data.result;
+                        }else{
+                            this.$queryFun.successAlert.call(this,data.error);
+                        }
                     })
+
+                    this.isCheckboxList = [];
+                    this.tableListData.list.forEach((v,i) =>{
+                        this.isCheckboxList.push(false);
+                        this.tableListData.list[i].isCheckboxList = false;
+                    })
+                },
+                primary(){
+                  this.getTableList(this.paramsData());
+                },
+                //获取子渠道Id
+                selectChild(value){                 
+                this.ziqudaoList.forEach((v,i)=>{
+                      if(v.name===value){
+                        this.ziqudaoId=v.id;
+                      }
+                  })
                 },
                 isClose(v){
                    this.ordeShow= v;

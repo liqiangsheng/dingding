@@ -57,7 +57,7 @@
 
             let url=this.$apiupdate+"/upload/kindeditorjson";
 
-            let param = new FormData(); // 创建form对象
+            let param = new FormData();      // 创建form对象
 
             param.append('file',filesObj, filesName);  // 通过append向form对象添加数据
 

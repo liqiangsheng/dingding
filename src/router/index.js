@@ -92,7 +92,8 @@ const financeList = resolve => require(['@/components/finance/financeList/financ
 const account = resolve => require(['@/components/finance/account/account'], resolve);
 const unusualAccount = resolve => require(['@/components/finance/unusualAccount/unusualAccount'], resolve);
 const abstract = resolve => require(['@/components/finance/abstract/abstract'], resolve);
-
+const recharge = resolve => require(['@/components/finance/recharge/recharge'], resolve);
+// console.log(recharge);
 
 //运营管理
 const dataVisualization = resolve => require(['@/components/yunYing_busines/Data_display/DataPlay'], resolve);
@@ -166,6 +167,8 @@ const channelInfo = resolve => require(['@/canal_components/standInfo/standInfo'
 //子渠道信息
 const childrenCensus = resolve => require(['@/canal_components/canal/childrenCanal/children'], resolve);
 const childrenAccount = resolve => require(['@/canal_components/canal/childrenCanal/childrenAccount'], resolve);
+const accountManagement = resolve =>require(['@/canal_components/canal/childrenCanal/accountManagement'],resolve); //账号管理
+
 //渠道端模块end
 
 //产品管理
@@ -348,7 +351,8 @@ let router = new Router({
                 { path: '/finance/financeList', component: financeList, name: '交易对账单', menuShow: isShowFunObj.isUserNavChild("sn-finance-reconciliation") },
                 {path: '/finance/account', component: account, name: '资金账户管理', menuShow: isShowFunObj.isUserNavChild("sn-finance-account")},
                 {path: '/finance/unusualAccount', component: unusualAccount, name: '异常结算', menuShow: isShowFunObj.isUserNavChild("sn-finance-abnormalsettlement")},
-                {path: '/finance/abstract', component: abstract, name: '提成审批', menuShow: isShowFunObj.isUserNavChild("sn-finance-abnormalsettlement")}
+                {path: '/finance/abstract', component: abstract, name: '提成审批', menuShow: isShowFunObj.isUserNavChild("sn-finance-abnormalsettlement")},
+                {path: '/finance/recharge', component: recharge, name: '充值审批', menuShow: isShowFunObj.isUserNavChild("sn-finance-abnormalsettlement")}
 
                 // {path: '/canvas/list3', component: CanvasList3, name: '工单评价', menuShow: true},
             ]
@@ -411,8 +415,9 @@ let router = new Router({
             children: [
                 { path: '/childrenCanal/children', component: childrenCensus, name: '子渠道一览', menuShow: true },
                 { path: '/childrenAccount', component: childrenAccount, name: '子渠道账号', menuShow: false },    //功能未开发完，暂时隐藏；
-              { path: '/census/childChannelCount', component: orderCensus, name: '子渠道统计', menuShow: true },
-              { path: '/canal_components/standInfo', component: channelInfo, name: '消息盒', menuShow: false },
+                { path: '/census/childChannelCount', component: orderCensus, name: '子渠道统计', menuShow: true },
+                {path:"/childrenCanal/accountManagement",component:accountManagement,name:"账号管理",menuShow:true}, //账号管理
+                { path: '/canal_components/standInfo', component: channelInfo, name: '消息盒', menuShow: false },
             ]
         },
 

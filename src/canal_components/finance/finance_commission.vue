@@ -3,16 +3,16 @@
         <div class="bill_header">
             <ul>
                 <li v-show="isShow">
-                    <p>待借款金额 (元)</p>
-                    <p>28,888.00</p>
+                    <p>本期收入 (元)</p>
+                    <p>{{data_display.currentIncomeFee}}</p>
                 </li>
                 <li v-show="isShow">
-                    <p>未出账金额 (元)</p>
-                    <p>1,531.00</p>
+                    <p>上期收入 (元)</p>
+                    <p>{{data_display.previousIncomeFee}}</p>
                 </li>
                 <li v-show="isShow">
-                    <p>累计已借款 (元)</p>
-                    <p>245,221.00</p>
+                    <p>累计收入 (元)</p>
+                    <p>{{data_display.cumulativeIncomeFee}}</p>
                 </li>
                 <li>
                     <p @click="takeUp">{{content}}<img :src="arrow"></p>
@@ -29,8 +29,8 @@
             </el-menu>
         </div>
         <hr>
-        <ComDailySum v-if="tabIndex == 0"></ComDailySum> 
-        <ComMonthSum v-if="tabIndex == 1"></ComMonthSum>
+        <ComDailySum v-if="tabIndex == 0" :type-state="sum"></ComDailySum> 
+        <ComMonthSum v-if="tabIndex == 1" :type-state="sum"></ComMonthSum>
     </div>
 </template>
 <script>
@@ -48,8 +48,22 @@
             content:"收起数据展示",
             tabList:["日汇总","月汇总"],
             tabIndex:0,
-            flag:0   //设置tab高亮
+            flag:0 ,  //设置tab高亮
+            data_display:{},
+            sum:1
         }   
+     },
+     created(){
+       const url = `${this.$apidomain}/officialPartnerExtractSettlementController/feeStatistics`;
+       this.$http.post(url).then(res =>{
+          let data = res.data;
+          console.log(data)
+          if(data.code==="0000"){
+              this.data_display=data.result;
+          }else{
+              this.$queryFun.successAlert.call(this,data.error)
+          }
+       })
      },
      methods:{
           takeUp(){   //完工的消失显示
@@ -67,6 +81,11 @@
          tabClick(item,i){
              this.tabIndex = i;
              this.flag = i;
+             if(item==='日汇总'){
+                 this.sum=1;
+             }else{
+                 this.sum=2;
+             }
          }
    
      }

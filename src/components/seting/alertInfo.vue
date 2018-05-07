@@ -177,7 +177,7 @@
               "id":prams.id,
               "userRoleId":prams.level,
               "fullName":prams.fullName,
-              "password":this.password
+//              "password":this.password
             };
         this.$http.post(url,params).then(res=>{
           let data = res.data;

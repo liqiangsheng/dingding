@@ -294,7 +294,7 @@
             if(path===this.$route.path){
               let i=index===0?2:index;
               this.$router.push(this.tabPathList[i-1].path)
-               }
+             }
 //            this.tabPathList.splice(index,1);
             this.$store.commit("spliceTabPathList",index)
           },

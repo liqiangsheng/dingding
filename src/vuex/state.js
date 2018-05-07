@@ -387,6 +387,9 @@ export let state={ //vueX初始化
   detailAlterId:"", //渠道详情ID
   addDataCarter:{}, //渠道新增数据
   cityIdid:"",
+  billDateTime:{},  //账单查看明细时间
+  comDateTime:{},   //提成查看明细时间
+  accountId:"",     //账单管理,账单详情ID
 //  渠道端 财务 管理 弹框状态数据 start
 
   accountOverviewAlertData:{

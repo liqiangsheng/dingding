@@ -4,15 +4,15 @@
             <ul>
                 <li v-show="isShow">
                     <p>待结款金额 (元)</p>
-                    <p>28,888.00</p>
+                    <p>{{data_display.feePending}}</p>
                 </li>
                 <li v-show="isShow">
                     <p>未出账金额 (元)</p>
-                    <p>1,531.00</p>
+                    <p>{{data_display.feeNotAccount}}</p>
                 </li>
                 <li v-show="isShow">
                     <p>累计已结款 (元)</p>
-                    <p>245,221.00</p>
+                    <p>{{data_display.feeAccumulated}}</p>
                 </li>
                 <li>
                     <p>{{content}}<img :src="arrow"   @click="takeUp"></p>
@@ -22,14 +22,15 @@
         </div>
         <div class="tab">
             <el-menu theme="dark" class="el-menu-demo" mode="horizontal" >
-               <el-menu-item  v-for="(item,index) in tabList" index="index" :key="index" @click="tabClick(item,index)" :class="{'active':flag==index}">
+               <el-menu-item  v-for="(item,index) in tabList" index="index"  v-model="sum"
+               :key="index" @click="tabClick(item,index)" :class="{'active':flag==index}">
                  {{item}}
                </el-menu-item>
             </el-menu>
         </div>
         <hr>
-        <DailySum v-if="tabIndex == 0"></DailySum>
-        <MonthSum v-if="tabIndex == 1"></MonthSum>
+        <DailySum v-if="tabIndex == 0" :type-state="sum"></DailySum>
+        <MonthSum v-if="tabIndex == 1" :type-state="sum"></MonthSum>
     </div>
 </template>
 <script>
@@ -41,14 +42,28 @@
        },
      data(){
          return{
+            data_display:{}, //数据展示
             isShow:true,
             num:1,
             arrow:"./static/images/xia.png",
             content:"收起数据展示",
             tabList:["日汇总","月汇总"],
+            sum:1,         
             tabIndex:0,
             flag:0,   //控制tab高亮
         }
+     },
+     created(){
+        let url = `${this.$apidomain}/officialPartnerBillSettlementController/feeStatistics`;
+        this.$http.post(url).then(res =>{
+            let data = res.data;
+            if(data.code=="0000"){
+                this.data_display=data.result;
+            }else{
+                this.$queryFun.successAlert.call(this,data.error);
+            } 
+           // console.log(this.data_display,"费用流水金额统计");          
+        })
      },
      methods:{
           takeUp(){   //完工的消失显示
@@ -66,6 +81,12 @@
          tabClick(v,i){
              this.tabIndex = i;
              this.flag= i;
+             if(v==="日汇总"){
+                 this.sum=1
+             }else{
+                 this.sum=2
+             }
+            // console.log(this.sum)
          }
 
      }
