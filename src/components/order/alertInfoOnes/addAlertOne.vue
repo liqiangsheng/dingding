@@ -29,6 +29,18 @@
                   :props="props"
                   filterable></el-cascader>
               </li>
+
+            <li v-show="biaoqianShow">标签<span>*</span>
+              <el-select v-model="biaoqian" multiple placeholder="请选择" style="width: 80%;" @change="biaoqianOne">
+                <el-option
+                  v-for="(item,index) in biaoqianOptions"
+                  :key="index"
+                  :label="item"
+                  :value="item">
+                </el-option>
+              </el-select>
+            </li>
+
               <li>品牌<el-input v-model="input1" placeholder="选填" style="width: 35%;margin:0 5% 0 12px" ></el-input>型号<el-input v-model="input2" placeholder="选填" style="width: 35%"></el-input></li>
               <li></li>
               <li id="nunber">数量<span>*</span>
@@ -50,6 +62,10 @@
     },
     data() {
       return {
+        maxNum:1, //最大数值
+        biaoqianShow:false,
+        biaoqianOptions:[],//标签
+        biaoqian:[],//标签
         input1:"",//品牌
         input2:"", //型号
         num:1, // 选择数量
@@ -75,6 +91,9 @@
 
     },
     methods: {
+      biaoqianOne(){ //标签
+        console.log(this.biaoqian)
+      },
       addProduct(){ //添加
         if(this.fenlei == ""){
           alert("请选择分类");
@@ -84,12 +103,18 @@
           alert("请选择产品");
           return ;
         }
+        if(this.biaoqianShow == true){
+          if(this.biaoqian.length <= 0){
+            alert("请选择标签");
+            return ;
+          }
+        }
         if(this.num < 1){
           alert("数量不得小于0");
           return ;
         }
         this.objData.id = this.serviceInfo.id;
-        this.objData.tags = this.serviceInfo.tags;
+        this.objData.tags = this.biaoqianOptions;
         this.objData.fenlei = this.fenlei;
         this.objData.serviceBrand = this.input1;
         this.objData.serviceModel = this.input2;
@@ -138,6 +163,18 @@
           console.log(res)
           if(res.data.code === "0000"){
             this.serviceInfo = res.data.result[0].serviceInfo;
+            if(this.serviceInfo.isSecondPayment == "1"){ //2口价
+              this.maxNum = 1;
+            }else if(this.serviceInfo.isSecondPayment == "0"){//1口价
+              this.maxNum = 999999999999;
+            }
+            this.biaoqianOptions = [];
+            if(res.data.result[0].serviceInfo.tags){
+              this.biaoqianShow = true;
+              this.biaoqianOptions  = res.data.result[0].serviceInfo.tags.split(",");
+            }else{
+              this.biaoqianShow = false;
+            }
           }else{
             alert(res.data.error)
           }

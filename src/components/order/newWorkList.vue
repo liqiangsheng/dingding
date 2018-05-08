@@ -44,7 +44,7 @@
           <p class="chanpinP"><span></span>产品信息</p><br>
           <span style="color: #EA5413">请选择服务产品*</span>
           <el-button type="success" @click="addProduct" v-if="xiaohui">添加产品</el-button>
-          <el-button type="success" @click="addProduct1" v-if="xiaohui1">新增产品</el-button>
+          <el-button type="success" @click="addProduct1" v-if="xiaohui1">继续添加</el-button>
 
           <div class="alertOne" v-if="peijiankuang">
             <!--表格数据-->
@@ -360,11 +360,14 @@
         this.query();
       },
       detailClick(v,i){  //删除
-        this.tableListData = this.tableListData.filter((item,index)=>{
-          return v.id != item.id;
-        })
+//        this.tableListData = this.tableListData.filter((item,index)=>{
+//          return v.id != item.id;
+//        })
+        this.tableListData.splice(i,1);
         if(this.tableListData.length <= 0){
           this.peijiankuang = false;
+          this.xiaohui = true;
+          this.xiaohui1 = false;
         }
 
       },

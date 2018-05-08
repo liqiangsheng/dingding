@@ -429,7 +429,7 @@
 
               if(res.data.code == "0000"){
                 //充值显示
-                   this.mainOrderId = res.data.result;
+                   this.mainOrderId = res.data.result.id;
                    sessionStorage.removeItem("mainOrderId");
                    sessionStorage.setItem('mainOrderId', JSON.stringify(this.mainOrderId));
                     let mainOrderIdObj={};

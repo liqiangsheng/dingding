@@ -68,6 +68,7 @@
       },
       close(){ //传值给父级
         this.$emit("isClose",false)
+        location.reload();
       },
       priceClick(v,i){ //点击价格
         this.ActiveIndex = i;

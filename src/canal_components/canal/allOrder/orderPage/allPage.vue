@@ -452,7 +452,6 @@
     .bnt{
       margin-top: 20px;
       width: 50%;
-      margin: 0 auto;
       .el-button{
         width:200px;
       }

@@ -20,8 +20,8 @@
           <li v-for="(item,index) in fangshi" @click="tabClick(item,index)" :class="{active:xianshiIndex==index}">{{item}}</li>
         </ul>
         <div>
-          <WechatScavengingCater :weachat="weachat"  @success="success" v-if="xianshiIndex == 0"></WechatScavengingCater>
-          <TransferAccountsCater :zhifubao="zhifubao" @success="success" v-if="xianshiIndex ==1"></TransferAccountsCater>
+          <WechatScavengingCater :weachat="weachat" :clearTimeOnem="clearTimeOnem"  @success="success" v-if="xianshiIndex == 0"></WechatScavengingCater>
+          <TransferAccountsCater :zhifubao="zhifubao" :clearTimeOnem="clearTimeOnem" @success="success" v-if="xianshiIndex ==1"></TransferAccountsCater>
         </div>
       </div>
 
@@ -49,13 +49,13 @@
         zhifubao2:{},//支付宝初始数据
         weixinchushiOBJ:{},
         data:{index:"0"},
+        clearTimeOnem:1,
         results:{
         }
       }
     },
     methods: {
       success(v){
-        console.log(v,"dsds")
         this.close1();
 //        location.reload();
       },
@@ -63,14 +63,17 @@
         this.close1();
       },
       close1(){ //充值
-        this.$emit("isClose1",false)
+        this.clearTimeOnem = 0;
+//        setTimeout(()=>{
+          this.$emit("isClose1",false)
+//        },1000)
+
+
       },
       tabClick(v,index){
-        console.log(index)
         this.xianshiIndex = index;
 //        this. weixinchushiData();
         if(index === 0){
-          console.log(this.weixinchushiOBJ,"sdfdsyfds反对发射点")
           let priceObj = {faPayJournalAccountId:this.weixinchushiOBJ.faPayJournalAccountId};
 //            priceObj.faPayJournalAccountId=this.weixinchushiOBJ.faPayJournalAccountId; // 二维码id
             priceObj.payAmount=this.price1; //价格
@@ -78,14 +81,14 @@
             priceObj.payType = 1; //1微信//2支付宝
             let priceObjurl=this.$apidomain+"/officialpartnerpay/recharge"
             this.$http.post(priceObjurl,priceObj).then(res=>{
-            console.log(res,"微信二次")
             if(res.data.code === "0000"){
               this.weachat = res.data.result;
+              sessionStorage.setItem("weachat",JSON.stringify(this.weachat))
             }else{
               alert(res.data.error)
             }
           })
-          sessionStorage.setItem("weachat",JSON.stringify(this.weachat))
+
 
         }else if(index === 1){
           let priceObj1 = {};
@@ -95,7 +98,6 @@
           priceObj1.payType = 2; //1微信//2支付宝
           let priceObj1url=this.$apidomain+"/officialpartnerpay/recharge"
           this.$http.post(priceObj1url,priceObj1).then(res=>{
-            console.log(res,"支付宝二次")
             if(res.data.code === "0000"){
                this.zhifubao = res.data.result;
                sessionStorage.setItem("zhifubao",JSON.stringify(this.zhifubao))
@@ -136,7 +138,6 @@
 
       let url=this.$apidomain+"/officialPartnerAccountInfo/findOne";
       this.$http.post(url).then(res=>{
-        console.log(res,"初始")
         if(res.data.code === "0000"){
           this.xianshiData = res.data.result;
         }else{
@@ -150,7 +151,6 @@
       priceObj2.payType = 2; //1微信//2支付宝
       let priceObj2url=this.$apidomain+"/officialpartnerpay/recharge";
       this.$http.post(priceObj2url,priceObj2).then(res=>{
-        console.log(res)
         if(res.data.code === "0000"){
           this.zhifubao2 =res.data.result;
         }else{

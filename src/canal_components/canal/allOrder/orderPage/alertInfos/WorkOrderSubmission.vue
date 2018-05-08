@@ -36,7 +36,7 @@
       },
       knowClick(){ //知道了
         location.reload()
-        this.$router.push({path:"../../newOrder"})
+//        this.$router.push({path:"../../newOrder"})
       }
 
     },

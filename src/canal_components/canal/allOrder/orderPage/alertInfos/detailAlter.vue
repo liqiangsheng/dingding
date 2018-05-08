@@ -13,14 +13,14 @@
                               <p><span></span>服务信息</p>
                               <div class="userInfos">
                                     <ul class="userInfosBox">
-                                      <li><span>工单号</span><span>{{detailData.id}}</span><span>工单状态</span><span>{{detailData.state|orderStateShow}}</span></li>
-                                      <li><span>质保状态</span><span>{{detailData.channelWarranty|qudaozhibao}}</span><span>紧急程度</span><span><b :style="isStyle">{{detailData.emergencyDegree|jinjidu}}</b></span></li>
-                                      <li><span>联系人</span><span>{{detailData.linkmanName}}</span><span>联系人手机</span><span>{{detailData.linkmanPhoneNum}}</span></li>
-                                      <li><span style="flex-grow: 1">服务地址</span><span style="flex-grow: 3">{{detailData.linkmanDetails}}</span></li>
-                                      <li><span>预约时间</span><span>{{detailData.appointmentDatetime|moment('YYYY-MM-DD HH:mm:ss')}}</span><span>完成时间</span><span>{{detailData.createTime|moment('YYYY-MM-DD HH:mm:ss')}}</span></li>
-                                      <li><span>服务时长</span><span>{{detailData.workTimeLimit}}</span><span>子渠道</span><span>{{detailData.officialPartnerSubsetName}}</span></li>
-                                      <li><span>师傅工号</span><span>{{detailData.masterId}}</span><span>工单类型</span><span>{{detailData.type|orderType}}</span></li>
-                                      <li><span style="flex-grow: 1">备注</span><span style="flex-grow: 3">{{detailData.remark}}</span></li>
+                                      <li><span style="flex-grow: 1">工单号</span><span>{{detailData.id}}</span><span style="flex-grow: 1">工单状态</span><span>{{detailData.state|orderStateShow}}</span></li>
+                                      <li><span style="flex-grow: 1">质保状态</span><span>{{detailData.channelWarranty|qudaozhibao}}</span><span style="flex-grow: 1">紧急程度</span><span><b :style="isStyle">{{detailData.emergencyDegree|jinjidu}}</b></span></li>
+                                      <li><span style="flex-grow: 1">联系人</span><span>{{detailData.linkmanName}}</span><span style="flex-grow: 1">联系人手机</span><span>{{detailData.linkmanPhoneNum}}</span></li>
+                                      <li><span style="flex-grow: 1">服务地址</span><span style="flex-grow: 5">{{detailData.linkmanDetails}}</span></li>
+                                      <li><span style="flex-grow: 1">预约时间</span><span>{{detailData.appointmentDatetime|moment('YYYY-MM-DD HH:mm:ss')}}</span><span style="flex-grow: 1">完成时间</span><span>{{detailData.createTime|moment('YYYY-MM-DD HH:mm:ss')}}</span></li>
+                                      <li><span style="flex-grow: 1">服务时长</span><span>{{detailData.workTimeLimit}}</span><span style="flex-grow: 1">子渠道</span><span>{{detailData.officialPartnerSubsetName}}</span></li>
+                                      <li><span style="flex-grow: 1">师傅工号</span><span>{{detailData.masterId}}</span><span style="flex-grow: 1">工单类型</span><span>{{detailData.type|orderType}}</span></li>
+                                      <li><span style="flex-grow: 1">备注</span><span style="flex-grow: 5">{{detailData.remark}}</span></li>
                                     </ul>
                               </div>
                          </div>
@@ -29,20 +29,21 @@
                            <div class="userInfos1"  v-for="(item,index) in chanpingleixing">
                              <div class="userInfosBox2">
                                  <ul class="list1">
-                                   <li>产品名称</li>
+                                   <li style="flex-grow:2">产品名称</li>
                                    <li style="flex-grow:4">{{item.serviceFullName}}</li>
-                                   <li>品牌</li>
-                                   <li>{{item.serviceBrand}}</li>
-                                   <li>型号</li>
-                                   <li>{{item.serviceModel}}</li>
-                                   <li style="flex-grow:1">数量</li>
-                                   <li style="flex-grow:1;border-right:0;">{{item.serviceSize}}</li>
+                                   <li style="flex-grow:2">品牌</li>
+                                   <li style="flex-grow:4">{{item.serviceBrand}}</li>
+                                   <li style="flex-grow:2">型号</li>
+                                   <li style="flex-grow:4">{{item.serviceModel}}</li>
+
                                  </ul>
                                <ul class="list2">
                                  <li style="flex-grow:2">服务费</li>
                                  <li>{{item.price2}}</li>
                                  <li style="flex-grow:2">检测费</li>
                                  <li>{{item.price1}}</li>
+                                 <li style="flex-grow:2">数量</li>
+                                 <li>{{item.serviceSize}}</li>
                                </ul>
                                <ul class="list3" v-show="listShow">
                                  <li v-for="(item1,index2) in item.mountings">
@@ -78,9 +79,9 @@
                                      <li>已付款</li>
                                      <li>{{detailData.paidAmount}}</li>
                                      <li>待付款</li>
-                                     <li>{{detailData.paidAmount}}</li>
+                                     <li>{{detailData.waitAmount}}</li>
                                      <li>结款状态</li>
-                                     <li> {{detailData.state|orderStateShow1}}</li>
+                                     <li style="text-indent: 2px"> {{detailData.state|orderStateShow1}}</li>
                                    </ul>
                                </div>
                              </div>
@@ -93,7 +94,7 @@
                          </div>
                    </div>
             </div>
-      <CreditIsRunningLow v-if="CreditIsRunningLowShow" :detailDataOrderTotal="detailData.orderTotal" @isClose="isClose"></CreditIsRunningLow>
+      <CreditIsRunningLow v-if="CreditIsRunningLowShow" :detailDataOrderTotal="detailData.waitAmount" @isClose="isClose"></CreditIsRunningLow>
   </div>
 </template>
 <script>
@@ -250,7 +251,8 @@
         border-left: 1px solid #CCCCCC;
         border-top: 1px solid #CCCCCC;
           li{
-            text-align: center;
+            text-align: left;
+            text-indent:10px;
             display: flex;
           font-size:14px;
           font-family:PingFangSC-Regular;
@@ -258,11 +260,14 @@
           line-height:36px;
           span{
             display: inline-block;
-            flex: 1;
+            flex: 2;
             border: 1px solid #CCCCCC;
             border-top:0 ;
             border-left:0;
           }
+        }
+        li:nth-child(2n){
+          background: #f3f3f3;
         }
 
 
@@ -301,7 +306,8 @@
           li{
             font-size:14px;
             flex: 2;
-            text-align: center;
+            text-align: left;
+            text-indent:10px;
             height:38px;
             background:rgba(229,233,242,1);
             line-height: 38px;
@@ -315,9 +321,11 @@
           li{
             flex: 4;
             font-size:14px;
-            text-align: center;
+            text-align: left;
+            text-indent:10px;
             height:38px;
-            background:rgba(255,247,204,1);
+            background:rgba(229,233,242,1);
+            /*background:rgba(255,247,204,1);*/
             line-height: 38px;
             border-right: 1px solid #cccccc;
             border-bottom: 1px solid #cccccc;
@@ -330,7 +338,8 @@
             display: flex;
             span{
               height:38px;
-              text-align: center;
+              text-align: left;
+              text-indent:10px;
               background:rgba(255,255,255,1);
               font-size:14px;
               font-family:PingFangSC-Regular;
@@ -381,7 +390,8 @@
           display: flex;
           li {
             flex: 2;
-            text-align: center;
+            text-align: left;
+            text-indent:10px;
             height: 38px;
             line-height: 38px;
             font-size:14px;
@@ -394,7 +404,8 @@
           display: flex;
           li {
             flex: 4;
-            text-align: center;
+            text-align: left;
+            text-indent:10px;
             height: 38px;
             font-size:14px;
             background: rgba(255, 247, 204, 1);

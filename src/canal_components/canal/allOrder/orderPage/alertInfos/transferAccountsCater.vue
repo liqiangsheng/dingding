@@ -17,7 +17,7 @@
 <script>
 //  import WorkOrderSubmission from "./WorkOrderSubmission.vue" //支付成功
   export default {
-    props:["zhifubao"],
+    props:["zhifubao","clearTimeOnem"],
     components:{
 //      WorkOrderSubmission
     },
@@ -29,6 +29,16 @@
         id:"",
         zhifuShow:false,
         temp:"",
+        payState:"",
+      }
+    },
+    watch:{
+      clearTimeOnem:function(newDATA,oldTime){
+        console.log(newDATA,"888")
+        console.log(oldTime,"oldTime")
+         if(newTime == 0){
+           clearInterval(this.temp);
+         }
       }
     },
     methods: {
@@ -40,8 +50,13 @@
         this.clickShow =!this.clickShow
       },
       success(){//成功支付
-        console.log(JSON.parse(sessionStorage.getItem('zhifubao')))
 //            this.$emit("success",false)
+        if(this.payState == "2"){
+          this.$emit("success",false);
+          location.reload();
+        }else if(this.payState == "1"){
+          alert("你还没支付成功，请支付")
+        }
       },
       query(){
         let obj = {};
@@ -49,16 +64,16 @@
         //      http://admin.test.dingdingkuaixiu.com/officialpartnercostflowController/findOne
         let url = this.$apidomain+"/officialpartnercostflowController/findOne";
         this.$http.post(url,obj).then(res=>{
+
           if(res.data.code =="0000"){
+            this.payState = res.data.result.payState;
             if(res.data.result.payState == "2"){
               let mainOrderIdObj={};
               mainOrderIdObj.mainOrderId = JSON.parse(sessionStorage.getItem("mainOrderId"));
               mainOrderIdObj.officialPartnerId = JSON.parse(sessionStorage.getItem("userInfo"))[0].channelId;
               let mainOrderIdUrl=this.$apidomain+"/order/payCallback";
               this.$http.post(mainOrderIdUrl,mainOrderIdObj).then(res1=>{
-                console.log(res1)
                 if(res1.data.code=="0000"){
-                  console.log(res1)
                   alert("支付成功")
                   clearInterval(this.temp);
 //                  this.zhifuShow = true;
@@ -72,7 +87,7 @@
               })
 
             }else if(res.data.result.payState == "1"){
-              console.log("我掉自己了")
+              console.log("我还没支付")
             }
           }else{
             this.$queryFun.successAlert.call(this,res.data.error)
@@ -84,10 +99,10 @@
 
     },
     created(){
-      setTimeout(()=>{
+
         this.imgUrl = JSON.parse(sessionStorage.getItem('zhifubao')).createCodeUrl;
         this.id = JSON.parse(sessionStorage.getItem('zhifubao')).officialPartnerCostFlowId;
-      },1000);
+
         setTimeout(()=>{
             let that = this;
             this.temp=setInterval(()=>{
@@ -96,7 +111,7 @@
                 that.query();
               }
             },1000);
-       },1500)
+       },1000)
 
 
 

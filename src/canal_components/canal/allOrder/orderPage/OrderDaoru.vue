@@ -2,16 +2,16 @@
 
   <div class="OrderDaoru" ref="OrderDaoru">
     <DaoRuGongDan v-if="daoruShow" @isClose="isClose"></DaoRuGongDan>
-    <DaoRuChanPin v-if="daoruShow1" @isClose="isClose" @centerShow="centerShow"></DaoRuChanPin>
+    <DaoRuChanPin v-if="daoruShow1" @isClose="isClose" @centerShow="centerShow" :stateIf="stateIf"></DaoRuChanPin>
     <DaoDetail v-if="daoruShow2" @isClose="isClose" :dexIndex="dexIndex" @isNum="isNum"></DaoDetail>
-    <DaoruBianji v-if="daoruShow3" @isClose="isClose"></DaoruBianji>
+    <DaoruBianji v-if="daoruShow3" @isClose="isClose" :everyContent="everyContent"></DaoruBianji>
      <ul class="OrderDaoruList">
        <li id="prodress">
          <!--<el-button type="primary" @click="chanpinClick">导入工单</el-button>-->
          <!--<Upload :action="file" :headers="header">-->
            <!--<Button style="color: #FFFFFF;background: #20a0ff;height: 36px;" type="ghost" icon="ios-cloud-upload-outline" v-model="file"  @click="chanpinClick">导入工单</Button>-->
          <!--</Upload>-->
-         <el-button style="position: relative" type="primary">产品导入
+         <el-button style="position: relative" type="primary">导入工单
            <a ref="fileBackground" href="javascript:;" class="file" style="position: absolute;left: 0;top: 0;opacity:0;">
            <input type="file" @change="onchangeFile($event)" style="width: 100%;height: 36px">
          </a>
@@ -91,23 +91,23 @@
         </ul>
     </div>
     <!--分页组件-->
-    <div class="paging"   v-show="OrderDaoruShow">
-      <p class="home">总页数{{tableListData.pageNo}}/{{tableListData.pageTotal}}</p>
-      <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :page-sizes='[20,50,100,200]'
-        layout="total, sizes, prev, pager, next, jumper"
-        :current-page="showPages"
-        :total="total"
-        :page-size="currentPageSize"
-        :page-count="pageTotal"
-      >
-      </el-pagination>
-      <p class="home last_page cursor" @click="lasePage">尾页</p>
-      <p class="home cursor" @click="firstPage">首页</p>
+    <!--<div class="paging"   v-show="OrderDaoruShow">-->
+      <!--<p class="home">总页数{{tableListData.pageNo}}/{{tableListData.pageTotal}}</p>-->
+      <!--<el-pagination-->
+        <!--@size-change="handleSizeChange"-->
+        <!--@current-change="handleCurrentChange"-->
+        <!--:page-sizes='[20,50,100,200]'-->
+        <!--layout="total, sizes, prev, pager, next, jumper"-->
+        <!--:current-page="showPages"-->
+        <!--:total="total"-->
+        <!--:page-size="currentPageSize"-->
+        <!--:page-count="pageTotal"-->
+      <!--&gt;-->
+      <!--</el-pagination>-->
+      <!--<p class="home last_page cursor" @click="lasePage">尾页</p>-->
+      <!--<p class="home cursor" @click="firstPage">首页</p>-->
 
-    </div>
+    <!--</div>-->
     <!--分页组件结束-->
     <div class="tijiao"  v-show="OrderDaoruShow"><el-button type="primary"  @click="daoClick">提交工单</el-button></div>
   </div>
@@ -140,6 +140,8 @@ import DaoruBianji from "./alertInfos/daoruBianji.vue" //导入编辑
         daoruShow2:false, //删除
         daoruShow3:false,// 导入编辑
         dexIndex:"", //删除的下标
+        everyContent:"", //点击的编辑
+        stateIf:"1",
 
       }
     },
@@ -169,13 +171,16 @@ import DaoruBianji from "./alertInfos/daoruBianji.vue" //导入编辑
           //        param.append('file',filesObj, filesName);  // 通过append向form对象添加数据
           param.append('file',filesObj);  // 通过append向form对象添加数据
           this.$http.post(url,param,{headers: {'Content-Type': 'multipart/form-data'}}).then(res=>{
+            console.log(res);
             if(res.data.code == "0000"){
+              this.stateIf = "1";
                this.daoruShow1 = true;
               this.tableListData = res.data.result;
               this.tableListData = JSON.parse(this.tableListData);
              console.log(this.tableListData);
             }else{
-            alert(res.data.error)
+              this.stateIf = "2";
+//              alert(res.data.error)
             }
           })
         }else{
@@ -183,14 +188,15 @@ import DaoruBianji from "./alertInfos/daoruBianji.vue" //导入编辑
         }
       ;
       },
-      bianjiClick(){//编辑
+      bianjiClick(v,i){//编辑
+        this.everyContent = v;
         this.daoruShow3 = true;
       },
       detailClick(item,index){//删除
         this.daoruShow2 = true;
         this.dexIndex = index;
       },
-      daoClick(){ // 导入
+      daoClick(){ // 提交工单
          this.daoruShow = true;
       },
       chanpinClick(){ //导入产品

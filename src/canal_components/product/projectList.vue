@@ -2,7 +2,7 @@
   <div>
     <div class="center">
       <div class="fenlei">一级分类：
-        <el-select id="yiiId" v-model="options" filterable placeholder="请选择"  @change="yijifenlei2">
+        <el-select id="yiiId" v-model="options" filterable placeholder="请选择"  @change="yijifenlei2"  style="margin-right: 75px">
           <el-option
             v-for="(item1,index1) in yijifenlei"
             :key="index1"
@@ -13,6 +13,7 @@
         分　　类:
         <el-cascader id="labelId"
                      @change="changeSelector2"
+                     style="margin-left:14px"
                      :disabled="isKeXuan"
                      :options="labeloptions2"
                      change-on-select
@@ -51,7 +52,7 @@
               <tbody>
               <tr v-for="(item,index) in tableListData.serviceInfos">
                 <!--序号-->
-                <td>
+                <td style="flex-grow: 0.5">
                 {{index+1}}
                 </td>
                 <!--产品编码-->
@@ -264,6 +265,9 @@
       th:nth-child(4){
         flex-grow: 3;
       }
+      th:nth-child(1){
+        flex-grow: 0.5;
+      }
       th:nth-child(2){
         flex-grow: 2;
       }
@@ -324,7 +328,7 @@
     .bnt{
       margin-top: 20px;
       width: 90%;
-      margin-left: 10%;
+      margin-left: 5%;
       .el-button{
         width:200px;
       }

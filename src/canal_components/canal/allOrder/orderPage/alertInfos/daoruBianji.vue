@@ -115,6 +115,7 @@
 </template>
 <script>
   export default {
+    props:["everyContent"],
     components:{
     },
     data() {
@@ -239,7 +240,7 @@
           this.options =res.data.result;
         }
       });
-
+          console.log(everyContent);
     },
 
   }

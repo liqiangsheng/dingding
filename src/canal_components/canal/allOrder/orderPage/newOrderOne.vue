@@ -45,7 +45,7 @@
     <div class="chanpin">
       <p class="chanpinP"><span></span>产品信息</p><br>
       <el-button type="success" @click="addProduct" v-if="xiaohui"style="transform: translateX(47px)">添加产品</el-button>
-      <el-button type="success" @click="addProduct1" v-if="xiaohui1"style="transform: translateX(47px)">新增产品</el-button>
+      <el-button type="success" @click="addProduct1" v-if="xiaohui1"style="transform: translateX(47px)">继续添加</el-button>
       <div class="alertOne" v-if="peijiankuang">
         <!--表格数据-->
         <table>
@@ -326,11 +326,15 @@
 
       },
       detailClick(v,i){  //删除
-        this.tableListData = this.tableListData.filter((item,index)=>{
-          return v.id != item.id;
-        })
+//        this.tableListData = this.tableListData.filter((item,index)=>{
+//          return v.id != item.id;
+//        })
+        console.log(i)
+        this.tableListData.splice(i,1);
         if(this.tableListData.length <= 0){
           this.peijiankuang = false;
+          this.xiaohui = true;
+
         }
 
       },
@@ -430,19 +434,17 @@
 
         let url=this.$apidomain+"/order/submitByChannel";
         this.$http.post(url,params).then(res=>{
-
               if(res.data.code == "0000"){
                 //充值显示
-                   this.mainOrderId = res.data.result;
+                   this.mainOrderId = res.data.result.id;
                    sessionStorage.removeItem("mainOrderId");
-                   sessionStorage.setItem('mainOrderId', JSON.stringify(this.mainOrderId));
+                   sessionStorage.setItem('mainOrderId', JSON.stringify(res.data.result));
                     let mainOrderIdObj={};
                     mainOrderIdObj.mainOrderId = this.mainOrderId;
                     mainOrderIdObj.officialPartnerId = this.chushiId[0].id;
                 let mainOrderIdUrl=this.$apidomain+"/order/payCallback";
                 this.$http.post(mainOrderIdUrl,mainOrderIdObj).then(res1=>{
                    if(res1.data.code=="0000"){
-                     console.log(res1)
                        this.chongzhiShow1 = true;
 
                    }else if(res1.data.code=="0902"){
@@ -548,7 +550,6 @@
            }
            tbody{
              width: 100%;
-
              tr{
                width: 100%;
                display: flex;
@@ -570,6 +571,9 @@
                    color:purple;
                  }
                }
+             }
+             tr:nth-child(2n){
+               background: #e4e8f1;
              }
              tr:last-child{
                border-bottom: 1px solid #bfcbd9;

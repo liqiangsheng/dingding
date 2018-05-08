@@ -18,21 +18,29 @@
           <li>{{valueObj.size}}</li>
           <li>{{valueObj.state}}</li>
         </ul>
-        <div class="progress">
+        <div class="progress" style="margin-bottom: 20px">
           <el-progress :text-inside="true" :stroke-width="24" :percentage="num"></el-progress>
         </div>
+        <div class="p1" v-show="P1show">
+           <p>提示：上传格式建议xlsx、xls、csv、xml等，文件大小限制10M以内</p>
+        </div>
         <div class="footer">
-               <p><el-button type="primary" @click="OKClick">完成</el-button></p>
+               <p><el-button type="primary" @click="OKClick" v-show="okShow">完成</el-button></p>
+               <p><el-button type="primary" @click="NoClick" v-show="noShow">去重新导入</el-button></p>
         </div>
     </div>
   </div>
 </template>
 <script>
   export default {
+    props:["stateIf"],
     components:{
     },
     data() {
       return {
+            okShow:false,
+            noShow:false,
+            P1show:false,
              num:0,
              valueObj:{
                name:"",
@@ -44,6 +52,9 @@
     methods: {
       close(){ //传值给父级
         this.$emit("isClose",false)
+      },
+      NoClick(){
+        location.reload();
       },
       OKClick(){ //查看完成
         if(this.valueObj.state == "已完成"){
@@ -60,8 +71,17 @@
     },
     created(){
       setTimeout(()=>{
-        this.num = 100;
-        this.valueObj.state = "已完成";
+        if(this.stateIf == "1"){
+          this.num = 100;
+          this.okShow = true;
+          this.valueObj.state = "已完成";
+        }else if(this.stateIf == "2"){
+          this.num = 0;
+          this.noShow = true;
+          this.P1show = true;
+          this.valueObj.state = "上传失败";
+        }
+
       },3000)
 
     },
@@ -153,8 +173,30 @@
       line-height:25px;
       text-align: center;
       .el-button{
-        width: 30%;
+        width: 200px;
       }
+    }
+    p:nth-child(2){
+      width:100%;
+      height:25px;
+      font-size:18px;
+      font-family:PingFangSC-Regular;
+      color:rgba(94,109,130,1);
+      line-height:25px;
+      text-align: center;
+      .el-button{
+        width: 200px;
+      }
+    }
+  }
+  .p1{
+    width:100%;
+    p{
+      height:20px;
+      font-size:14px;
+      font-family:PingFangSC-Regular;
+      color:rgba(230,88,49,1);
+      line-height:20px
     }
   }
 

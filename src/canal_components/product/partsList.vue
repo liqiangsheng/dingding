@@ -2,7 +2,7 @@
   <div>
     <div class="center">
       <div class="fenlei">一级分类：
-        <el-select id="yiiId" v-model="options" filterable placeholder="请选择"  @change="yijifenlei2">
+        <el-select id="yiiId" v-model="options" filterable placeholder="请选择"  @change="yijifenlei2"  style="margin-right: 75px">
           <el-option
             v-for="(item1,index1) in yijifenlei"
             :key="index1"
@@ -13,6 +13,7 @@
         分　　类:
         <el-cascader id="labelId"
                      @change="changeSelector2"
+                     style="margin-left:14px"
                      :disabled="isKeXuan"
                      :options="labeloptions2"
                      change-on-select
@@ -40,13 +41,13 @@
         <tbody>
         <tr v-for="(item,index) in tableListData.serviceAreaMountings">
           <!--序号-->
-          <td>
+          <td style="flex-grow: 0.2">
             {{index+1}}
           </td>
           <!--产品编码-->
-          <!--<td>-->
-            <!--{{item.id}}-->
-          <!--</td>-->
+          <td style="flex-grow: 2">
+            {{item.id}}
+          </td>
           <!--分类-->
           <td>
             {{item.labelParentId|FLabelBusiness}}
@@ -111,7 +112,7 @@
         input3:"",  //配件名称
         theadsName: [
           '序号',
-//          '配件编码',
+          '配件编码',
           '分类',
           '产品名称',
 //          "检测费",
@@ -234,6 +235,12 @@
         line-height:52px;
         text-align: center;
       };
+      th:nth-child(1){
+        flex-grow: 0.2;
+      }
+      th:nth-child(2){
+        flex-grow: 2;
+      }
     };
   }
   .productList table tbody{
@@ -285,7 +292,7 @@
     .bnt{
       margin-top: 20px;
       width: 90%;
-      margin-left: 10%;
+      margin-left: 5%;
       .el-button{
         width:200px;
       }

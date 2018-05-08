@@ -17,7 +17,7 @@
 <script>
 //  import WorkOrderSubmission from "./WorkOrderSubmission.vue" //支付成功
   export default {
-    props:["weachat"],
+    props:["weachat","clearTimeOnem"],
     components:{
 //      WorkOrderSubmission
     },
@@ -28,18 +28,35 @@
         id:"",
         zhifuShow:false,
         temp:"",
+        payState:"",
+      }
+    },
+    watch:{
+      clearTimeOnem(newTime,oldTime ){
+        console.log(newTime,"888")
+        console.log(oldTime,"oldTime");
+        console.log(this.temp)
+        if(newTime == 0){
+          clearInterval(this.temp);
+        }
       }
     },
     methods: {
-      isClose(v){
-        this.zhifuShow =v;
-        location.reload();
-      },
+//      isClose(v){
+//        this.zhifuShow =v;
+//        location.reload();
+//      },
       tel(){ //支付问题电话
         this.clickShow =!this.clickShow
       },
       success(){//成功支付
-        this.$emit("success",false)
+        if(this.payState == "2"){
+          this.$emit("success",false);
+          location.reload();
+        }else if(this.payState == "1"){
+              alert("你还没支付成功，请支付")
+        }
+
       },
       query(){
         let obj = {};
@@ -47,17 +64,16 @@
         //      http://admin.test.dingdingkuaixiu.com/officialpartnercostflowController/findOne
           let url = this.$apidomain+"/officialpartnercostflowController/findOne";
             this.$http.post(url,obj).then(res=>{
-              console.log(res)
             if(res.data.code =="0000"){
+                this.payState = res.data.result.payState;
               if(res.data.result.payState == "2"){
                 let mainOrderIdObj={};
                 mainOrderIdObj.mainOrderId = JSON.parse(sessionStorage.getItem("mainOrderId"));
                 mainOrderIdObj.officialPartnerId = JSON.parse(sessionStorage.getItem("userInfo"))[0].channelId;
                 let mainOrderIdUrl=this.$apidomain+"/order/payCallback";
                 this.$http.post(mainOrderIdUrl,mainOrderIdObj).then(res1=>{
-                  console.log(res1)
                   if(res1.data.code=="0000"){
-                    alert("支付成功")
+                    alert("支付成功");
                     clearInterval(this.temp);
 //                    this.zhifuShow = true;
                      this.$router.push({path:"./orderPage/alertInfos/WorkOrderSubmission"})
@@ -68,7 +84,7 @@
                   }
                 })
               }else if(res.data.result.payState == "1"){
-                console.log("我掉自己了")
+                console.log("我还没支付");
               }
             }else{
               this.$queryFun.successAlert.call(this,res.data.error)
@@ -77,10 +93,8 @@
       },
     },
     mounted() {
-
     },
     created(){
-
 
       setTimeout(()=>{
         let that = this;
@@ -90,9 +104,7 @@
             that.query();
           }
         },1000);
-
-
-    })
+    },1000)
   }
   }
 </script>
