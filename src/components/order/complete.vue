@@ -88,8 +88,7 @@
       <!--table表格-->
       <div class="dable_lsit">
         <!--表格数据-->
-        <!--<table id="table" cellSpacing="0px" cellpadding="0">-->
-          <table cellSpacing="0px" cellpadding="0">
+        <table id="table" cellSpacing="0px" cellpadding="0">
           <thead>
           <tr class="theads">
             <th v-for="(item,index) in theadsName" :key="index">{{item}}</th>

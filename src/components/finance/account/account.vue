@@ -167,24 +167,7 @@
             name:"对象类型",
             key:"userRole",
             SourceTypeValue: '',
-            SourceType:[
-              {
-                value: '---请选择---',
-                id:""
-              }, {
-                id:"Site",
-                value: '网点'
-              },{
-                id:"Channel",
-                value: '渠道'
-              },{
-                id:"Autotrophy",
-                value: '自营师傅'
-              },{
-                id:"PartTimeJob",
-                value: '兼职师傅'
-              }
-            ]
+            SourceType:this.$store.state.userRole
           }
         ],
         tableListData:{

@@ -52,7 +52,7 @@
             value:this.$store.state.creditCardMessage.bankCard,
           }, {
             name:'当前余额',
-            value:`${this.$store.state.creditCardMessage.balance.toFixed(2)} 元`,
+            value:`${this.$store.state.creditCardMessage.accountAmount.toFixed(2)} 元`,
           }, {
             name:' 充值金额',
             value:`${(this.$store.state.accountOverviewAlertData.money-0).toFixed(2)} 元`,
@@ -111,8 +111,7 @@
         //支付方式 1 微信   2 支付宝
 
       this.getData({payType:"1",faPayJournalAccountId:this.$store.state.accountOverviewAlertData.wechatOrderId})
-
-        ///officialpartnerpay/rechargeWeb   //支付宝网页
+      ///officialpartnerpay/rechargeWeb   //支付宝网页
         ////officialpartnerpay/recharge    //二维码
 
     }

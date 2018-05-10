@@ -23,7 +23,7 @@
 
       <ul>
         <li>费用类型：
-          <el-select v-model="moneyOption" filterable placeholder="请选择">
+          <el-select v-model="selectorBehindObj.name" filterable placeholder="请选择">
             <el-option
               v-for="(item,index) in moneyOptions"
               :key="index"
@@ -32,8 +32,8 @@
             </el-option>
           </el-select>
         </li>
-        <li>产品编号：<el-input v-model="input1" placeholder="请输入产品编号" style="width:200px;margin-left: 7px"></el-input></li>
-        <li>产品名称：<el-input v-model="input2" placeholder="产品名称" style="width:200px;margin-left: 7px"></el-input></li>
+        <li>产品编号：<el-input v-model="selectorBehindObj.id" placeholder="请输入产品编号" style="width:200px;margin-left: 7px"></el-input></li>
+        <li>产品名称：<el-input v-model="selectorBehindObj.fullName" placeholder="产品名称" style="width:200px;margin-left: 7px"></el-input></li>
       </ul>
       <div class="bnt">
         <el-button type="primary" @click="query">搜索</el-button>
@@ -61,7 +61,7 @@
                 </td>
                 <!--分类-->
                 <td>
-                  {{item.labelParentId}}
+                  {{item.labelParentId|FLabelBusiness}}
               </td>
                 <!--产品名称-->
                 <td>
@@ -161,7 +161,10 @@
         this.$store.commit("product",v)
       },
       reset(){ //重置
-        this.query();
+        this.selectorBehindObj = {fullName:"",labelId:"",id:"", name:''};
+        this.moneyOption = "";
+        this.labeloptions2=[];
+        this.options = "";
       },
       yijifenlei2(id){ ////选中分类数据请求
         let urlTwo=this.$common.apidomain+'/articleinfo/findlabelbusinessbyflabel?id='+id;
@@ -177,16 +180,16 @@
         query(){ //数据初始化
              this.paramsData();
              this.getTableList(this.paramsData());
-          this.$store.commit("fenyeObj",this.paramsData())
+             this.$store.commit("fenyeObj",this.paramsData())
         },
       paramsData(){  //传数据给后台
         return {params: {
           "pageNo":JSON.stringify(this.showPages),
           "pageSize":JSON.stringify(this.currentPageSize),
-          "fullName":this.selectorBehindObj.fullName,
-          "labelId":this.selectorBehindObj.labelId,
-          "serviceId":this.selectorBehindObj.id,
-          "name":this.selectorBehindObj.name,
+          "fullName":this.selectorBehindObj.fullName,  //产品名称
+          "labelId":this.selectorBehindObj.labelId,//分类id
+          "serviceId":this.selectorBehindObj.id,//产品编号
+          "name":this.selectorBehindObj.name,//费用类型
         }}
       },
       getTableList(params){ //搜索
@@ -252,9 +255,7 @@
     width: 100%;
     tr{
       width: 100%;
-      display: flex;
       th{
-        flex: 1;
         height:52px;
         font-size:14px;
         font-family:PingFangSC-Regular;
@@ -262,45 +263,26 @@
         line-height:52px;
         text-align: center;
       };
-      th:nth-child(4){
-        flex-grow: 3;
-      }
-      th:nth-child(1){
-        flex-grow: 0.5;
-      }
-      th:nth-child(2){
-        flex-grow: 2;
-      }
+
     };
   }
   .productList table tbody{
     width: 100%;
     tr{
       width: 100%;
-      display: flex;
       border-left: 1px solid #bfcbd9;
       background:rgba(255,255,255,1);
       td{
         height:46px;
-        flex: 1;
         line-height:46px;
         text-align: center;
-        border: 1px solid #bfcbd9;
-        border-bottom: 0;
-        border-left: 0;
-      }
-      td:nth-child(4){
-        flex-grow: 3;
-      }
-      td:nth-child(2){
-        flex-grow: 2;
       }
     }
     tr:hover{
       background: #DBF0FF;
     }
-    tr:last-child{
-      border-bottom: 1px solid #bfcbd9;
+    tr:nth-child(2n){
+      background:#F7F8FA ;
     }
   }
   .productList table tbody tr:hover{
@@ -314,21 +296,20 @@
     padding-top:20px ;
     .fenlei{
       float: left;
-      margin: 0 0 20px 5%;
-
+      margin: 0 0 20px 75px;
     }
     ul{
       width: 95%;
       display: flex;
       li{
         float: left;
-        margin-left: 5%;
+        margin-left:75px;
       }
     }
     .bnt{
       margin-top: 20px;
-      width: 90%;
-      margin-left: 5%;
+      width: 91%;
+      margin-left: 140px;
       .el-button{
         width:200px;
       }

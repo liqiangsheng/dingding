@@ -7,7 +7,7 @@
             创建时间 :
           </div>
 
-          <DatePicker   v-model="selectorBehindObj.date"  type="datetimerange" format="yyyy-MM-dd" placeholder="请选择时间" style="width: 200px"></DatePicker>
+          <DatePicker   v-model="date"  type="datetimerange" format="yyyy-MM-dd" placeholder="请选择时间" style="width: 200px"></DatePicker>
         </div>
         <div  v-for="(item,index) in optionList" :key="index" class="list">
 
@@ -32,7 +32,7 @@
           <el-input
             style="width:200px;"
             placeholder="请输入内容"
-            v-model="selectorBehindObj.streamNumber">
+            v-model="selectorBehindObj.accountId">
           </el-input>
         </div>
         <div class="list">
@@ -43,7 +43,7 @@
           <el-input
             style="width:200px;"
             placeholder="请输入内容"
-            v-model="selectorBehindObj.streamNumber">
+            v-model="selectorBehindObj.walletId">
           </el-input>
         </div>
 
@@ -54,7 +54,7 @@
           <el-input
             style="width:200px;"
             type="number"
-            v-model="selectorBehindObj.min"
+            v-model="selectorBehindObj.opAmount"
             placeholder="最低"
           >
           </el-input>
@@ -63,7 +63,8 @@
 
       <!--查询按钮-->
       <section class="query_button_box">
-        <el-button @click="quiry('')"  class="query_button"> 查询 </el-button>
+        <el-button @click="queryData('')"  class="query_button"> 查询 </el-button>
+        <el-button @click="resetting(selectorBehindObj)"  class="resetting_button"> 重置</el-button>
       </section>
       <section class="button_derive_box">
         <el-button @click="derive" size="large" class="derive_btn">导出</el-button>
@@ -95,61 +96,48 @@
               {{index+1}}
             </td>
             <td>
-              {{item.runningWater}}
+              {{item.accountId}}
             </td>
             <td>
-              {{item.objIdentifier }}
+              {{item.userId}}
+            </td>
+            <td style="min-width:7em;">
+              {{item.userRole|userRoleName}}
+            </td>
+            <td style="min-width:5em;">
+              {{item.userName}}
             </td>
             <td>
-              {{item.objType}}
+              {{item.bankCardBranch}}
             </td>
             <td>
-              {{item.objName}}
+              {{item.bankCard}}
             </td>
             <td>
-              {{item.rechargeSum}}
+              {{item.opAmount}}
             </td>
             <td>
-              {{item.cardNumber}}
+              {{item.accountAmount}}
             </td>
             <td>
-              {{item.accountSum}}
-            </td>
-
-            <td>
-              {{item.bankName}}
-            </td>
-
-            <td>
-              {{item.availableSum}}
+              {{item.canWithdrawDepositAmount}}
             </td>
             <td>
-              {{item.createdTime}}
+              {{item.createTime}}
             </td>
             <td class="table_operate cursor">
-
-              <span v-if="item.state" v-for="(ite,index) in ['通过','驳回']"  @click="operate(index)">{{ite}}</span>
-              <p v-if="!item.state">已驳回</p>
+              <span v-if="item.state==='0'" v-for="(ite,index) in ['通过','驳回']"  @click="operate(index,item)">{{ite}}</span>
+              <p v-if="item.state!=='0'">{{item.state|rechargeState}}</p>
             </td>
           </tr>
           </tbody>
         </table>
-        <div class="paging">
-          <p class="home">总页数{{tableListData.pageNum}}/{{tableListData.pageSize}}</p>
-          <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :page-sizes='[20,50,100,200]'
-            layout="total, sizes, prev, pager, next, jumper"
-            :current-page="showPages"
-            :total="total"
-            :page-size="currentPageSize"
-            :page-count="pageTotal"
-          >
-          </el-pagination>
-          <p class="home last_page" @click="lasePage">尾页</p>
-          <p class="home" @click="firstPage">首页</p>
-        </div>
+        <Pagination
+          :data="pageData"
+          :getTableList="getTableList"
+          :paramsData="paramsData"
+          :tableListData="tableListData"
+        ></Pagination>
       </div>
     </div>
     <div>
@@ -158,6 +146,14 @@
   </div>
 </template>
 <script>
+  const httpFilterData = res => new Promise( (resolve, reject)=>{
+    const data= res.data;
+    if(data.code==="0000"){
+      resolve(data)
+    }else{
+      reject(data)
+    }
+  });
   export default {
     data() {
       return {
@@ -174,31 +170,14 @@
          全选反选模块end
         */
         //<!--弹窗基础数据start-->
-        statisticsDateStartStr:"",
-        statisticsDateEndStr:"",
 
+        date:["",""],
         optionList: [
           {
             name: "对象类型",
-            key: "payType",
+            key: "userRole",
             SourceTypeValue: '',
-            SourceType: [
-              {
-                id:"1",
-                value: "充值",
-              },
-              {
-                id:"2",
-                value:"提现"
-              },
-              {
-                id: "3",
-                value: "支付"
-              },{
-                value:"结款",
-                id:"4"
-              }
-            ]
+            SourceType: this.$store.state.userRole
           }
         ],
         //<!--搜索框筛选数据end-->
@@ -217,104 +196,76 @@
           '创建时间',
           '交易状态',
         ],
-
-        selectorBehindObj:{
-          date:["",""],
-          streamNumber:'',
-          min:"",
-          max:""
-        },
+        selectorBehindObj:{},
         tableListData:{
-          pageNo:1,
-          pageSize:20,
-          total:0,
+          page:1,
+          rows:20,
+          startRow:0,
           pageTotal: 1,
-          list:[
-            {
-              runningWater:201521224522,
-              objIdentifier:'q121212',
-              objType:"渠道",
-              objName:"华侨城",
-              rechargeSum:10,
-              accountSum:55,
-              bankName:"中国银行",
-              cardNumber:12121212555555551,
-              availableSum:20,
-              state:0,
-              createdTime:1515151515,
-            },  {
-              runningWater:201521224522,
-              objIdentifier:'q121212',
-              objType:"渠道",
-              objName:"华侨城",
-              rechargeSum:10,
-              accountSum:55,
-              bankName:"中国银行",
-              cardNumber:12121212555555551,
-              availableSum:20,
-              state:1,
-              createdTime:1515151515,
-            },  {
-              runningWater:201521224522,
-              objIdentifier:'q121212',
-              objType:"渠道",
-              objName:"华侨城",
-              rechargeSum:10,
-              accountSum:55,
-              bankName:"中国银行",
-              cardNumber:12121212555555551,
-              availableSum:20,
-              state:0,
-              createdTime:1515151515,
-            } , {
-              runningWater:201521224522,
-              objIdentifier:'q121212',
-              objType:"渠道",
-              objName:"华侨城",
-              rechargeSum:10,
-              accountSum:55,
-              bankName:"中国银行",
-              cardNumber:12121212555555551,
-              availableSum:20,
-              state:1,
-              createdTime:1515151515,
-            }
-          ]
+          list:[]
         },
-        showPages:1,
-        currentPageSize:20,
-        total:0,
-        pageTotal:0,
+        pageData:{
+          size:20,
+          startRow:0,
+          total:0,
+          pageTotal:0,
+        }
       }
     },
     created(){
-//      this.getTableList(this.paramsData());
+      this.getTableList(this.paramsData());
+
     },
     methods: {
+ //   重置
+      resetting(params){
+        this.date = this.date.map( v => '');
+        for(let k in params) {
+          params[k] = params[k] instanceof Array? params[k].map(v => "") : ""
+        }
+        for(let k in this.optionList){
+          this.optionList[k].SourceTypeValue=""
+        }
+      },
       confirmSubmit(e){
         const value = this.$queryFun.Trim(e);
         if(value.length){
-          this.data.isShow=false;
-          this.$queryFun.successAlert.call(this,"驳回成功","1")
+          this.$http.post(this.data.url,{id:this.data.accountId,state:"2",remark:value}).then(res=>{
+            httpFilterData(res).then( res => {
+              this.data.isShow=false;
+              this.$queryFun.successAlert.call(this,"驳回成功","1");
+              this.getTableList(this.paramsData());
+            }, res => this.$queryFun.successAlert.call(this,res.error));
+          })
         }else{
           this.$queryFun.successAlert.call(this,"请输入驳回原因")
         }
       },
-      operate(i){
+      operate(i,v){
         /*
         0 通过
         1 驳回
         * */
+
+        let url = `${this.$apidomain}/putForward/updateFaWalletJournalAccount`;
+
         if(!i){
           this.$queryFun.confirm.call(this,{
             text:"通过前，请确认已将该提现金额打款至该渠道",
             title:"确认通过",
             success(){
-
+              this.$http.post(url,{id:v.accountId,state:"1"}).then(res=>{
+                httpFilterData(res).then(res=>{
+                  this.$queryFun.successAlert.call(this,"通过成功","1");
+                  this.getTableList(this.paramsData());
+                },res => this.$queryFun.successAlert.call(this,res.error));
+              })
             }
           })
         }else{
           this.data.isShow=true;
+          this.data.accountId=v.accountId;
+          this.data.url=url;
         }
       },
       /*
@@ -326,15 +277,14 @@
       wholeSelector(item,currentState){
         this.$queryFun.wholeSelector.call(this,item,currentState);
       },
-      derive(){        //导出事件
+      derive(){               //导出事件
         let data=[];
         this.tableListData.list.forEach(v => {
-          if (v.isCheckboxList) data.push(v.id);
+          if (v.isCheckboxList) data.push(v.accountId);
         });
         if(data.length){
-          const ids=data.join(",");
-          const url=`${this.$common.apidomain}/officialpartnercostflowController/exportFile`;
-          this.$http.post(url,{ids}).then(res=>{
+          const url=`${this.$common.apidomain}/putForward/createPutForwardExcel`;
+          this.$http.get(url,{params:{accountId:data.join(",")}}).then(res=>{
             const data=res.data;
             if(data.code==="0000"){
               window.location=data.result;
@@ -352,44 +302,31 @@
         全选反选模块end
       */
       //      <!--分页查询数据对象功能组合start-->
-      quiry(){
+      queryData(){
 
-//        this.getTableList(this.paramsData());
+        this.getTableList(this.paramsData());
 
       },
       paramsData(){
-        const filterDate = e => this.$moment( this.selectorBehindObj.date[e] ).format("YYYY-MM-DD")==="Invalid date"?'':this.$moment( this.selectorBehindObj.date[e] ).format("YYYY-MM-DD");
+        const filterDate = e => this.$moment( this.date[e] ).format("YYYY-MM-DD")==="Invalid date"?'':this.$moment( this.date[e] ).format("YYYY-MM-DD");
 
-        this.statisticsDateStartStr = filterDate(0);
-
-        this.statisticsDateEndStr = filterDate(1);
-
-        return {
-          "pageNo":JSON.stringify(this.showPages),
-          "pageSize":JSON.stringify(this.currentPageSize),
-          "startDate":filterDate(0),
-          "endDate":filterDate(1),
-          "minFee":this.selectorBehindObj.min,
-          "maxFee":this.selectorBehindObj.max,
-          "payType":this.selectorBehindObj.payType,
-          "payState":this.selectorBehindObj.payState,
-          "journalAccountNum":this.selectorBehindObj.streamNumber,
-          "paySource":this.selectorBehindObj.paySource,
-//          "statisticsDateStartStr":
-//          "statisticsDateEndStr":filterDate(1),
-        }
+        let params={
+          statisticsDateStartStr : filterDate(0),
+          statisticsDateEndStr : filterDate(1),
+          page: JSON.stringify(this.pageData.startRow),
+          rows: JSON.stringify(this.pageData.size)
+        };
+        return Object.assign(params,this.selectorBehindObj);
       },
 
       getTableList(params){
-        let url=`${this.$apidomain}/officialpartnercostflowController/all`;
+        let url=`${this.$apidomain}/putForward/all`;
         this.$http.post(url,params).then( r => {
           let data=r.data;
           if(data.code==="0000"){
             this.tableListData = data.result;
-            this.showPages = data.result.pageNo;
-            this.currentPageSize = data.result.pageSize;
-            this.total = data.result.total;
-            this.pageTotal = data.result.pageTotal;
+            this.pageData.total = data.result.total;
+            this.pageData.pageTotal = data.result.pages;
             this.isCheckboxList=[];
             data.result.list.forEach((v,i)=>{
               this.isCheckboxList.push(false);
@@ -400,30 +337,6 @@
             this.$queryFun.successAlert.call(this,data.error);
           }
         })
-      },
-
-
-      handleSizeChange(val) {      //每页显示多少条
-        this.currentPageSize=val;
-        this.getTableList(this.paramsData());
-      },
-      handleCurrentChange(val) {
-        this.showPages=val;
-        this.getTableList(this.paramsData());
-      },
-      firstPage(){
-        if(  this.showPages===1 ){
-          return alert("已经是第一页")
-        }
-        this.showPages=1;     //第一页
-        this.getTableList(this.paramsData());
-      },
-      lasePage(){
-        if(this.showPages===this.pageTotal){
-          return alert("已经是最后一页")
-        }
-        this.showPages=this.pageTotal; //最后一页
-        this.getTableList(this.paramsData());
       },
 
       selector(item,values,SourceTypeValue){       //选中后的下拉列表
@@ -455,6 +368,10 @@
         background: #A470CD;
         padding-left:4em;
         padding-right:4em;
+      }
+      .resetting_button{
+        padding-left:2em;
+        padding-right:2em;
       }
     }
     .container{

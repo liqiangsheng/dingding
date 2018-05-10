@@ -8,16 +8,21 @@
           <p class="title">{{isAddorder.title}}</p>
           <ul>
             <li v-for="(item,index) in addOrder.canalList" :key="index">
+
               {{item.name}}
+
               <el-select style="width:130px"
                          v-model="item.SourceTypeValue" placeholder="请选择" @change="selector(item,item.SourceType,item.SourceTypeValue)">
+
                 <el-option
                   v-for="items in item.SourceType"
                   :key="items.value"
                   :value="items.value"
                 >
+
                 </el-option>
               </el-select>
+
             </li>
             <!--输入框开始-->
             <li v-for="(item,index) in addOrder.inputs" :key="index">

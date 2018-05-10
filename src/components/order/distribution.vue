@@ -99,7 +99,7 @@
       <!--查询按钮结束-->
 
       <!--table表格-->
-      <div class="dable_lsit">
+      <div class="dable_lsit"  style="overflow-x: auto">
 
         <!--导出按钮-->
         <div class="derive" style="transform:translateY(-50%)">
@@ -109,9 +109,8 @@
         <!--导出按钮结束-->
 
         <!--表格数据-->
-        <div style="overflow-x: auto;width:100%">
-        <!--<table cellSpacing="0px" id="table" cellpadding="0">-->
-          <table cellSpacing="0px" cellpadding="0">
+        <!--<div style="overflow-x: auto;width:100%">-->
+        <table cellSpacing="0px" id="table" cellpadding="0">
           <thead>
           <tr class="theads">
             <th class="multiple">
@@ -175,6 +174,14 @@
             <td>
               {{item.type|orderType}}
             </td>
+            <!--渠道质保-->
+            <td>
+              {{item.emergencyDegree|qudaozhibao}}
+            </td>
+            <!--紧急度-->
+            <td>
+              {{item.channelWarranty|jinjidu}}
+            </td>
             <!--操作-->
             <td class="icon">
               <!--详情-->
@@ -233,7 +240,6 @@
           </tr>
           </tbody>
         </table>
-        </div>
         <!--表格数据结束-->
         <!--分页组件-->
         <div class="paging">
@@ -602,6 +608,8 @@
           '服务区域',
           '下单时间',
           "工单来源",
+          "渠道质保",
+          "紧急度",
           '操作',
         ],
         tableList:[],

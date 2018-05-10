@@ -59,7 +59,7 @@
                        v-model="selectedOptions1"
                        :props="props2"
           ></el-cascader>
-
+            <el-input placeholder="请填写详细地址" v-model="headquarterAddress"></el-input>
             </li>
 
             <li><span class="list_name"> 结算方式:</span>
@@ -101,6 +101,7 @@
     data(){
       return{
         //区域start
+        headquarterAddress:"",//详细地址
         linkmanAreaId:"",//街道ID
         linkmanName:"", //街道名字
         disabled:true,
@@ -244,8 +245,10 @@
       //      城市数据
       let cityurl = `${this.$apidomain}/common/findprovinceandcitylist`;
       this.$http.get(cityurl).then(res=>{
-        if (res.data.code === '0000') {
+        if(res.data.code == "0000"){
           this.options =res.data.result;
+        }else{
+          alert(res.data.error)
         }
       });
     },
@@ -260,7 +263,12 @@
         //选择区域街道
         let cityIdurl=this.$apidomain+"/common/findareaandstreetoptions?cityId="+ this.cityId;//获取区域
         this.$http.get(cityIdurl).then(res=>{
-          this.serveAreas = res.data.result;
+          if(res.data.code == "0000"){
+            this.serveAreas = res.data.result;
+          }else{
+            alert(res.data.error)
+          }
+
         })
         this.disabled = false;
       },
@@ -287,15 +295,23 @@
           this.selectorBehindObj.settle_day = this.Datevalue+"";
           this.selectorBehindObj.areaName = this.linkmanName;
           this.selectorBehindObj.areaId = this.linkmanAreaId;
+          this.selectorBehindObj.headquarterAddress = this.headquarterAddress;
         let url=this.$apidomain+"/officialpartnerinfo/saveOfficialPartnerInfo";
         this.$http.post(url,this.selectorBehindObj).then(res=>{
           let data = res.data;
-          this.$notify({
-            title: '成功',
-            message: '新建成功',
-            type: 'success'});
-          this.quiry();
-          this.isAdd.isShow=false
+          if(res.data.code === "0000"){
+            this.$notify({
+              title: '成功',
+              message: '新建成功',
+              type: 'success'});
+            this.quiry();
+            this.isAdd.isShow=false;
+          }else{
+            alert(res.data.error);
+
+          }
+
+
         })}
       },
       selector(item,values,SourceTypeValue){       //选中后的下拉列表

@@ -48,7 +48,7 @@
       <el-button type="success" @click="addProduct1" v-if="xiaohui1"style="transform: translateX(47px)">继续添加</el-button>
       <div class="alertOne" v-if="peijiankuang">
         <!--表格数据-->
-        <table>
+        <table  cellSpacing="0px" cellpadding="0">
           <thead>
           <tr class="theads">
             <th v-for="(item,index) in theadsName">{{item}}</th>
@@ -61,7 +61,7 @@
               {{index+1}}
             </td>
             <!--产品名称-->
-            <td style="flex-grow:3">
+            <td>
               {{item.serviceInfo.fullName}}
             </td>
             <!--品牌-->
@@ -102,7 +102,7 @@
       </div>
     </div>
 
-    <ul class="zhibao">
+    <ul class="zhibao" v-if="zhibaoIsShow">
     <li class="zhibaoP"><span></span><b style="float: left;font-weight: 100">质保状态</b>
         <p @click="danxuan2(item,index)" v-for="(item,index) in zhibao"><el-button>{{item}}</el-button><img src="/static/images/danxuan.png"  v-show="jinjiduIndex1 == index"></p>
       </li>
@@ -170,6 +170,7 @@
         //区域end
         jinjiduIndex:0,//紧急度下标
         jinjiduIndex1:0,//紧急度下标
+        zhibaoIsShow:false,
         zhibao:["质保外","质保内"],//质保
         zhibaoStr:"0",
         jinjiduStr:"0",
@@ -216,6 +217,17 @@
       this.$http.get(url1).then(res=>{
         this.ziqudao = res.data.result;
       });
+      if(this.chushiId[0].channelSettleType == "1"){
+        this.zhibaoIsShow =true;
+        this. zhibaoStr ="0";
+        this.danxuanShow1 = true;
+        this.danxuanShow2 = false;
+      }else{
+        this. zhibaoStr ="";
+        this.zhibaoIsShow =false;
+        this.danxuanShow1 = true;
+        this.danxuanShow2 = false;
+      }
 
       let cityurl = `${this.$apidomain}/common/findprovinceandcitylist`;
       this.$http.get(cityurl).then(res=>{
@@ -246,81 +258,38 @@
         this.linkmanAreaId = this.selectedOptions1[this.selectedOptions1.length - 1];
         this.linkmanName =this.$refs.one.currentLabels[1];
        },
-      ifElse(){  //
+
+      addTijiao(){ //提交
         if(this.input1 == ""){
-          this.flag = false;
-          this.$queryFun.successAlert.call(this,"请填写联系人")
-          return setTimeout(()=>{
-            location.reload();
-          },1000)
-
-
+          return this.$queryFun.successAlert.call(this,"请填写联系人")
         }
 
         if(this.input2 == ""){
-          this.flag = false;
-           this.$queryFun.successAlert.call(this,"请填写联系人手机");
-          return setTimeout(()=>{
-            location.reload();
-          },1000)
+          return this.$queryFun.successAlert.call(this,"请填写联系人手机");
+
         }
         let reg =  /^(13[0-9]|15[0-35-9]|18[0-9]|17[06-8]|14[57])\d{8}$/;
         if(reg.test(this.input2)==false){
-          this.flag = false;
-        this.$queryFun.successAlert.call(this,"请填写正确手机号");
-          return setTimeout(()=>{
-            location.reload();
-          },1000)
-
+          return this.$queryFun.successAlert.call(this,"请填写正确手机号");
         }
         if(this.selectedOptions2.length<=0||this.selectedOptions1.length<=0){
-          this.flag = false;
-          this.$queryFun.successAlert.call(this,"请填写服务地区");
-          return setTimeout(()=>{
-            location.reload();
-          },1000)
+          return this.$queryFun.successAlert.call(this,"请填写服务地区");
         }
         if(this.input4 == ""){
-          this.flag = false;
-          this.$queryFun.successAlert.call(this,"请填写详细地址");
-          return setTimeout(()=>{
-            location.reload();
-          },1000)
-
+          return this.$queryFun.successAlert.call(this,"请填写详细地址");
         }
         if(this.input5 == ""){
-
-          this.flag = false;
-          this.$queryFun.successAlert.call(this,"请填写预约时间");
-          return setTimeout(()=>{
-            location.reload();
-          },1000)
+          return this.$queryFun.successAlert.call(this,"请填写预约时间");
         }
-      },
-
-      addTijiao(){ //提交
-          this.ifElse();
-
         if(this.peijiankuang == false){
-          this.flag = false;
-           this.$queryFun.successAlert.call(this,"请添加产品")
-          return setTimeout(()=>{
-            location.reload();
-          },1000)
+          return  this.$queryFun.successAlert.call(this,"请添加产品");
         }
         if(this.danxuanShow1 == false&&this.danxuanShow2 == false){
-          this.flag = false;
-          this.$queryFun.successAlert.call(this,"请选择质保状态");
-          return setTimeout(()=>{
-            location.reload();
-          },1000)
+          return this.$queryFun.successAlert.call(this,"请选择质保状态");
         }
         if(this.danxuanShow3 == false&&this.danxuanShow4 == false){
-          this.flag = false;
-          this.$queryFun.successAlert.call(this,"请选择紧急程度");
-          return setTimeout(()=>{
-            location.reload();
-          },1000)
+          return  this.$queryFun.successAlert.call(this,"请选择紧急程度");
+
         }
          this.query();
 
@@ -329,17 +298,16 @@
 //        this.tableListData = this.tableListData.filter((item,index)=>{
 //          return v.id != item.id;
 //        })
-        console.log(i)
         this.tableListData.splice(i,1);
         if(this.tableListData.length <= 0){
           this.peijiankuang = false;
           this.xiaohui = true;
-
+          this.xiaohui1 = false;
         }
 
       },
       bianjiClick(v,i){  //编辑
-        this.flagOne = 3;
+         this.flagOne = 3;
           this.bianjiData = v;
           this.bianjiShow = true;
       },
@@ -347,10 +315,10 @@
         this.bianjiData1 = obj;
         this.peijiankuang = true;
         if(this.flagOne == 1){
-          this.tableListData.push(obj)
-        }else if(this.flagOne == 2){
-              this.tableListData.push(obj)
 
+            this.tableListData.push(obj)
+        }else if(this.flagOne == 2){
+          this.tableListData.push(obj)
         }else if(this.flagOne == 3){
             for(let i=0;i<this.tableListData.length;i++){
               this.tableListData.splice(this.tableListData[i],1,obj)
@@ -384,34 +352,85 @@
 
 
       addProduct1(){//添加产品
-        this.flagOne = 2;
+         this.flagOne = 2;
          this.xiaohui = false;
-        this.ifElse();
-        if( this.flag == false){
-          this.addShowONE = false;
-        }else if(this.flag == true){
-          this.addShowONE = true;
+        if(this.input1 == ""){
+          return this.$queryFun.successAlert.call(this,"请填写联系人")
         }
+
+        if(this.input2 == ""){
+          return this.$queryFun.successAlert.call(this,"请填写联系人手机");
+
+        }
+        let reg =  /^(13[0-9]|15[0-35-9]|18[0-9]|17[06-8]|14[57])\d{8}$/;
+        if(reg.test(this.input2)==false){
+          return this.$queryFun.successAlert.call(this,"请填写正确手机号");
+        }
+        if(this.selectedOptions2.length<=0||this.selectedOptions1.length<=0){
+          return this.$queryFun.successAlert.call(this,"请填写服务地区");
+        }
+        if(this.input4 == ""){
+          return this.$queryFun.successAlert.call(this,"请填写详细地址");
+        }
+        if(this.input5 == ""){
+          return this.$queryFun.successAlert.call(this,"请填写预约时间");
+        }
+          this.addShowONE = true;
+
 
       },
       addProduct(){//添加产品
         this.flagOne = 1;
         this.xiaohui1 = false;
-        this.ifElse();
+        if(this.input1 == ""){
+          return this.$queryFun.successAlert.call(this,"请填写联系人")
+        }
 
-        if( this.flag == false){
-          this.addShow = false;
-        }else if(this.flag == true){
-          this.addShow = true;
+        if(this.input2 == ""){
+          return this.$queryFun.successAlert.call(this,"请填写联系人手机");
+
+        }
+        let reg =  /^(13[0-9]|15[0-35-9]|18[0-9]|17[06-8]|14[57])\d{8}$/;
+        if(reg.test(this.input2)==false){
+          return this.$queryFun.successAlert.call(this,"请填写正确手机号");
+        }
+        if(this.selectedOptions2.length<=0||this.selectedOptions1.length<=0){
+          return this.$queryFun.successAlert.call(this,"请填写服务地区");
+        }
+        if(this.input4 == ""){
+          return this.$queryFun.successAlert.call(this,"请填写详细地址");
+        }
+        if(this.input5 == ""){
+          return this.$queryFun.successAlert.call(this,"请填写预约时间");
+        }
+        this.addShow = true;
+      },
+      danxuan2(v,i){//保外单选
+        this.jinjiduIndex1 = i;
+        if(i==0){
+          this.zhibaoStr = "0";
+          console.log( this.zhibaoStr)
+        }else if(i==1){
+          this.zhibaoStr = "1";
+          console.log( this.zhibaoStr)
         }
       },
+      danxuan3(v,i){//正常单选
+        this.jinjiduIndex = i;
+        if(i==0){
+          this.jinjiduStr = "0";
+        }else if(i==1){
+          this.jinjiduStr = "1";
+        }
+      },
+
       query(){  //初始数据
         this.input5 = this.$moment(this.input5).format("YYYY-MM-DD HH:mm:ss");
         this.getTableList(this.paramsData());
       },
       paramsData(){  //传数据给后台
           let aaaaaa=JSON.stringify(this.tableListData)
-        console.log(this.tableListData,"ashdasdj")
+        console.log(this.zhibaoStr)
         return{
           "officialPartnerId":this.chushiId[0].id, //主渠道ID
           "appointmentDatetime":this.input5, //预约时间
@@ -430,23 +449,21 @@
         };
       },
       getTableList(params){
-
-
         let url=this.$apidomain+"/order/submitByChannel";
         this.$http.post(url,params).then(res=>{
               if(res.data.code == "0000"){
                 //充值显示
                    this.mainOrderId = res.data.result.id;
                    sessionStorage.removeItem("mainOrderId");
-                   sessionStorage.setItem('mainOrderId', JSON.stringify(res.data.result));
+                   sessionStorage.setItem('mainOrderId', JSON.stringify(this.mainOrderId));
                     let mainOrderIdObj={};
                     mainOrderIdObj.mainOrderId = this.mainOrderId;
                     mainOrderIdObj.officialPartnerId = this.chushiId[0].id;
                 let mainOrderIdUrl=this.$apidomain+"/order/payCallback";
                 this.$http.post(mainOrderIdUrl,mainOrderIdObj).then(res1=>{
                    if(res1.data.code=="0000"){
+                      this.$queryFun.successAlert.call(this,"工单提交成功","1");
                        this.chongzhiShow1 = true;
-
                    }else if(res1.data.code=="0902"){
                      this.chongzhiShow=true;    //充值显示
                    }else{
@@ -459,24 +476,6 @@
 
          })
       },
-
-      danxuan2(v,i){//保外单选
-        this.jinjiduIndex1 = i;
-        if(i=0){
-          this.zhibaoStr = "0";
-        }else if(i=1){
-          this.zhibaoStr = "1";
-        }
-      },
-      danxuan3(v,i){//正常单选
-        this.jinjiduIndex = i;
-        if(i==0){
-          this.jinjiduStr = "0";
-        }else if(i==1){
-         this.jinjiduStr = "1";
-        }
-      },
-
 //
     },
     mounted() {
@@ -533,9 +532,7 @@
              background:rgba(229,233,242,1);
              tr{
                width: 100%;
-               display: flex;
                th{
-                 flex: 1;
                  height:52px;
                  font-size:14px;
                  font-family:PingFangSC-Regular;
@@ -543,25 +540,21 @@
                  line-height:52px;
                  text-align: center;
                };
-               th:nth-child(2){
-                 flex-grow:3;
-               }
              }
            }
            tbody{
              width: 100%;
              tr{
                width: 100%;
-               display: flex;
-               border-left: 1px solid #bfcbd9;
                background:rgba(255,255,255,1);
+               td:nth-child(1){
+                 border-left: 1px solid #bfcbd9;
+               }
                td{
                  height:46px;
-                 flex: 1;
                  line-height:46px;
                  text-align: center;
                  border: 1px solid #bfcbd9;
-                 border-bottom: 0;
                  border-left: 0;
                 .track,.detail{
                    cursor: pointer;
@@ -574,9 +567,6 @@
              }
              tr:nth-child(2n){
                background: #e4e8f1;
-             }
-             tr:last-child{
-               border-bottom: 1px solid #bfcbd9;
              }
              tr:hover{
                background: #DBF0FF;

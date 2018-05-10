@@ -7,7 +7,7 @@
             创建时间 :
           </div>
 
-          <DatePicker   v-model="selectorBehindObj.date"  type="datetimerange" format="yyyy-MM-dd" placeholder="请选择时间" style="width: 200px"></DatePicker>
+          <DatePicker  v-model="date"  type="datetimerange" format="yyyy-MM-dd" placeholder="请选择时间" style="width: 200px"></DatePicker>
         </div>
         <div  v-for="(item,index) in optionList" :key="index" class="list">
 
@@ -27,12 +27,12 @@
         <div class="list">
 
           <div class="list_name">
-            提现流水号 :
+            充值流水号 :
           </div>
           <el-input
             style="width:200px;"
             placeholder="请输入内容"
-            v-model="selectorBehindObj.streamNumber">
+            v-model="selectorBehindObj.accountId">
           </el-input>
         </div>
         <div class="list">
@@ -43,18 +43,18 @@
           <el-input
             style="width:200px;"
             placeholder="请输入内容"
-            v-model="selectorBehindObj.streamNumber">
+            v-model="selectorBehindObj.walletId">
           </el-input>
         </div>
 
         <div class="list business">
           <div class="list_name">
-            提现金额 :
+            充值金额 :
           </div>
           <el-input
             style="width:200px;"
             type="number"
-            v-model="selectorBehindObj.min"
+            v-model="selectorBehindObj.opAmount"
             placeholder="最低"
           >
           </el-input>
@@ -64,6 +64,7 @@
       <!--查询按钮-->
       <section class="query_button_box">
         <el-button @click="quiry('')"  class="query_button"> 查询 </el-button>
+        <el-button @click="resetting(selectorBehindObj)"  class="resetting_button"> 重置</el-button>
       </section>
 
       <section class="button_derive_box">
@@ -96,67 +97,89 @@
               {{index+1}}
             </td>
             <td>
-              {{item.runningWater}}
+              {{item.accountId}}
             </td>
             <td>
-              {{item.objIdentifier }}
+              {{item.userId}}
             </td>
             <td>
-              {{item.objType}}
+              {{item.userRole|userRoleName}}
             </td>
             <td>
-              {{item.objName}}
+              {{item.userName}}
             </td>
             <td>
-              {{item.rechargeSum}}
+              {{item.opAmount}}
             </td>
 
             <td>
-              {{item.accountSum}}
+              {{item.accountAmount}}
             </td>
             <td>
-              {{item.availableSum}}
+              {{item.canWithdrawDepositAmount}}
             </td>
             <td>
-              {{item.createdTime}}
+              {{item.createTime}}
             </td>
-            <td class="table_operate cursor">
-
-              <span v-if="item.state" v-for="(ite,index) in ['凭证','通过','驳回',]"  @click="operate(index)">{{ite}}</span>
-              <p v-if="!item.state">已通过</p>
+            <td class="table_operate cursor" >
+              <!-- state    (0.审核中1.通过2.驳回)-->
+              <div class="operate_container">
+                <el-button class="examine_images" @click="openExamine(item,index)">
+                  查看凭证
+                </el-button>
+                <span v-if="item.state==='0'" v-for="(ite,index) in ['通过','驳回']"  @click="operate(index,item)">{{ite}}</span>
+                <p v-if="item.state!=='0'">{{item.state|rechargeState}}</p>
+              </div>
             </td>
           </tr>
           </tbody>
         </table>
-        <div class="paging">
-          <p class="home">总页数{{tableListData.pageNum}}/{{tableListData.pageSize}}</p>
-          <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :page-sizes='[20,50,100,200]'
-            layout="total, sizes, prev, pager, next, jumper"
-            :current-page="showPages"
-            :total="total"
-            :page-size="currentPageSize"
-            :page-count="pageTotal"
-          >
-          </el-pagination>
-          <p class="home last_page" @click="lasePage">尾页</p>
-          <p class="home" @click="firstPage">首页</p>
-        </div>
+
+
+<!--分页 -->
+        <Pagination
+          :data="pageData"
+          :getTableList="getTableList"
+          :paramsData="paramsData"
+          :tableListData="tableListData"
+        ></Pagination>
       </div>
     </div>
+
     <div>
     </div>
+
+    <!--驳回 alert-->
     <common-alert :data="data" v-if="data.isShow" :sendData="confirmSubmit"></common-alert>
+
+    <!--查看凭证 alert images-->
+    <carousel-images :data="carouselData" v-if="carouselData.isShow"></carousel-images>
   </div>
 </template>
 <script>
+  import carouselImages from '@/components/finance/recharge/carouselImages';
+  const httpFilterData = res => new Promise( (resolve, reject)=>{
+        const data= res.data;
+        if(data.code==="0000"){
+            resolve(data)
+        }else{
+            reject(data)
+        }
+    });
+//idPhotos
   export default {
+    components:{
+      carouselImages
+    },
     data() {
       return {
+        carouselData:{
+          isShow:false,
+          title:"查看凭证",
+        },
         data:{
           isShow:false,
+          accountId:"",
           title:"确认驳回"
         },
         /*
@@ -168,31 +191,12 @@
          全选反选模块end
         */
         //<!--弹窗基础数据start-->
-        statisticsDateStartStr:"",
-        statisticsDateEndStr:"",
-
         optionList: [
           {
             name: "对象类型",
-            key: "payType",
+            key: "userRole",
             SourceTypeValue: '',
-            SourceType: [
-              {
-                id:"1",
-                value: "充值",
-              },
-              {
-                id:"2",
-                value:"提现"
-              },
-              {
-                id: "3",
-                value: "支付"
-              },{
-                value:"结款",
-                id:"4"
-              }
-            ]
+            SourceType:this.$store.state.userRole
           }
         ],
         //<!--搜索框筛选数据end-->
@@ -209,99 +213,88 @@
           '创建时间',
           '交易状态',
         ],
-
+        date:["",""],
         selectorBehindObj:{
-          date:["",""],
-          streamNumber:'',
-          min:"",
-          max:""
         },
         tableListData:{
-          pageNo:1,
-          pageSize:20,
-          total:0,
+          page:1,
+          rows:20,
+          startRow:0,
           pageTotal: 1,
-          list:[
-            {
-              runningWater:201521224522,
-              objIdentifier:'q121212',
-              objType:"渠道",
-              objName:"华侨城",
-              rechargeSum:10,
-              accountSum:55,
-              availableSum:20,
-              state:0,
-              createdTime:1515151515,
-            },  {
-              runningWater:201521224522,
-              objIdentifier:'q121212',
-              objType:"渠道",
-              objName:"华侨城",
-              rechargeSum:10,
-              accountSum:55,
-              availableSum:20,
-              state:1,
-              createdTime:1515151515,
-            },  {
-              runningWater:201521224522,
-              objIdentifier:'q121212',
-              objType:"渠道",
-              objName:"华侨城",
-              rechargeSum:10,
-              accountSum:55,
-              availableSum:20,
-              state:0,
-              createdTime:1515151515,
-            } , {
-              runningWater:201521224522,
-              objIdentifier:'q121212',
-              objType:"渠道",
-              objName:"华侨城",
-              rechargeSum:10,
-              accountSum:55,
-              availableSum:20,
-              state:1,
-              createdTime:1515151515,
-            }
-          ]
+          list:[]
         },
-        showPages:1,
-        currentPageSize:20,
-        total:0,
-        pageTotal:0,
+        pageData:{
+          size:20,
+          startRow:0,
+          total:0,
+          pageTotal:0,
+        }
       }
     },
     created(){
-//      this.getTableList(this.paramsData());
+      this.getTableList(this.paramsData());
     },
     methods: {
+  //      重置
+      resetting(params){
+        this.date = this.date.map( v => '');
+        for(let k in params) {
+          params[k] = params[k] instanceof Array? params[k].map(v => "") : ""
+        }
+        for(let k in this.optionList){
+          this.optionList[k].SourceTypeValue=""
+        }
+
+      },
+//      凭证 start
+      openExamine(e,i){
+        if(!!e.idPhotos){
+          this.carouselData.images= e.idPhotos.split(",");
+          this.carouselData.isShow=!this.carouselData.isShow;
+        }else{
+          this.$queryFun.successAlert.call(this,"暂无凭证")
+        }
+//
+      },
+//      凭证 end
       confirmSubmit(e){
         const value = this.$queryFun.Trim(e);
         if(value.length){
-          this.data.isShow=false;
-          this.$queryFun.successAlert.call(this,"驳回成功","1")
+          this.$http.post(this.data.url,{id:this.data.accountId,state:"2",remark:value}).then(res=>{
+              httpFilterData(res).then(res=>{
+                this.data.isShow=false;
+                this.$queryFun.successAlert.call(this,"驳回成功","1")
+                this.getTableList(this.paramsData());
+              },res => this.$queryFun.successAlert.call(this,res.error));
+          })
+
         }else{
           this.$queryFun.successAlert.call(this,"请输入驳回原因")
         }
       },
-      operate(i){
+      operate(i,v){
         /*
-        1 通过
-        2 驳回
-        0 凭证
+        0 通过
+        1 驳回
         * */
-        if(i===1){
+        let url = `${this.$apidomain}/rechargeApproval/updateFaWalletJournalAccount`
+        if(i){
+          this.data.isShow=true;
+          this.data.accountId=v.accountId;
+          this.data.url=url;
+        }else{
           this.$queryFun.confirm.call(this,{
-            text:"通过前，请确认已将该提现金额打款至该渠道",
+            text:"通过前，请确认已将该充值金额打款至该渠道",
             title:"确认通过",
             success(){
-
+              this.$http.post(url,{id:v.accountId,state:"1"}).then(res=>{
+                httpFilterData(res).then(res=>{
+                  this.$queryFun.successAlert.call(this,"通过成功","1");
+                  this.getTableList(this.paramsData());
+                },res => this.$queryFun.successAlert.call(this,res.error));
+              })
             }
           })
-        }else if(i===2){
-          this.data.isShow=true;
-        }else{
-          alert("凭证")
         }
       },
       /*
@@ -316,12 +309,11 @@
       derive(){        //导出事件
         let data=[];
         this.tableListData.list.forEach(v => {
-          if (v.isCheckboxList) data.push(v.id);
+          if (v.isCheckboxList) data.push(v.accountId);
         });
         if(data.length){
-          const ids=data.join(",");
-          const url=`${this.$common.apidomain}/officialpartnercostflowController/exportFile`;
-          this.$http.post(url,{ids}).then(res=>{
+          const url=`${this.$common.apidomain}/rechargeApproval/createRechargeApprovalExcel`;
+          this.$http.get(url,{params:{accountId:data.join(",")}}).then(res=>{
             const data=res.data;
             if(data.code==="0000"){
               window.location=data.result;
@@ -331,7 +323,9 @@
             }
           })
         }else{
+
           this.$queryFun.successAlert.call(this,"请选择需要导出的选项");
+
         }
       },
 
@@ -341,42 +335,31 @@
       //      <!--分页查询数据对象功能组合start-->
       quiry(){
 
-//        this.getTableList(this.paramsData());
+        this.getTableList(this.paramsData());
 
       },
       paramsData(){
-        const filterDate = e => this.$moment( this.selectorBehindObj.date[e] ).format("YYYY-MM-DD")==="Invalid date"?'':this.$moment( this.selectorBehindObj.date[e] ).format("YYYY-MM-DD");
+        const filterDate = e => this.$moment( this.date[e] ).format("YYYY-MM-DD")==="Invalid date"?'':this.$moment( this.date[e] ).format("YYYY-MM-DD");
 
-        this.statisticsDateStartStr = filterDate(0);
+        let params={
+            statisticsDateStartStr : filterDate(0),
+            statisticsDateEndStr : filterDate(1),
+            page: JSON.stringify(this.pageData.startRow),
+            rows: JSON.stringify(this.pageData.size)
+        };
+        return Object.assign(params,this.selectorBehindObj);
 
-        this.statisticsDateEndStr = filterDate(1);
-
-        return {
-          "pageNo":JSON.stringify(this.showPages),
-          "pageSize":JSON.stringify(this.currentPageSize),
-          "startDate":filterDate(0),
-          "endDate":filterDate(1),
-          "minFee":this.selectorBehindObj.min,
-          "maxFee":this.selectorBehindObj.max,
-          "payType":this.selectorBehindObj.payType,
-          "payState":this.selectorBehindObj.payState,
-          "journalAccountNum":this.selectorBehindObj.streamNumber,
-          "paySource":this.selectorBehindObj.paySource,
-//          "statisticsDateStartStr":
-//          "statisticsDateEndStr":filterDate(1),
-        }
       },
 
       getTableList(params){
-        let url=`${this.$apidomain}/officialpartnercostflowController/all`;
+        let url=`${this.$apidomain}/rechargeApproval/all`;
         this.$http.post(url,params).then( r => {
           let data=r.data;
           if(data.code==="0000"){
+
             this.tableListData = data.result;
-            this.showPages = data.result.pageNo;
-            this.currentPageSize = data.result.pageSize;
-            this.total = data.result.total;
-            this.pageTotal = data.result.pageTotal;
+            this.pageData.total = data.result.total;
+            this.pageData.pageTotal = data.result.pages;
             this.isCheckboxList=[];
             data.result.list.forEach((v,i)=>{
               this.isCheckboxList.push(false);
@@ -388,31 +371,6 @@
           }
         })
       },
-
-
-      handleSizeChange(val) {      //每页显示多少条
-        this.currentPageSize=val;
-        this.getTableList(this.paramsData());
-      },
-      handleCurrentChange(val) {
-        this.showPages=val;
-        this.getTableList(this.paramsData());
-      },
-      firstPage(){
-        if(  this.showPages===1 ){
-          return alert("已经是第一页")
-        }
-        this.showPages=1;     //第一页
-        this.getTableList(this.paramsData());
-      },
-      lasePage(){
-        if(this.showPages===this.pageTotal){
-          return alert("已经是最后一页")
-        }
-        this.showPages=this.pageTotal; //最后一页
-        this.getTableList(this.paramsData());
-      },
-
       selector(item,values,SourceTypeValue){       //选中后的下拉列表
         let key=item.key;
         values.forEach((v,i)=>{
@@ -443,6 +401,10 @@
         background: #A470CD;
         padding-left:4em;
         padding-right:4em;
+      }
+      .resetting_button{
+        padding-left:2em;
+        padding-right:2em;
       }
     }
     .container{
@@ -531,21 +493,37 @@
             border-left:none;
           }
           >.table_operate{
-            min-width: 155px;
-            > span{
-              font-size: 1em;
-              display: inline-block;
-              padding-top:0;
-              width:33%;
-              color:#20A0FF;
+
+            .examine_images{
+              background:#54BA82;
+              color:#fff;
+              margin-left:1em;
             }
-            >p{
-              margin: 0 auto;
-              float:none;
+            padding:0;
+            min-width:14em;
+
+            >.operate_container{
+              width:100%;
+              height:100%;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              > span{
+                font-size: 1em;
+                display: inline-block;
+                padding-top:0;
+                color:#20A0FF;
+                flex:1;
+              }
+              >p{
+                margin: 0 auto;
+                float:none;
+              }
+              >span:last-of-type{
+                color:#E65831;
+              }
             }
-            >span:last-of-type{
-              color:#E65831;
-            }
+
           }
         }
       }

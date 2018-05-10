@@ -10,8 +10,8 @@
       </div>
       <section class="content">
         <ul>
-          <li>充值账号:<span>{{this.xianshiData.officialPartnerName}}</span></li>
-          <li>当前余额:<span>{{this.xianshiData.balance}}元</span></li>
+          <li>充值账号:<span>{{this.xianshiData.userName}}</span></li>
+          <li>当前余额:<span>{{this.xianshiData.accountAmount}}元</span></li>
           <li>充值金额:<span style="color:rgba(230,88,49,1);font-size:20px;">{{this.price1}}元</span><a class="chongzhi" @click="modifyClick">修改充值金额</a></li>
         </ul>
       </section>
@@ -134,8 +134,6 @@
     created(){
       this.price1 = JSON.parse(sessionStorage.getItem("price1"));//价格
       this.weixinchushiData();
-
-
       let url=this.$apidomain+"/officialPartnerAccountInfo/findOne";
       this.$http.post(url).then(res=>{
         if(res.data.code === "0000"){

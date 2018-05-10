@@ -96,7 +96,7 @@
       components:{
 
       },
-      props:["display"],
+      props:["getTableList"],
       data(){
           return{
            isSubChannel:true,   //关联子渠道显隐
@@ -115,6 +115,7 @@
            sub_channel:[],
            select_list:[],
            select_lists:[],   //去重后的数据
+           select_id:[],//子渠道Id
           }
 
       },
@@ -130,7 +131,7 @@
         this.$http.post(url).then(res=>{
             let data = res.data
             if(data.code==="0000"){
-               // console.log(data,"ziqudao")
+                //console.log(data,"ziqudao")
                 this.sub_channel=data.result;
             }else{
                 this.$queryFun.successAlert.call(this,data.error);
@@ -151,11 +152,22 @@
             }, 
          //提交修改数据
          submit(){
-           let roles = this.role_name==="超级管理员"?"SuperAdmin":"Admin";
+           this.select_id=[];
+           let roles = this.role_name==="超级管理员"?"Admin":"Manage";
+           let userInfo = JSON.parse(sessionStorage.getItem('userInfo'))[0]
+           this.sub_channel.forEach((v,i)=>{
+               this.select_list.forEach((j,k)=>{
+                   if(v.name===j){
+                       this.select_id.push(v.id);
+                   }
+               })
+           })
+          // console.log(this.select_id,"子渠道Id")
+          // console.log(userInfo,"主渠道")
            if(this.role_name==="超级管理员"){
-               roles="SuperAdmin";
-           }else if(this.role_name==="管理员"){
                roles="Admin";
+           }else if(this.role_name==="管理员"){
+               roles="Manage";
            }else{
                roles=""
            }       
@@ -167,12 +179,15 @@
                 "linkmanName":this.name,
                 "linkmanTelephone":this.tel,
                 "linkmanEmail":this.email,
-                "officialPartnerSubsetInfoIdStr":this.select_list.join()
+                "officialPartnerId":userInfo.channelId,
+                "officialPartnerName":userInfo.fullName,
+                "officialPartnerSubsetInfoIdStr":this.select_id.join()
             }
+            //console.log(params,"参数")
               if(!this.isSubChannel){
                params.officialPartnerSubsetInfoIdStr = "";
            }
-            console.log(this.isSubChannel,"子渠道")
+           // console.log(this.isSubChannel,"子渠道")
             if(!params.roleId){
                 this.$queryFun.successAlert.call(this,"角色不能为空");
             }else if(!params.account){
@@ -193,7 +208,7 @@
                             title: '成功',
                             message: '新建成功',
                             type: 'success'});
-                        this.display();
+                        this.getTableList();
                         this.close();
                         return
                     }else{

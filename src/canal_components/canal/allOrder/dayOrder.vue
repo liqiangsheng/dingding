@@ -4,15 +4,15 @@
         <ul>
           <li v-show="isShow">
             <p>本月完工数</p>
-            <b>50</b>
+            <b>{{numObj.currentPeriodCompleteNum}}</b>
           </li>
           <li v-show="isShow">
             <p>上月完工数</p>
-          <b>80</b>
+          <b>{{numObj.lastCurrentPeriodCompleteNum}}</b>
           </li>
           <li v-show="isShow">
             <p>今年完工数</p>
-            <b>130</b>
+            <b>{{numObj.thisYearCompleteNum}}</b>
           </li>
           <li>
             <p>{{wenzi}}<img :src="jiantou" @click="jiantouClick"></p>
@@ -52,12 +52,20 @@ import WaitForService from "./orderPage/waitForService.vue"
         num : 1, //用来改变箭头的方向
         isShow:true,//完工list显示消失
         tabIndex:0, // 点击显示的页面
+        numObj:{},
         wenzi :"收起数据展示",
       }
     },
 
     created(){
-
+//      http://admin.test.dingdingkuaixiu.com/channelItem/countListByChannel?channelId=p000003
+      let childId = JSON.parse(sessionStorage.getItem("userInfo"))[0].channelId;
+      console.log(childId)
+      let url=this.$apidomain+"/channelItem/countListByChannel?channelId="+childId;
+      this.$http.get(url).then(res=>{
+        this.numObj = res.data.result;
+        console.log(res)
+      });
     },
     methods: {
       jiantouClick(){   //完工的消失显示

@@ -12,9 +12,13 @@
     export default {
       props:["item"],
         data() {
-            return {}
+            return {
+
+            }
         },
-        methods: {},
+        methods: {
+
+        },
         created() {
         }
     }

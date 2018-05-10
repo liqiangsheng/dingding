@@ -39,12 +39,12 @@
                 </el-option>
               </el-select>
             </li>
-              <li>品牌<el-input v-model="input1" placeholder="选填" style="width: 35%;margin:0 2% 0 12px" ></el-input>型号<el-input v-model="input2" placeholder="选填" style="width: 35%"></el-input></li>
+              <li>品牌<el-input v-model="input1" placeholder="选填" style="width: 35%;margin:0 2% 0 12px" ></el-input><span style="margin: 0 14px 0 0;color: black">型号</span><el-input v-model="input2" placeholder="选填" style="width: 35%"></el-input></li>
               <li></li>
               <li id="nunber">数量<span>*</span>
                 <el-input-number v-model="num" @change="handleChange" :min="1"></el-input-number>
               </li>
-              <li>
+              <li id="bntOne" style="position: absolute;left: 0%;bottom: 0">
                 <el-button @click="quxiao">取消</el-button>
                 <el-button type="primary" @click="addProduct">添加</el-button>
               </li>
@@ -111,7 +111,7 @@
           return ;
         }
         this.objData.id = this.serviceInfo.id;
-        this.objData.tags = this.biaoqianOptions;
+        this.objData.tags = this.biaoqian?this.biaoqian.join(","):'';
         this.objData.fenlei = this.fenlei;
         this.objData.serviceBrand = this.input1;
         this.objData.serviceModel = this.input2;

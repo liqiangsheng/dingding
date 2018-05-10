@@ -404,4 +404,23 @@ export let state={ //vueX初始化
   creditCardMessage:{},
   zhifuDataObj:{}, //充值数据
   weachat:{}, //微信支付数据
+  userRole:[
+    {
+      value: '---请选择---',
+      id:""
+    }, {
+      id:"Site",
+      value: '网点'
+    },{
+      id:"Channel",
+      value: '渠道'
+    },{
+      id:"Autotrophy",
+      value: '自营师傅'
+    },{
+      id:"PartTimeJob",
+      value: '兼职师傅'
+    }
+  ]
 };
+

@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <el-dialog style="z-index:999999"  :visible.sync="data.isShow" size="min">
+    <el-dialog style="z-index:999999"  :visible.sync="data.isShow" size="min" id="commonAlert_001">
       <h3>{{data.title}}</h3>
       <!--<textarea class="alert_forbidden_area" v-model="text" placeholder="输入其他原因">-->
         <!--</textarea>-->
@@ -54,5 +54,11 @@
 
 </style>
 
-
+<style lang="scss">
+  #commonAlert_001{
+    .el-dialog__body{
+      padding-top:0;
+    }
+  }
+</style>
 

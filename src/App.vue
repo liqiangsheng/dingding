@@ -1,16 +1,25 @@
 <template>
   <div id="app">
-    <router-view></router-view>
+    <router-view ></router-view>
       <amend-password v-if="$store.state.isChannelPassword"></amend-password>
   </div>
 </template>
 
 <script>
 import amendPassword from "@/canal_components/channerPass/amendPassword";
+import {getSession,setSession} from "../static/js/session";
 export default {
   name: 'app',
   components:{
     amendPassword
+  },
+  watch:{
+    "$route":function(e,l){
+      if(!!getSession("update").length&&getSession("update")[0]==="0"){
+         history.go(0);
+        setSession("update","1")
+    }
+    }
   },
   created(){
 

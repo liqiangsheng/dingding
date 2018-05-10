@@ -23,7 +23,7 @@
               </el-select>
             </li>
             <li>子渠道：
-              <el-select v-model="ziqudao" filterable placeholder="所有" @change="zhibaoqudao(ziqudao)">
+              <el-select v-model="ziqudao" filterable placeholder="请选择" @change="zhibaoqudao(ziqudao)">
                 <el-option
                   v-for="(item,index) in ziqudaoData"
                   :key="index"
@@ -33,7 +33,7 @@
               </el-select>
             </li>
             <li>渠道质保：
-              <el-select v-model="ziqudaozhibao" filterable placeholder="所有">
+              <el-select v-model="ziqudaozhibao" filterable placeholder="请选择" @change="ziqudaozhibaoClick(ziqudaozhibao)">
                 <el-option
                   v-for="item in options1"
                   :key="item.value"
@@ -48,7 +48,7 @@
         <div class="centerDateOne">
           <ul>
             <li>紧急度：
-              <el-select v-model="jinjidu" filterable placeholder="所有">
+              <el-select v-model="jinjidu" filterable placeholder="请选择" @change="jinjiduClick(jinjidu)">
                 <el-option
                   v-for="item in options2"
                   :key="item.value"
@@ -95,11 +95,11 @@
         <tbody>
         <tr v-for="(item,index) in tableListData.orders">
           <!--序号-->
-          <td>
+          <td style="flex-grow: 0.5">
             {{index+1}}
           </td>
           <!--工单号号-->
-          <td style="flex-grow:2">
+          <td style="flex-grow:1.5">
             {{item.id}}
           </td>
           <!--联系人-->
@@ -119,16 +119,16 @@
             {{item.appointmentDatetime|moment('YYYY-MM-DD HH:mm:ss')}}
           </td>
           <!--子渠道-->
-          <td>
+          <td style="flex-grow: 1.5">
             {{item.officialPartnerSubsetName}}
           </td>
           <!--渠道质保-->
-          <td>
+          <td style="flex-grow: 0.5">
             {{item.channelWarranty|qudaozhibao}}
           </td>
           <!--紧急度-->
-          <td>
-            <span :style="styleRed">{{item.emergencyDegree|jinjidu}}</span>
+          <td style="flex-grow: 0.5">
+            <span :class="{active:item.isbool}">{{item.emergencyDegree|jinjidu}}</span>
           </td>
           <!--操作-->
           <td>
@@ -160,22 +160,27 @@
     </div>
     <!--分页组件结束-->
     <TrackAlert @isClose="isClose" v-if="trackShow" :trackAlterId="trackAlterId"></TrackAlert>
+    <DetailAlert @isClose1="isClose1" v-if="trackShow1" :detailAlterId="detailAlterId"></DetailAlert>
   </div>
 </template>
 <script>
   import TrackAlert from "./alertInfos/truckAlert.vue"
+  import DetailAlert from "./alertInfos/detailAlter.vue"
   export default {
     components:{
-      TrackAlert
+      TrackAlert,DetailAlert
     },
     data() {
       return {
         options:[{  // 子渠道
           value: '1',
-          label: '黄金糕'
+          label: '-请选择-'
         }],
         ziqudao:"",
         options1:[{//渠道质保
+          value: '2',
+          label: '--请选择--'
+        },{
           value: '0',
           label: '质保外'
         },{
@@ -184,6 +189,9 @@
         }],
         ziqudaozhibao:"",
         options2:[{//紧急度
+          value: '2',
+          label: '--请选择--'
+        },{
           value: '0',
           label: '正常'
         },{
@@ -218,7 +226,9 @@
         officialPartnerSubsetId:"", //子渠道选中ID
         styleRed:{"background":"#ffffff",color:"black"}, //背景色加急
         trackShow: false,         //跟踪显示
+        trackShow1:false,
         trackAlterId : "",//渠道跟踪ID
+        detailAlterId:"",
     }
     },
     created(){
@@ -228,7 +238,7 @@
       this.kehuID = this.chushiId[0].id;
       let url1 = this.$apidomain+"/officialPartnerSubsetInfo/findlistOfficialPartnerSubsetInfo?officialPartnerId="+this.kehuID
       this.$http.get(url1).then(res=>{
-        this.ziqudaoData = res.data.result;
+        this.ziqudaoData = [{name:"--请选择--"},...res.data.result];
       });
 
 // 分类
@@ -239,6 +249,16 @@
       });
     },
     methods: {
+      jinjiduClick(value){
+        if(value == "2"){
+          this.jinjidu = "";
+        }
+      },
+      ziqudaozhibaoClick(value){
+        if(value == "2"){
+          this.ziqudaozhibao = "";
+        }
+      },
       isClose(v){////接收给儿子组件数据
         this.trackShow = v;
       },
@@ -247,8 +267,14 @@
         this.$store.commit("trackAlterId",vItem.id)
         this.trackAlterId = vItem.id;
       },
+      isClose1(v){////接收给儿子组件数据
+        this.trackShow1 = v;
+      },
       detailClick(vItem1,Iindex1){ //详情
-
+        this.trackShow1 = true;
+//        this.$store.commit("detailAlterId",vItem1.id)
+        this.$store.dispatch("detailAlterId",vItem1.id);
+        this.detailAlterId = vItem1.id;
       },
       zhibaoqudao(value){ //质保渠道
         this.ziqudaoData.forEach(item=>{
@@ -308,8 +334,11 @@
           let data=r.data;
           this.tableListData = data.result;
           this.tableListData.orders.forEach((v,i)=>{
-            if(v.emergencyDegree == "1"){
-              this.styleRed ={"background":"red","color":"#ffffff"}
+            this.tableListData.orders[i].isbool =false;
+            if(this.tableListData.orders[i].emergencyDegree == "1"){
+              v.isbool =true;
+            }else if(this.tableListData.orders[i].emergencyDegree == "0"){
+              v.isbool = false;
             }
           })
           this.showPages = data.result.pageNo;
@@ -352,10 +381,7 @@
     width: 100%;
     tr{
       width: 100%;
-      display: flex;
-
       th{
-        flex: 1;
         height:52px;
         font-size:14px;
         font-family:PingFangSC-Regular;
@@ -363,16 +389,12 @@
         line-height:52px;
         text-align: center;
       };
-      th:nth-child(2){
-        flex-grow:2;
-      }
     };
   }
   .tableList table tbody{
     width: 100%;
     tr{
       width: 100%;
-      display: flex;
       border-left: 1px solid #bfcbd9;
       background:rgba(255,255,255,1);
       td{
@@ -384,9 +406,13 @@
         border-bottom: 0;
         border-left: 0;
       }
+      .active{
+        background: red;
+        color: #FFFFFF;
+      }
     }
-    tr:last-child{
-      border-bottom: 1px solid #bfcbd9;
+    tr:nth-child(2n){
+      background:#F7F8FA ;
     }
   }
   .tableList table tbody tr:hover{
@@ -422,6 +448,7 @@
     .bnt{
       margin-top: 20px;
       width: 90%;
+      margin-left: 50px;
       .el-button{
         width:200px;
       }

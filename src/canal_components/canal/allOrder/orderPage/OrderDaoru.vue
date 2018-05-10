@@ -13,7 +13,7 @@
          <!--</Upload>-->
          <el-button style="position: relative" type="primary">导入工单
            <a ref="fileBackground" href="javascript:;" class="file" style="position: absolute;left: 0;top: 0;opacity:0;">
-           <input type="file" @change="onchangeFile($event)" style="width: 100%;height: 36px">
+           <input type="file" @change="onchangeFile($event)" style="width: 100%;height: 36px" accept=".xlsx,.xls,.csv,.xml">
          </a>
          </el-button>
 

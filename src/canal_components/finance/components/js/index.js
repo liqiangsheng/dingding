@@ -26,7 +26,7 @@ export function Init(params){
 Init.prototype.getQuery=function($this,callback=null){
   $this.$http.post(this.url,{id:this.id}).then(res=>{
     let data=res.data;
-    console.log(data);
+
     if( data.code === "0000" && data.result && data.result.payState==="2"){
       if(!!callback){
           callback(data.result.paState);

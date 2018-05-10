@@ -239,7 +239,6 @@
         this.$http.get(url,params).then(r=>{
           let data=r.data;
           this.tableListData = data.result;
-          console.log(this.tableListData)
           this.showPages = data.result.pageNo;
           this.currentPageSize = data.result.pageSize;
           this.total = data.result.total;

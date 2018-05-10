@@ -136,6 +136,18 @@
             <li >师傅类型: <span v-if="!!masterInfos"> {{masterInfos.type|masterType}}</span> <span v-else>无</span></li>
             <li v-if="2==dataObj.orderSource">推荐人手机号:{{dataObj.orderSourceId|placeholder}}</li>
             <li>
+              渠道质保:{{orderData.channelWarranty|qudaozhibao}}
+            </li>
+            <li>
+              紧急度:{{orderData.emergencyDegree|jinjidu}}
+            </li>
+            <li>
+              品牌:{{orderData.serviceBrand?orderData.serviceBrand:"无"}}
+            </li>
+            <li>
+              型号:{{orderData.serviceModel?orderData.serviceBrand:"无"}}
+            </li>
+            <li>
               <textarea class="text_area" placeholder="编辑基本信息备注"  v-if="this.isEdit()" v-model="dataObj.remarks">
               </textarea>
             </li>
@@ -479,10 +491,6 @@
         </ul>
       </div>
     </div>
-
-
-
-
 
     <!-- 查看订单日志 弹框-->
     <div class="alert" v-if="dailyIsShow.isShow">

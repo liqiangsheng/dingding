@@ -125,9 +125,13 @@
         }
         let url=this.$apidomain+"/officialPartnerSubsetInfo/saveOfficialPartnerSubsetInfo";
         this.$http.post(url,this.selectorBehindObj).then(res=>{
-          let data = res.data;
-          this.findOne();
-          this.closeMove();
+          if(res.data.code === "0000"){
+            this.findOne();
+            this.closeMove();
+          }else{
+           alert(res.data.error)
+          }
+
         })
       },
       selector(item,values,SourceTypeValue){       //选中后的下拉列表

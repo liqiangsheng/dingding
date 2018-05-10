@@ -113,7 +113,7 @@
           return ;
         }
         this.objData.id = this.serviceInfo.id;
-        this.objData.tags =  this.biaoqianOptions;
+        this.objData.tags =  this.biaoqian?this.biaoqian.join(","):'';
         this.objData.fenlei = this.fenlei;
         this.objData.serviceBrand = this.input1;
         this.objData.serviceModel = this.input2;

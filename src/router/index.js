@@ -28,6 +28,7 @@ if(locationUrl.includes('manage.')){
   setSession("KEY", "3");
 
 }
+
 function backstage() {
     if(getSession("KEY")[0] === "1") {
       document.title="叮叮快修后台管理系统";
@@ -47,11 +48,12 @@ function site() {
       document.title="叮叮快修网点端";
         return true;
     }
+
     return false
 }
+
 import UserList from '@/components/user/list'
 import UserUnusual from '@/components/user/unusual'
-
 
 //师傅管理；
 const accountList = resolve => require(['@/components/master/accountList'], resolve);
@@ -75,9 +77,11 @@ const OrderList6 = resolve => require(['@/components/order/complete'], resolve);
 
 //渠道管理
 
+
 const canalList = resolve => require(['@/components/channel/canalList/canalList'], resolve);
 const channelList = resolve => require(['@/components/channel/channelList'], resolve);
 const canaChildren = resolve => require(['@/components/channel/canaChildren/canaChildren'], resolve);
+
 
 //网点管理
 const networkGlance = resolve => require(['@/components/network/networkGlance/networkGlance'], resolve);
@@ -92,6 +96,8 @@ const financeList = resolve => require(['@/components/finance/financeList/financ
 const account = resolve => require(['@/components/finance/account/account'], resolve);
 const unusualAccount = resolve => require(['@/components/finance/unusualAccount/unusualAccount'], resolve);
 const abstract = resolve => require(['@/components/finance/abstract/abstract'], resolve);
+const billManagement = resolve =>require(['@/components/finance/billManagement/billManagement'],resolve);  //账单管理
+const billingDetails = resolve =>require(['@/components/finance/billManagement/billingDetails'],resolve) ; //账单明细
 const recharge = resolve => require(['@/components/finance/recharge/recharge'], resolve);
 // console.log(recharge);
 
@@ -218,9 +224,9 @@ let router = new Router({
         name: '登录',
         component: Login1
       },
-
       // {
       //   path:"/user",
+
       //   component:UserList
       // },
         //后台  start
@@ -351,6 +357,8 @@ let router = new Router({
                 { path: '/finance/financeList', component: financeList, name: '交易对账单', menuShow: isShowFunObj.isUserNavChild("sn-finance-reconciliation") },
                 {path: '/finance/account', component: account, name: '资金账户管理', menuShow: isShowFunObj.isUserNavChild("sn-finance-account")},
                 {path: '/finance/unusualAccount', component: unusualAccount, name: '异常结算', menuShow: isShowFunObj.isUserNavChild("sn-finance-abnormalsettlement")},
+                {path:'/finance/billManagement',component:billManagement,name:"账单管理",menuShow:isShowFunObj.isUserNavChild('sn-finance-abnormalsettlement')}, //账单管理
+                {path:"/finance/billingDetails",component:billingDetails,name:"账单明细",menuShow:false}, //账单明细
                 {path: '/finance/abstract', component: abstract, name: '提成审批', menuShow: isShowFunObj.isUserNavChild("sn-finance-abnormalsettlement")},
                 {path: '/finance/recharge', component: recharge, name: '充值审批', menuShow: isShowFunObj.isUserNavChild("sn-finance-abnormalsettlement")}
 
@@ -429,13 +437,13 @@ let router = new Router({
         leaf: false, // 只有一个节点
         iconCls: 'iconfont detailed_icons biaobiao_icon channel_biaobiao_icon', // 图标样式class
         children: [
+          {path:'/finance/accountOverview',component:accountOverview,name:'账号概览',menuShow:true},
+          {path:'/finance/transactionDetail',component:transactionDetail,name:'交易明细',menuShow:true},
           {path:'/finance/bill',component:financeBill,name:"账单结算",menuShow:true},
           {path:'/finance/commission',component:financeCommission,name:'提成结算',menuShow:true},
           {path:'/finance/bill/billSettlementDetails',component:billSettlementDetails,name:"账单结算明细",menuShow:false},
           {path:'/finance/commission/commissionSettlementDetails',component:commissionSettlementDetails,name:"提成结算明细",menuShow:false},
-          {path:'/finance/accountOverview',component:accountOverview,name:'账号概览',menuShow:true},
           {path:'/finance/accountRecharge/:state',component:accountRecharge ,name:'充值',menuShow:false},
-          {path:'/finance/transactionDetail',component:transactionDetail,name:'交易明细',menuShow:true},
           //{ path: '/canal_components/finance/finance', component: finance, name: '财务管理', menuShow: true },
         ]
       },
@@ -563,7 +571,7 @@ router.beforeEach((to, from, next) => {
     }
 })
 
-//1.后台 2.渠道  3.网店
+//1.后台 2.渠道  3.网点
 // export {backstage,canal,site}
 export default router
 

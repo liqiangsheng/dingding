@@ -33,7 +33,7 @@
                       </el-select>
                     </li>
                     <li>渠道质保：
-                      <el-select v-model="ziqudaozhibao" filterable placeholder="请选择">
+                      <el-select v-model="ziqudaozhibao" filterable placeholder="请选择" @change="ziqudaozhibaoClick(ziqudaozhibao)">
                         <el-option
                           v-for="item in options1"
                           :key="item.value"
@@ -48,7 +48,7 @@
         <div class="centerDateOne">
            <ul>
              <li>紧急度：
-               <el-select v-model="jinjidu" filterable placeholder="请选择">
+               <el-select v-model="jinjidu" filterable placeholder="请选择" @change="jinjiduClick(jinjidu)">
                  <el-option
                    v-for="item in options2"
                    :key="item.value"
@@ -84,7 +84,7 @@
         </div>
       </div>
       </div>
-     <div class="tableList">
+     <div class="tableList" style="overflow-x: auto">
        <!--表格数据-->
        <table>
          <thead>
@@ -99,7 +99,7 @@
              {{index+1}}
            </td>
            <!--工单号号-->
-           <td style="flex-grow:2">
+           <td>
              {{item.id}}
            </td>
            <!--联系人-->
@@ -115,8 +115,8 @@
              {{item.fLabelBusiness|FLabelBusiness}}
            </td>
            <!--下单时间-->
-           <td style="flex-grow: 1.5">
-           {{item.appointmentDatetime|moment('YYYY-MM-DD HH:mm:ss')}}
+           <td>
+           {{item.createTime|moment('YYYY-MM-DD HH:mm:ss')}}
            </td>
            <!--子渠道-->
            <td>
@@ -179,10 +179,13 @@
       return {
         options:[{  // 子渠道
           value: '1',
-          label: '请选择'
+          label: '-请选择-'
         }],
         ziqudao:"",
         options1:[{//渠道质保
+          value: '2',
+          label: '--请选择--'
+        },{
           value: '0',
           label: '质保外'
         },{
@@ -191,6 +194,9 @@
         }],
         ziqudaozhibao:"",
         options2:[{//紧急度
+          value: '2',
+          label: '--请选择--'
+        },{
           value: '0',
           label: '正常'
         },{
@@ -227,7 +233,7 @@
         trackAlterId : "",//渠道跟踪ID
         isClass:false, //背景色加急
         trackShow1:false, //详情显示
-        detailAlterId : "",//渠道跟踪ID
+        detailAlterId : "",//渠道详情ID
       }
     },
     created(){
@@ -235,9 +241,10 @@
       //子渠道
       this.chushiId = JSON.parse(sessionStorage.getItem("userInfo"))
       this.kehuID = this.chushiId[0].id;
-      let url1 = this.$apidomain+"/officialPartnerSubsetInfo/findlistOfficialPartnerSubsetInfo?officialPartnerId="+this.kehuID[0].id;
+      let url1 = this.$apidomain+"/officialPartnerSubsetInfo/findlistOfficialPartnerSubsetInfo?officialPartnerId="+this.chushiId[0].id;
       this.$http.get(url1).then(res=>{
-        this.ziqudaoData = res.data.result;
+        this.ziqudaoData = [{name:"--请选择--"},...res.data.result];
+
       });
 
 // 分类
@@ -248,6 +255,16 @@
       });
     },
     methods: {
+      jinjiduClick(value){
+        if(value == "2"){
+          this.jinjidu = "";
+        }
+      },
+      ziqudaozhibaoClick(value){
+        if(value == "2"){
+          this.ziqudaozhibao = "";
+        }
+      },
       isClose(v){////接收给儿子组件数据
         this.trackShow = v;
       },
@@ -325,11 +342,11 @@
           this.tableListData = data.result;
           this.tableListData.orders.forEach((v,i)=>{
             this.tableListData.orders[i].isbool =false;
-             if(this.tableListData.orders[i].emergencyDegree == "1"){
-                 v.isbool =true;
-             }else if(this.tableListData.orders[i].emergencyDegree == "0"){
-                v.isbool = false;
-             }
+            if(this.tableListData.orders[i].emergencyDegree == "1"){
+              v.isbool =true;
+            }else if(this.tableListData.orders[i].emergencyDegree == "0"){
+              v.isbool = false;
+            }
           })
 
           this.showPages = data.result.pageNo;
@@ -366,16 +383,12 @@
   .tableList,.tableList table{
     width: 100%;
     background:rgba(229,233,242,1);
-
   }
   .tableList table thead{
     width: 100%;
     tr{
       width: 100%;
-      display: flex;
-
       th{
-        flex: 1;
         height:52px;
         font-size:14px;
         font-family:PingFangSC-Regular;
@@ -383,41 +396,33 @@
         line-height:52px;
         text-align: center;
       };
-      th:nth-child(2){
-        flex-grow:2;
-      }
-      th:nth-child(6){
-        flex-grow:1.5;
-      }
+
     };
   }
   .tableList table tbody{
     width: 100%;
     tr{
       width: 100%;
-      display: flex;
       border-left: 1px solid #bfcbd9;
       background:rgba(255,255,255,1);
       td{
         height:46px;
-        flex: 1;
         line-height:46px;
         text-align: center;
-        border: 1px solid #bfcbd9;
-        border-bottom: 0;
-        border-left: 0;
         .active{
           background: red;
           color: #FFFFFF;
         }
       }
     }
+    tr:nth-child(2n){
+      background:#F7F8FA  ;
+    }
+
     /*td:hover{*/
       /*background: #DBF0FF;*/
     /*}*/
-    tr:last-child{
-      border-bottom: 1px solid #bfcbd9;
-    }
+
   }
   .tableList table tbody #trHover:hover{
     background: #DBF0FF;
@@ -452,7 +457,9 @@
     .bnt{
       margin-top: 20px;
       width: 50%;
+      margin-left: 50px;
       .el-button{
+
         width:200px;
       }
     }

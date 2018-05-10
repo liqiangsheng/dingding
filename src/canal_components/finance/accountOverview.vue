@@ -3,7 +3,7 @@
       <nav class="nav_container">
         <div class="data_list">
             <p>可用余额（元）</p>
-            <p class="sum">{{creditCardMessage.balance}}</p>
+            <p class="sum">{{creditCardMessage.accountAmount}}</p>
           <div class="button_container">
               <el-button @click="recharge('1')" type="primary">充值</el-button>
               <el-button @click="recharge('0')">提现</el-button>
@@ -14,14 +14,14 @@
                <p>提成收入（元） <span>截止到昨天</span></p>
                 <p class="sum">{{findExtractTotal.toFixed(2)}}</p>
               <div class="button_container">
-                <a href="javescript:;">查看收入明细>></a>
+                <a href="javescript:;" @click="extract">查看收入明细>></a>
               </div>
             </div>
           <div class="data_list_item">
                <p>待结款金额（元） <span>不含未出账</span></p>
                 <p class="sum">{{findPendingTotal.toFixed(2)}}</p>
               <div class="button_container">
-                <a href="javescript:;">查看账单记录>></a>
+                <a href="javescript:;" @click="billDetail">查看账单记录>></a>
               </div>
             </div>
         </div>
@@ -30,7 +30,7 @@
 <!---->
       <section class="nav_title">
           <span>最近交易明细</span>
-          <a style="color:#20A0FF" href="##">查看更多>></a>
+          <a style="color:#20A0FF" href="javascript:;" @click="examineMore">查看更多>></a>
       </section>
       <div class="dable_lsit table">
         <!--导出-->
@@ -58,7 +58,7 @@
               {{item.remark||'无'}}
             </td>
             <td>
-              {{item.paySource | paySourceShow}}
+              {{item.paySource | channelPaySourceShow}}
             </td>
             <td>
               {{item.createTime}}
@@ -74,7 +74,11 @@
 </template>
 <script>
 
-  const isPushPath = (tabPathList,path) => !tabPathList.some( v => v.path === path);
+  const isPushPath = (tabPathList,path) => !tabPathList.some( v => v.path === path),
+        filterNavTabers = function (path,name) {
+            if(isPushPath(this.$store.state.tabPathList, path)) this.$store.commit("pushTabPathList",{path, name,});
+            this.$router.push({path});
+        };
 
   export default {
         data() {
@@ -99,18 +103,28 @@
             }
 
         },
+    //  /finance/commission/commissionSettlementDetails 提成明细
+//    \\/finance/bill/billSettlementDetails   账单结算明细
         methods: {
+          billDetail(){
+            const {path,name} = {path:`/finance/bill/billSettlementDetails`,name:"账单结算明细"};
+            filterNavTabers.call(this,path,name)
+          },
+          extract(){
+            const {path,name} = {path:`/finance/commission/commissionSettlementDetails`,name:"提成结算明细"};
+                  filterNavTabers.call(this,path,name)
+          },
+          examineMore(){
+              const {path,name}= {path:`/finance/transactionDetail`, name:"交易明细" };
+                   filterNavTabers.call(this,path,name)
+          },
           recharge(state){
-           let path=`/finance/accountRecharge/${state}`;
-           if(isPushPath(this.$store.state.tabPathList, path))this.$store.commit("pushTabPathList",{
-                     path:`/finance/accountRecharge/${state}`,
-                     name:!!parseInt(state)?"充值":"提现"
-                   });
-            this.$router.push({path});
+           let {path,name}={path:`/finance/accountRecharge/${state}`,name:!!parseInt(state)?"充值":"提现"};
+                filterNavTabers.call(this,path,name)
           },
           getTableList(){
             let url=`${this.$apidomain}/officialpartnercostflowController/all`;
-            this.$http.post( url ).then( r => this.getFilter(r.data).then( res => this.tableListData = res.list ))
+            this.$http.post( url ,{ page:1, rows:20 }).then( r => this.getFilter(r.data).then( res => this.tableListData = res.list ))
           },
           getFilter (res) {
            return new Promise((resolve, reject) => {

@@ -56,6 +56,7 @@
         qudaoNaem:"",//渠道名字
         chongzhiPrice:"", //充值金额
         zhifuShow:false, //支付显示
+        xianshiData:"", //cunkuan
        }
 
     },
@@ -84,6 +85,15 @@
     mounted() {
     },
     created(){
+      //cunkuan
+//      let url=this.$apidomain+"/officialPartnerAccountInfo/findOne";
+//      this.$http.post(url).then(res=>{
+//        if(res.data.code === "0000"){
+//          this.xianshiData = res.data.result;
+//        }else{
+//          return this.$queryFun.successAlert.call(this,res.data.error)
+//        }
+//      });
       //子渠道
       this.chushiId = JSON.parse(sessionStorage.getItem("userInfo"));
       this.qudaoNaem = this.chushiId[0].fullName;

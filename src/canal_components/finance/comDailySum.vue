@@ -15,6 +15,10 @@
               </div>
           </div>
       </div>
+      <div class="exporting" @click="derive">
+          <img src="../../assets/images/daochublue.png">
+          <span>导出表格</span>
+      </div>
       <div class="tableList">
           <table border="0" cellspacing="0" >
               <thead>
@@ -43,23 +47,13 @@
                   </tr>
               </tbody>
           </table>
-           <!-- 分页 -->
-          <div class="paging">
-          <p class="home">总页数{{tableListData.pageNo}}/{{tableListData.pageTotal}}</p>
-          <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :page-sizes='[20,50,100,200]'
-            layout="total, sizes, prev, pager, next, jumper"
-            :current-page="showPages"
-            :total="total"
-            :page-size="currentPageSize"
-            :page-count="pageTotal"
-          >
-          </el-pagination>
-          <p class="home last_page" @click="lasePage">尾页</p>
-          <p class="home" @click="firstPage">首页</p>
-        </div>
+          <!-- 分页 -->
+            <Pagination
+            :data="pageData"
+            :getTableList="getTableList"
+            :paramsData="paramsData"
+            :tableListData="tableListData"
+            ></Pagination>
       </div>
   </div>
 </template>
@@ -97,16 +91,18 @@
             ],
             //分页
             tableListData:{
-            pageNo:1,
-            pageSize:20,  //每页显示多少条
-            total:0,
-            pageTotal: 1,
-            list:[]
-            },
-            showPages:1,
-            currentPageSize:20,
-            total:0,
-            pageTotal:0,
+                page:1,
+                rows:20,
+                startRow:0,
+                pageTotal: 1,
+                list:[]
+                },
+                pageData:{
+                size:20,
+                startRow:0,
+                total:0,
+                pageTotal:0,
+                }
            }
        },
        created(){
@@ -135,18 +131,21 @@
                 const url = `${this.$common.apidomain}/officialPartnerExtractSettlementController/all `;
                 this.$http.post(url,params).then(res =>{
                     const data = res.data;
-                    console.log(data,"提成结算");
+                    //console.log(data,"提成结算");
                     if (data.code="0000") {
                         this.tableListData = data.result;
+                        this.pageData.total = data.result.total;
+                        this.pageData.pageTotal = data.result.pages;
+                        this.isCheckboxList = [];
+                        this.tableListData.list.forEach((v,i) =>{
+                            this.isCheckboxList.push(false);
+                            this.tableListData.list[i].isCheckboxList = false;
+                        })
                     } else {
                         this.$queryFun.successAlert.call(this,data.error)
                     }
                 })
-                this.isCheckboxList = [];
-                this.tableListData.list.forEach((v,i) =>{
-                    this.isCheckboxList.push(false);
-                    this.tableListData.list[i].isCheckboxList = false;
-                })
+                
              },
              //页签跳转
             jump(state){
@@ -166,30 +165,32 @@
                 this.getTableList(this.paramsData());
                 
             },
-
-             handleSizeChange(val) {      //每页显示多少条
-                    this.currentPageSize=val;
-                    this.getTableList(this.paramsData());
-                },
-             handleCurrentChange(val) {
-                    this.showPages=val;
-                    this.getTableList(this.paramsData());
-                },
-             firstPage(){
-                    if(  this.showPages===1 ){
-                    return alert("已经是第一页")
+            //导出
+             derive(){
+                let data  =[];
+                this.tableListData.list.forEach((v,i)=>{
+                    if(v.isCheckboxList){
+                        data.push(v.id);
                     }
-                    this.showPages=1;     //第一页
-                    this.getTableList(this.paramsData());
-                },
-             lasePage(){
-                    if(this.showPages===this.pageTotal){
-                    return alert("已经是最后一页")
-                    }
-                    this.showPages=this.pageTotal; //最后一页
-                    this.getTableList(this.paramsData());
-                },
+                });
+                if(data.length){
+                    const ids = data.join(",");
+                    const url = this.$common.apidomain+"/officialPartnerExtractSettlementController/exportFile";
+                    this.$http.post(url,{ids}).then(res=>{
+                        let data = res.data;
+                        //console.log(data,"导出")
+                        if(data.code==="0000"){
+                            window.location =data.result;
+                            this.$queryFun.successAlert.call(this,"导出成功","1")
+                        }else{
+                             this.$queryFun.successAlert.call(this,data.error);
+                        }
+                    })
+                }else{
+                    this.$queryFun.successAlert.call(this,"请选择需要导出的选项");
+                }
 
+             },
        }
     }
 </script>
@@ -197,13 +198,12 @@
    .month_sum{
         width:100%;
         //display:flex;
-        background:rgba(229,233,242,1);
+        //background:rgba(229,233,242,1);
    }
   .center{
       width:95%;
       margin-left:31px;
       margin-top:30px;
-     // margin-bottom:50px;
      .demonstration{
          margin-right:12px;
      }
@@ -220,18 +220,16 @@
               }
           }
       }
-      .btn{
+     
+  }
+   .btn{
           margin: 18px 0px 0px 65px;
-          height:100px;
+          height:36px;
           .el-button{
               width: 140px;
-              margin-top: 18px;
-              margin-bottom: 68px;
           }
       }
-  }
   .tableList,.tableList table{
-      //margin-top:50px;
       width: 100%;
       background:#FFFFFF;     
   }
@@ -239,7 +237,6 @@
       border-color:#E0E6ED;
       border-left:1px solid #E0E6ED;  
       border-bottom:1px solid #E0E6ED;     
-      //border-spacing: 1px;
       color:#393939;
       font-size: 14px;
       th,td{
@@ -248,6 +245,7 @@
           border-right:1px solid #E0E6ED;
       }
       th{
+          height:45px;
           background:#E5E9F2;
           position: relative;
       }
@@ -300,34 +298,19 @@
                  width:214px;
              }
           }
-      }
-     
+      }     
   }
-.paging{
-      font-size: 14px;
-      text-align:right;
-      width:100%;
-      line-height:50px;
-      >input,select{
-        width:42px;
-        height:20px;
-        padding:0;
-      }
-      >.link_page{
-        background: #1C5B94;
-        color:#fff;
-      }
-      .home{
-        float:right;
-      }
-      .last_page{
-        color:blue;
-        margin-left:10px;
-      }
-      .el-pagination{
-        float:right;
-        padding-top:12px;
-      }
-    }
+.exporting{
+   margin:28px 0px 20px 21px;
+   span{
+       font-size: 14px;
+       color:#20A0FF;
+       display: inline-block;
+       transform:translateY(-4px);
+   }
+}
+.exporting:hover{
+    cursor: pointer;
+}
 </style>
 

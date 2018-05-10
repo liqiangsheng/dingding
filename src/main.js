@@ -30,11 +30,13 @@ import inputs from "@/components/commInfo/inputs"
 import commAlerttext from "@/components/commInfo/commAlerttext"
 import commonAlert from "@/components/commInfo/commonAlert"
 import index from "@/canal_components/assets/index"
+import Pagination from "@/components/commInfo/pageing"       //分页组件
 
 Vue.component("seqencingIcon",seqencingIcon);
 Vue.component("commonAlert",commonAlert);
 Vue.component("inputsList",inputs);
 Vue.component("commAlerttext",commAlerttext);
+Vue.component("Pagination",Pagination);                      //分页组件
 //缓存  start
 import { getLocalStorage, setLocalStorage, getSession ,getLocalStorageUserInfo} from "../static/js/session";
 Vue.prototype.$getLocalStorage = getLocalStorageUserInfo;

@@ -76,9 +76,7 @@
                 if(res1.data.code=="0000"){
                   alert("支付成功")
                   clearInterval(this.temp);
-//                  this.zhifuShow = true;
                   this.$router.push({path:"./orderPage/alertInfos/WorkOrderSubmission"})
-
                 }else if(res1.data.code=="0902"){
                   this.success();    //充值显示
                 }else{
@@ -99,10 +97,10 @@
 
     },
     created(){
-
+      setTimeout(()=>{
         this.imgUrl = JSON.parse(sessionStorage.getItem('zhifubao')).createCodeUrl;
         this.id = JSON.parse(sessionStorage.getItem('zhifubao')).officialPartnerCostFlowId;
-
+      },500);
         setTimeout(()=>{
             let that = this;
             this.temp=setInterval(()=>{

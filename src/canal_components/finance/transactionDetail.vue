@@ -6,11 +6,9 @@
           <div class="list_name">
             日期范围 :
           </div>
-
           <DatePicker   v-model="selectorBehindObj.date"  type="datetimerange" format="yyyy-MM-dd" placeholder="请选择时间" style="width: 200px"></DatePicker>
         </div>
         <div  v-for="(item,index) in optionList" :key="index" class="list">
-
           <div class="list_name">
             {{item.name}} :
           </div>
@@ -25,7 +23,6 @@
           </el-select>
         </div>
         <div class="list">
-
           <div class="list_name">
             流水号 :
           </div>
@@ -35,7 +32,6 @@
             v-model="selectorBehindObj.streamNumber">
           </el-input>
         </div>
-
         <div class="list business">
           <div class="list_name">
             交易金额 :
@@ -52,16 +48,14 @@
           placeholder="最高"
           v-model="selectorBehindObj.max"
           >
-
           </el-input>
         </div>
       </div>
-
       <!--查询按钮-->
       <section class="query_button_box">
         <el-button @click="quiry('')" type="primary" class="query_button"> 查询</el-button>
+        <el-button @click="resetting(selectorBehindObj)"  class="query_button"> 重置</el-button>
       </section>
-
       <div @click="derive" class="derive_button cursor">导出表格</div>
       <div class="dable_lsit table">
 
@@ -100,7 +94,7 @@
               {{item.remark||'无'}}
             </td>
             <td>
-              {{item.paySource | paySourceShow}}
+              {{item.paySource | channelPaySourceShow}}
             </td>
             <td>
               {{item.createTime}}
@@ -112,23 +106,14 @@
           </tr>
           </tbody>
         </table>
-        <div class="paging">
-          <p class="home">总页数{{tableListData.pageNum}}/{{tableListData.pages}}</p>
-          <!--<p class="home">总页数{{tableListData.pageNum}}/{{tableListData.pageSize}}</p>-->
-          <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :page-sizes='[20,50,100,200]'
-            layout="total, sizes, prev, pager, next, jumper"
-            :current-page="startRow"
-            :total="total"
-            :page-size="size"
-            :page-count="pageTotal"
-          >
-          </el-pagination>
-          <p class="home last_page" @click="lasePage">尾页</p>
-          <p class="home" @click="firstPage">首页</p>
-        </div>
+
+        <Pagination
+          :data="pageData"
+          :getTableList="getTableList"
+          :paramsData="paramsData"
+          :tableListData="tableListData"
+        ></Pagination>
+
       </div>
     </div>
     <div>
@@ -136,7 +121,9 @@
   </div>
 </template>
 <script>
+
   export default {
+
     data() {
       return {
         /*
@@ -148,15 +135,16 @@
          全选反选模块end
         */
         //<!--弹窗基础数据start-->
-        statisticsDateStartStr:"",
-        statisticsDateEndStr:"",
-
         optionList: [
           {
             name: "交易类型",
             key: "payType",
             SourceTypeValue: '',
             SourceType: [
+              {
+                id:"",
+                value:"--请选择--"
+              },
               {
                 id:"1",
                 value: "充值",
@@ -177,12 +165,24 @@
             name: "支付方式",
             key: "paySource",
             SourceTypeValue: '',
-            SourceType: [{
-                  id:"Alipay",
+//            微信 支付宝 账户余额 线下
+            SourceType: [
+              {
+                id:"",
+                value:"--请选择--"
+              },
+              {
+                  id:"2",
                   value:"支付宝"
                 },{
-                  id:"WeChat",
+                  id:"1",
                   value: "微信支付"
+                },{
+                  id:"3",
+                  value: "账户余额"
+                },{
+                  id:"4",
+                  value: "线下"
                 }
             ]
           },{
@@ -190,6 +190,10 @@
             key: "payState",
             SourceTypeValue: '',
             SourceType: [
+              {
+                id:"",
+                value:"--请选择--"
+              },
               {
                 value:"进行中",
                 id:"1"
@@ -217,7 +221,9 @@
           date:["",""],
           streamNumber:'',
           min:"",
-          max:""
+          max:"",
+          statisticsDateStartStr:"",
+          statisticsDateEndStr:"",
         },
         tableListData:{
           page:1,
@@ -226,17 +232,32 @@
           pageTotal: 1,
           list:[]
         },
+        pageData:{
+          size:20,
+          startRow:0,
+          total:0,
+          pageTotal:0,
+        }
 
-        size:20,
-        startRow:0,
-        total:0,
-        pageTotal:0,
       }
     },
     created(){
       this.getTableList(this.paramsData());
     },
     methods: {
+//      重置
+      resetting(params){
+          for(let k in params) {
+            if (params[k] instanceof Array) {
+              params[k] = params[k].map(v => "")
+            } else {
+              params[k] = ""
+            }
+          }
+          for(let k in this.optionList){
+            this.optionList[k].SourceTypeValue=""
+          }
+      },
       /*
         全选反选模块start
       */
@@ -279,12 +300,11 @@
       paramsData(){
         const filterDate = e => this.$moment( this.selectorBehindObj.date[e] ).format("YYYY-MM-DD")==="Invalid date"?'':this.$moment( this.selectorBehindObj.date[e] ).format("YYYY-MM-DD");
 
-        this.statisticsDateStartStr = filterDate(0);
-
-        this.statisticsDateEndStr = filterDate(1);
+        this.selectorBehindObj.statisticsDateStartStr = filterDate(0);
+        this.selectorBehindObj.statisticsDateEndStr = filterDate(1);
         return {
-          "page":JSON.stringify(this.startRow),
-          "rows":JSON.stringify(this.size),
+          "page":JSON.stringify(this.pageData.startRow),
+          "rows":JSON.stringify(this.pageData.size),
           "startDate":filterDate(0),
           "endDate":filterDate(1),
           "minFee":this.selectorBehindObj.min,
@@ -293,8 +313,8 @@
           "payState":this.selectorBehindObj.payState,
           "journalAccountNum":this.selectorBehindObj.streamNumber,
           "paySource":this.selectorBehindObj.paySource,
-//          "statisticsDateStartStr":
-//          "statisticsDateEndStr":filterDate(1),
+          "statisticsDateStartStr":this.selectorBehindObj.statisticsDateStartStr,
+          "statisticsDateEndStr":this.selectorBehindObj.statisticsDateEndStr,
         }
       },
 
@@ -304,8 +324,8 @@
           let data=r.data;
           if(data.code==="0000"){
             this.tableListData = data.result;
-            this.total = data.result.total;
-            this.pageTotal = data.result.pages;
+            this.pageData.total = data.result.total;
+            this.pageData.pageTotal = data.result.pages;
             this.isCheckboxList=[];
             data.result.list.forEach((v,i)=>{
               this.isCheckboxList.push(false);
@@ -317,33 +337,6 @@
           }
         })
       },
-
-
-      handleSizeChange(val) {      //每页显示多少条
-        this.size=val;
-        this.getTableList(this.paramsData());
-      },
-      handleCurrentChange(val) {
-        this.startRow=val;
-        this.getTableList(this.paramsData());
-      },
-      firstPage(){
-        if(  this.startRow===1 ){
-          return alert("已经是第一页")
-        }
-        this.startRow=1;     //第一页
-        this.getTableList(this.paramsData());
-      },
-      lasePage(){
-        console.log(this.pageTotal);
-        if(this.startRow===this.pageTotal){
-          return alert("已经是最后一页")
-        }
-
-        this.startRow=this.pageTotal; //最后一页
-        this.getTableList(this.paramsData());
-      },
-
       selector(item,values,SourceTypeValue){       //选中后的下拉列表
         let key=item.key;
         values.forEach((v,i)=>{
@@ -358,6 +351,7 @@
 <style scoped lang="scss">
   @import "../../assets/styles/comminStyle";
   @import "../../assets/styles/Ch_comminStyle";
+
 #app{
   .dable_lsit{
     position:relative;

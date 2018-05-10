@@ -1,11 +1,11 @@
 <template>
-    <div>
+    <div class="accountSt">
         <div class="main-div">
             <div class="account-btn">
                 <el-button type="success" @click="open()">新建账号</el-button>
             </div>
             <div  class="table-list">
-                <table cellspacing="0">
+                <table cellspacing="0" ref="mybox">
                     <thead>
                         <tr>
                             <th v-for="(item,index) in th_list" :key="index">
@@ -14,53 +14,69 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(item,index) in tableListData" :key="index">
+                        <tr v-for="(item,index) in tableListData.list" :key="index">
                             <td>{{index+1}}</td>          <!--序号-->
                             <td>{{item.roleId|roles}}</td>  <!--角色-->
                             <td>{{item.account||"无  "}}</td>     <!--账号-->
                             <td>{{item.linkmanName    }}</td>        <!--真实姓名-->
                             <td>{{item.linkmanTelephone}}</td>         <!--手机号-->
                             <td>{{item.state|states}}</td>       <!--账号状态-->   
-                            <td>{{item.loginTime}}</td>        <!--最近登录时间-->
+                            <td>{{item.recentLogin}}</td>        <!--最近登录时间-->
                             <td>
                                 <span @click="open_details(item)">详情</span>
                                 <span @click="enable(item)">{{item.state|enable}}</span>
-                            </td>        
-                            
+                            </td>                                   
                         </tr>
                     </tbody>
                 </table>
-
+                <!-- 分页 -->
+                <Pagination
+                :data="pageData"
+                :getTableList="getTableList"
+                :paramsData="paramsData"
+                :tableListData="tableListData"
+                ></Pagination>
             </div>
         </div>
-        <account-details v-if="details_show" @isDetails="isDetails" :detailsList="detailsList"></account-details>
-        <new-account-number v-if="account_show" @isClose="isClose" :display="display"></new-account-number>
-        <forbidden v-if="isForbidden" @isForbiddens="isForbiddens" :display="display" :forbiddenId="forbiddenId"></forbidden>
+        <account-details v-if="details_show" @isDetails="isDetails" :detailsList="detailsList" :getTableList="getTableList"></account-details>
+        <new-account-number v-if="account_show" @isClose="isClose" :getTableList="getTableList"></new-account-number>
+        <forbidden v-if="isForbidden" @isForbiddens="isForbiddens" :getTableList="getTableList" :forbiddenId="forbiddenId"></forbidden>
     </div>
 </template>
 <script>
     import accountDetails from "../childrenCanal/add/account_details"          //账号详情
     import newAccountNumber from "../childrenCanal/add/new_account_number"    //新建账号
     import forbidden from "../childrenCanal/add/forbidden"                    //禁用弹框
-   // import modifyDetails from "../childrenCanal/add/modify_details"
     export default{
         components:{
            newAccountNumber,accountDetails,forbidden
         },
         data(){
             return{
-                //modify_details:false,     //修改账号详情
                 details_show:false,    // 账号详情
                 account_show:false,    //新增账号
                 th_list:["序号","角色","账号","真实姓名","手机号","账号状态","最近登录时间","操作"],
-                tableListData:[],
                 detailsList:{}, //账号详情
                 isForbidden:false, //禁用弹框
-                forbiddenId:""
+                forbiddenId:"",
+                //分页
+                tableListData:{
+                    page:1,
+                    rows:20,
+                    startRow:0,
+                    pageTotal: 1,
+                    list:[]
+                    },
+                    pageData:{
+                    size:20,
+                    startRow:0,
+                    total:0,
+                    pageTotal:0,
+                    }
             }
         },
         created(){
-           this.display()
+           this.getTableList()
         },
         methods:{
             //新增账号弹窗
@@ -71,14 +87,21 @@
             isClose(v){
                 this.account_show = v;
             },
+            paramsData(){
+
+            },
             //请求列表数据
-            display(){
-                const url =this.$common.apidomain+"/officialPartnerSubsetAccountInfo/findPage";
+            getTableList(){
+                let mainId = JSON.parse(sessionStorage.getItem("userInfo"))[0].channelId;
+                const url =this.$common.apidomain+"/officialPartnerSubsetAccountInfo/findPage?officialPartnerId="+mainId;
                 this.$http.get(url).then(res=>{
                     let data = res.data
-                    if(data.code){
+                    if(data.code==="0000"){
                         console.log(data,"账号管理")
-                        this.tableListData=data.result.officialPartnerSubsetAccountInfos;
+                        this.tableListData=data.result;
+                        this.pageData.total = data.result.total;
+                        this.pageData.pageTotal = data.result.pages;
+                        //console.log(this.tableListData,"账号管理")
                     }else{
                         this.$queryFun.successAlert.call(this,data.error);
                     }
@@ -86,20 +109,18 @@
             },
             //详情弹窗
             open_details(data){
-                console.log(data);
-                this.details_show = true
+               //console.log(this.$refs.mybox.offsetWidth,"表格宽度")
                 const url = this.$common.apidomain+"/officialPartnerSubsetAccountInfo/findoneOfficialPartnerSubsetAccountInfo?id="+data.id;
                     this.$http.get(url).then(res=>{
                         let data=res.data
                         if(data.code==="0000"){
-                            console.log("编辑账号")
+                            this.details_show = true;
                             this.detailsList = data.result;
+                            //("编辑账号",this.detailsList)
                         }else{
                             this.$queryFun.successAlert.call(this,data.error)
                         }
-                    }) 
-                
-                
+                    })    
             },
             isDetails(v){
                 this.details_show = v;
@@ -139,7 +160,7 @@
                                 type: 'success',
                                 message: '开启成功!'
                                });
-                               this.display();
+                               this.getTableList();
                             })    
                         }).catch(() => {
 
@@ -160,6 +181,9 @@
 
 </script>
 <style scoped lang="scss">
+.accountSt,.main-div,.table-list.table{
+    width:100%;
+}
  .main-div{
      width:100%;
      .account-btn{
@@ -168,7 +192,9 @@
      }
      .table-list{
          margin-top: 19px;
+         width:100%;
          table{
+             width:100%;
              border-left:1px solid #E0E6ED;
              border-bottom:1px solid #E0E6ED;
              font-size:14px;

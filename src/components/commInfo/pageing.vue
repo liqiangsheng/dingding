@@ -1,20 +1,20 @@
 <template>
     <div>
       <div class="paging">
-        <p class="home">总页数{{tableListData.pageNo}}/{{tableListData.pageTotal}}</p>
+        <p class="home">总页数{{tableListData.pageNum}}/{{tableListData.pages}}</p>
         <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :page-sizes='[20,50,100,200]'
           layout="total, sizes, prev, pager, next, jumper"
-          :current-page="data.showPages"
+          :current-page="data.startRow"
           :total="data.total"
-          :page-size="data.currentPageSize"
+          :page-size="data.size"
           :page-count="data.pageTotal"
         >
         </el-pagination>
-        <p class="home last_page" @click="lasePage">尾页</p>
-        <p class="home" @click="firstPage">首页</p>
+        <p class="home last_page cursor" @click="lasePage">尾页</p>
+        <p class="home cursor" @click="firstPage">首页</p>
       </div>
     </div>
 </template>
@@ -27,26 +27,29 @@
             }
         },
         methods: {
+          //每页显示多少条
           handleSizeChange(val) {
-            this.data.currentPageSize=val;
+            this.data.size=val;
             this.getTableList(this.paramsData());
           },
           handleCurrentChange(val) {
-            this.data.showPages=val;
+            this.data.startRow=val;
             this.getTableList(this.paramsData());
           },
           firstPage(){
-            if(this.data.showPages===1 ){
-              return alert("已经是第一页")
+            //第一页
+            if(this.data.startRow===1 ){
+              return this.$queryFun.successAlert.call(this,'已经是第一页')
             }
-            this.data.showPages=1;
+            this.data.startRow=1;
             this.getTableList(this.paramsData());
           },
           lasePage(){
-            if(this.data.showPages===this.data.pageTotal){
-              return alert("已经是最后一页")
+            //最后一页
+            if(this.data.startRow===this.data.pageTotal){
+              return this.$queryFun.successAlert.call(this,'已经是最后一页')
             }
-            this.data.showPages=this.data.pageTotal;
+            this.data.startRow=this.data.pageTotal;
             this.getTableList(this.paramsData());
           },
         },

@@ -158,14 +158,14 @@
       </div>
 
       <!--table表格-->
-      <div class="dable_lsit" style=" margin-top:10px;">
+      <div class="dable_lsit" style=" margin-top:10px;overflow-x: auto">
         <!--导出按钮-->
         <!--导出按钮结束-->
         <!--<div style="overflow-x: auto">-->
-        <div style="overflow-x: auto">
+        <!--<div style="overflow: auto">-->
         <!--表格数据-->
-          <!--<table  id="table" cellSpacing="0px" cellpadding="0">-->
-        <table  cellSpacing="0px" cellpadding="0">
+          <table  id="table" cellSpacing="0px" cellpadding="0">
+        <!--<table  cellSpacing="0px" cellpadding="0">-->
           <thead>
           <tr class="theads">
             <th>
@@ -242,6 +242,14 @@
             <td>
               {{item.state | BackOrderStatus}}
             </td>
+            <!--渠道质保-->
+            <td>
+                {{item.emergencyDegree|qudaozhibao}}
+            </td>
+            <!--紧急度-->
+            <td>
+              {{item.channelWarranty|jinjidu}}
+            </td>
             <!--操作-->
             <td class="icon">
               <!--详情-->
@@ -299,7 +307,7 @@
           </tr>
           </tbody>
         </table>
-        </div>
+        <!--</div>-->
         <!--</div>-->
         <!--表格数据结束-->
         <!--分页组件-->
@@ -739,6 +747,8 @@
           '师傅手机号',
           '下单时间',
           '状态',
+          "渠道质保",
+          "紧急度",
           '操作'
         ],
         tableListData: {},          //表格数据

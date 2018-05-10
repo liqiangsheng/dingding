@@ -21,8 +21,8 @@
         ></el-cascader>
       </div>
       <ul>
-        <li>产品名称：<el-input v-model="input2" placeholder="请输入产品名称" style="width:200px;margin-left: 7px"></el-input></li>
-        <li>配件名称：<el-input v-model="input3" placeholder="请输入配件名称" style="width:200px;margin-left: 7px"></el-input></li>
+        <li>产品名称：<el-input v-model="selectorBehindObj.fullName" placeholder="请输入产品名称" style="width:200px;margin-left: 7px"></el-input></li>
+        <li>配件名称：<el-input v-model="selectorBehindObj.name" placeholder="请输入配件名称" style="width:200px;margin-left: 7px"></el-input></li>
       </ul>
       <div class="bnt">
         <el-button type="primary" @click="query">搜索</el-button>
@@ -45,7 +45,7 @@
             {{index+1}}
           </td>
           <!--产品编码-->
-          <td style="flex-grow: 2">
+          <td>
             {{item.id}}
           </td>
           <!--分类-->
@@ -143,7 +143,9 @@
         this.$emit("callBack","1")
       },
       reset(){ //重置
-        this.query();
+        this.selectorBehindObj= {fullName:"",labelId:"",name:''};
+        this.labeloptions2=[];
+        this.options = "";
       },
       yijifenlei2(id){ ////选中分类数据请求
         let urlTwo=this.$common.apidomain+'/articleinfo/findlabelbusinessbyflabel?id='+id;
@@ -164,9 +166,9 @@
         return {params: {
           "pageNo":JSON.stringify(this.showPages),
           "pageSize":JSON.stringify(this.currentPageSize),
-          "fullName":this.selectorBehindObj.fullName,
-          "labelId":this.selectorBehindObj.labelId,
-          "mountingsName ":this.selectorBehindObj.name,
+          "fullName":this.selectorBehindObj.fullName,  //产品名称
+          "labelId":this.selectorBehindObj.labelId,//分类id
+          "mountingsName":this.selectorBehindObj.name,//产品编号
         }}
       },
       getTableList(params){ //搜索
@@ -225,9 +227,7 @@
     width: 100%;
     tr{
       width: 100%;
-      display: flex;
       th{
-        flex: 1;
         height:52px;
         font-size:14px;
         font-family:PingFangSC-Regular;
@@ -235,36 +235,25 @@
         line-height:52px;
         text-align: center;
       };
-      th:nth-child(1){
-        flex-grow: 0.2;
-      }
-      th:nth-child(2){
-        flex-grow: 2;
-      }
     };
   }
   .productList table tbody{
     width: 100%;
     tr{
       width: 100%;
-      display: flex;
       border-left: 1px solid #bfcbd9;
       background:rgba(255,255,255,1);
       td{
         height:46px;
-        flex: 1;
         line-height:46px;
         text-align: center;
-        border: 1px solid #bfcbd9;
-        border-bottom: 0;
-        border-left: 0;
       }
     }
     tr:hover{
       background: #DBF0FF;
     }
-    tr:last-child{
-      border-bottom: 1px solid #bfcbd9;
+    tr:nth-child(2n){
+      background:#F7F8FA ;
     }
   }
   .productList table tbody tr:hover{
@@ -278,7 +267,7 @@
     padding-top:20px ;
     .fenlei{
       float: left;
-      margin: 0 0 20px 5%;
+      margin: 0 0 20px 75px;
 
     }
     ul{
@@ -286,13 +275,13 @@
       display: flex;
       li{
         float: left;
-        margin-left: 5%;
+        margin-left: 75px;
       }
     }
     .bnt{
       margin-top: 20px;
       width: 90%;
-      margin-left: 5%;
+      margin-left: 140px;
       .el-button{
         width:200px;
       }

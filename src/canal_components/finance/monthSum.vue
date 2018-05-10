@@ -42,6 +42,10 @@
               </div>
           </div>
       </div>
+      <div class="exporting" @click="derive">
+          <img src="../../assets/images/daochublue.png">
+          <span>导出表格</span>
+      </div>
       <div class="tableList">
           <table border="0" cellspacing="0" >
               <thead>
@@ -70,6 +74,13 @@
                   </tr>
               </tbody>
           </table>
+          <!-- 分页 -->
+            <Pagination
+            :data="pageData"
+            :getTableList="getTableList"
+            :paramsData="paramsData"
+            :tableListData="tableListData"
+            ></Pagination>
       </div>
   </div>
 </template>
@@ -104,17 +115,19 @@
                 {"id":"","name":"未结款"},
             ],
             //分页
-             tableListData:{
-                pageNo:1,
-                pageSize:20,
-                total:0,       //总条目数
+            tableListData:{
+                page:1,
+                rows:20,
+                startRow:0,
                 pageTotal: 1,
                 list:[]
                 },
-                showPages:1,        //当前页数
-                currentPageSize:20, //每页显示的条目个数
+                pageData:{
+                size:20,
+                startRow:0,
                 total:0,
-                pageTotal:0,        //总页数
+                pageTotal:0,
+                }
            }
        },
        created(){
@@ -162,16 +175,19 @@
                     //console.log(data,"渠道账单结算流水列表");
                     if(data.code=="0000"){
                         this.tableListData = data.result;
+                        this.pageData.total = data.result.total;
+                        this.pageData.pageTotal = data.result.pages;
+                        this.isCheckboxList = [];
+                        this.tableListData.list.forEach((v,i) =>{
+                            this.isCheckboxList.push(false);
+                            this.tableListData.list[i].isCheckboxList = false;
+                        })
                     }else{
                         this.$queryFun.successAlert.call(this,data.error);
                     }
                 })
 
-                this.isCheckboxList = [];
-                this.tableListData.list.forEach((v,i) =>{
-                    this.isCheckboxList.push(false);
-                    this.tableListData.list[i].isCheckboxList = false;
-                })
+                
              },
              //查询
              query(){
@@ -183,6 +199,32 @@
                this.bill_state="";
                this.date_state="";
                this.kont_state="";
+             },
+             //导出
+             derive(){
+                let data  =[];
+                this.tableListData.list.forEach((v,i)=>{
+                    if(v.isCheckboxList){
+                        data.push(v.id);
+                    }
+                });
+                if(data.length){
+                    const ids = data.join(",");
+                    const url = this.$common.apidomain+"/officialPartnerBillSettlementController/exportFile";
+                    this.$http.post(url,{ids}).then(res=>{
+                        let data = res.data;
+                        console.log(data,"导出")
+                        if(data.code==="0000"){
+                            window.location =data.result;
+                            this.$queryFun.successAlert.call(this,"导出成功","1")
+                        }else{
+                             this.$queryFun.successAlert.call(this,data.error);
+                        }
+                    })
+                }else{
+                    this.$queryFun.successAlert.call(this,"请选择需要导出的选项");
+                }
+
              },
              //页签跳转
              jump(state){
@@ -204,7 +246,7 @@
    .month_sum{
         width:100%;
         //display:flex;
-        background:rgba(229,233,242,1);
+        //background:rgba(229,233,242,1);
    }
   .center{
       width:95%;
@@ -228,7 +270,6 @@
           .el-button{
               width: 140px;
               margin-top: 18px;
-              margin-bottom: 68px;
           }
       }
   }
@@ -314,5 +355,17 @@
       }
      
   }
+.exporting{
+   margin:28px 0px 20px 21px;
+   span{
+       font-size: 14px;
+       color:#20A0FF;
+       display: inline-block;
+       transform:translateY(-4px);
+   }
+}
+.exporting:hover{
+    cursor: pointer;
+}
 </style>
 

@@ -50,13 +50,11 @@
       <!--查询按钮-->
       <div class="btn_inquiry" @click="quiry">查询</div>
       <!--table表格-->
-      <div class="dable_lsit">
+      <div class="dable_lsit" style="overflow-x: auto">
         <!--导出按钮-->
         <!--导出按钮结束-->
-        <div style="overflow-x: auto">
         <!--表格数据-->
-        <!--<table cellSpacing="0px" cellpadding="0" id="table">-->
-          <table cellSpacing="0px" cellpadding="0" >
+        <table cellSpacing="0px" cellpadding="0" id="table">
           <thead>
           <tr class="theads">
             <th v-for="(item,index) in theadsName" :key="index">
@@ -148,7 +146,6 @@
           </tr>
           </tbody>
         </table>
-        </div>
         <!--表格数据结束-->
         <!--分页组件-->
         <div class="paging">

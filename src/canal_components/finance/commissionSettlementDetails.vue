@@ -44,17 +44,21 @@
                           <el-input  placeholder="请输入工单号" v-model="gongdanhao"></el-input>
                       </li>
                       <li>
-                           <span>联系人手机号</span></span>
+                           <span>手机尾号</span></span>
                           <el-input  placeholder="请输入手机后四位" v-model="tel"></el-input>
                       </li>
                   </ul>
               </div>
               <div class="btn">
                   <el-button type="primary" @click="primary">查询</el-button>
-                  <el-button>重置</el-button>
+                  <el-button @click="reset">重置</el-button>
               </div>
           </div>
           <!-- 查询end -->
+          <div class="exporting" @click="derive">
+            <img src="../../assets/images/daochugray.png">
+            <span>导出表格</span>
+          </div>
           <!-- 查询表格 -->
          <div class="tableList">
             <table border="0" cellspacing="0" >
@@ -85,6 +89,13 @@
                     </tr>
                 </tbody>
             </table>
+            <!-- 分页 -->
+            <Pagination
+            :data="pageData"
+            :getTableList="getTableList"
+            :paramsData="paramsData"
+            :tableListData="tableListData"
+            ></Pagination>
         </div>
       </div>
   </div>
@@ -111,18 +122,20 @@
                 {"id":"","name":"已结款"},
                 {"id":"","name":"未结款"}
                 ] ,
-      //分页
-        tableListData:{
-        pageNo:1,
-        pageSize:20,  //每页显示多少条
-        total:0,
-        pageTotal: 1,
-        list:[]
-        },
-        showPages:1,
-        currentPageSize:20,
-        total:0,
-        pageTotal:0,
+        //分页
+         tableListData:{
+                page:1,
+                rows:20,
+                startRow:0,
+                pageTotal: 1,
+                list:[]
+                },
+                pageData:{
+                size:20,
+                startRow:0,
+                total:0,
+                pageTotal:0,
+                }
       }
     },
     watch:{
@@ -138,7 +151,6 @@
             let data = res.data;
             if(data.code="0000"){
                 this.ziqudaoList = data.result;
-               // console.log(this.ziqudaoList)
             }else{
                 this.$queryFun.successAlert.call(this,data.error);
             }
@@ -185,20 +197,56 @@
                     let data = res.data;
                     if(data.code==="0000"){
                         this.tableListData = data.result;
-                        console.log("提成查看明细",this.tableListData)
+                        this.pageData.total = data.result.total;
+                        this.pageData.pageTotal = data.result.pages;
+                        this.isCheckboxList = [];
+                        this.tableListData.list.forEach((v,i) =>{
+                            this.isCheckboxList.push(false);
+                            this.tableListData.list[i].isCheckboxList = false;
+                        })
+                       // console.log("提成查看明细",this.tableListData)
                     }else{
                         this.$queryFun.successAlert.call(this,data.error);
                     }
-                })
-                this.isCheckboxList = [];
-                this.tableListData.list.forEach((v,i) =>{
-                    this.isCheckboxList.push(false);
-                    this.tableListData.list[i].isCheckboxList = false;
-                })
+                })              
              },
              //查询
              primary(){
                 this.getTableList(this.paramsData());
+             },
+             //重置
+             reset(){
+                this.date="";
+                this.jiekuanzhuangtai="";
+                this.ziqudao="";
+                this.gongdanhao="";
+                this.tel=""
+             },
+             //导出
+             derive(){
+                let data  =[];
+                this.tableListData.list.forEach((v,i)=>{
+                    if(v.isCheckboxList){
+                        data.push(v.id);
+                    }
+                });
+                if(data.length){
+                    const ids = data.join(",");
+                    const url = this.$common.apidomain+"/extractSettlementFlowing/exportFile";
+                    this.$http.post(url,{ids}).then(res=>{
+                        let data = res.data;
+                        //console.log(data,"导出")
+                        if(data.code==="0000"){
+                            window.location =data.result;
+                            this.$queryFun.successAlert.call(this,"导出成功","1")
+                        }else{
+                             this.$queryFun.successAlert.call(this,data.error);
+                        }
+                    })
+                }else{
+                    this.$queryFun.successAlert.call(this,"请选择需要导出的选项");
+                }
+
              },
              //获取子渠道ID
              selector(value){
@@ -251,6 +299,9 @@
           }
       }
       .list{
+          li:nth-of-type(2){
+              margin-left:25px;
+          }
           .el-input{
               width:200px;
           }
@@ -260,7 +311,6 @@
       }
       }
    .tableList{
-      margin-top:45px;
       border-bottom:1px solid #E0E6ED;
       .tableList table{
           width:100%;
@@ -332,8 +382,19 @@
               width:102px;
           }
       }
-
   }
+.exporting{
+   margin:39px 0px 20px 21px;
+   span{
+       font-size: 14px;
+       color:#888888;
+       display: inline-block;
+       transform:translateY(-4px);
+   }
+}
+.exporting:hover{
+    cursor: pointer;
+}
 </style>
 
 

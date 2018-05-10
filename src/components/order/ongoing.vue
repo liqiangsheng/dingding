@@ -121,11 +121,10 @@
       <!--查询按钮结束-->
 
       <!--table表格-->
-      <div class="dable_lsit">
-        <div style="overflow-x: auto">
+      <div class="dable_lsit" style="overflow-x: auto">
+
         <!--表格数据-->
-        <!--<table cellSpacing="0px" cellpadding="0"  id="table">-->
-          <table cellSpacing="0px" cellpadding="0">
+        <table cellSpacing="0px" cellpadding="0"  id="table">
           <thead>
           <tr class="theads">
             <th v-for="(item,index) in theadsName" :key="index">
@@ -196,6 +195,14 @@
             <td >
               {{item.state|orderStateShow}}
             </td>
+            <!--渠道质保-->
+            <td>
+              {{item.emergencyDegree|qudaozhibao}}
+            </td>
+            <!--紧急度-->
+            <td>
+              {{item.channelWarranty|jinjidu}}
+            </td>
             <!--操作-->
             <td class="icon">
               <!--详情-->
@@ -253,7 +260,6 @@
           </tr>
           </tbody>
         </table>
-        </div>
         <!--表格数据结束-->
         <!--分页组件-->
         <div class="paging">
@@ -614,6 +620,8 @@
 //          '下单手机号',
           // '师傅编号',
           '状态',
+          "渠道质保",
+          "紧急度",
           '操作'
         ],
         sortData: [

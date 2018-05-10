@@ -111,7 +111,7 @@
         </ul>
         <div class="ziqudao">
           <p class="ziqudaoP">　　主渠道
-            <el-select v-model="value1" placeholder="请选择子渠道" @change="zuqudaoA(value)">
+            <el-select v-model="value1" placeholder="请选择子渠道" @change="zuqudaoA(value1)">
               <el-option
                 v-for="(item,index) in zhuqudao"
                 :key="index"
@@ -220,6 +220,7 @@
         fuwufei:0,
         yujifei:0,
         mainOrderId:"",// 订单Id
+        settleType:"",//主渠道类型
       }
     },
     computed:{
@@ -248,9 +249,10 @@
         this.zhuqudao.forEach((v,i)=>{
           if(value == v.name){
             this.zhuqudaoId = v.id;
+            this.settleType = v.settleType;
           }
         });
-        //子渠道
+        //子渠
         let url1 = this.$apidomain+"/officialPartnerSubsetInfo/findlistOfficialPartnerSubsetInfo?officialPartnerId="+this.zhuqudaoId;
         this.$http.get(url1).then(res=>{
           if(res.data.code === "0000"){
@@ -258,6 +260,13 @@
             this.disabled = false;
           }
         });
+       if(this.settleType == "1"){
+             this.qudaoShow = true;
+             this.zhibaoStr = "0";
+           }else{
+             this.qudaoShow = false;
+              this.zhibaoStr = "";
+           }
       },
 
       ziqudaoA(value){ //子渠道
@@ -266,7 +275,7 @@
             this.xiaoqudaoId = v.id;
           }
         })
-        this.qudaoShow = true;
+
       },
       handleChange(value) {
         this.cityId = value[value.length - 1];
@@ -282,80 +291,38 @@
         this.linkmanName =this.$refs.one.currentLabels[1];
 
       },
-      ifElse(){  //
+
+      addTijiao(){ //提交
         if(this.input1 == ""){
-          this.flag = false;
-          this.$queryFun.successAlert.call(this,"请填写联系人")
-          return setTimeout(()=>{
-            location.reload();
-          },1000)
+          return this.$queryFun.successAlert.call(this,"请填写联系人")
         }
 
         if(this.input2 == ""){
-          this.flag = false;
-          this.$queryFun.successAlert.call(this,"请填写联系人手机");
-          return setTimeout(()=>{
-            location.reload();
-          },1000)
+          return this.$queryFun.successAlert.call(this,"请填写联系人手机");
+
         }
         let reg =  /^(13[0-9]|15[0-35-9]|18[0-9]|17[06-8]|14[57])\d{8}$/;
         if(reg.test(this.input2)==false){
-          this.flag = false;
-          this.$queryFun.successAlert.call(this,"请填写正确手机号");
-          return setTimeout(()=>{
-            location.reload();
-          },1000)
-
+          return this.$queryFun.successAlert.call(this,"请填写正确手机号");
         }
         if(this.selectedOptions2.length<=0||this.selectedOptions1.length<=0){
-          this.flag = false;
-          this.$queryFun.successAlert.call(this,"请填写服务地区");
-          return setTimeout(()=>{
-            location.reload();
-          },1000)
+          return this.$queryFun.successAlert.call(this,"请填写服务地区");
         }
         if(this.input4 == ""){
-          this.flag = false;
-          this.$queryFun.successAlert.call(this,"请填写详细地址");
-          return setTimeout(()=>{
-            location.reload();
-          },1000)
-
+          return this.$queryFun.successAlert.call(this,"请填写详细地址");
         }
         if(this.input5 == ""){
-
-          this.flag = false;
-          this.$queryFun.successAlert.call(this,"请填写预约时间");
-          return setTimeout(()=>{
-            location.reload();
-          },1000)
+          return this.$queryFun.successAlert.call(this,"请填写预约时间");
         }
-      },
-
-      addTijiao(){ //提交
-        console.log(111)
-        this.ifElse();
-
         if(this.peijiankuang == false){
-          this.flag = false;
-          this.$queryFun.successAlert.call(this,"请添加产品")
-          return setTimeout(()=>{
-            location.reload();
-          },1000)
+          return  this.$queryFun.successAlert.call(this,"请添加产品");
         }
         if(this.danxuanShow1 == false&&this.danxuanShow2 == false){
-          this.flag = false;
-          this.$queryFun.successAlert.call(this,"请选择质保状态");
-          return setTimeout(()=>{
-            location.reload();
-          },1000)
+          return this.$queryFun.successAlert.call(this,"请选择质保状态");
         }
         if(this.danxuanShow3 == false&&this.danxuanShow4 == false){
-          this.flag = false;
-          this.$queryFun.successAlert.call(this,"请选择紧急程度");
-          return setTimeout(()=>{
-            location.reload();
-          },1000)
+          return  this.$queryFun.successAlert.call(this,"请选择紧急程度");
+
         }
         this.query();
       },
@@ -419,24 +386,56 @@
       addProduct1(){//添加产品
         this.flagOne = 2;
         this.xiaohui = false;
-        this.ifElse();
-        if( this.flag == false){
-          this.addShowONE = false;
-        }else if(this.flag == true){
-          this.addShowONE = true;
+        if(this.input1 == ""){
+          return this.$queryFun.successAlert.call(this,"请填写联系人")
         }
+
+        if(this.input2 == ""){
+          return this.$queryFun.successAlert.call(this,"请填写联系人手机");
+
+        }
+        let reg =  /^(13[0-9]|15[0-35-9]|18[0-9]|17[06-8]|14[57])\d{8}$/;
+        if(reg.test(this.input2)==false){
+          return this.$queryFun.successAlert.call(this,"请填写正确手机号");
+        }
+        if(this.selectedOptions2.length<=0||this.selectedOptions1.length<=0){
+          return this.$queryFun.successAlert.call(this,"请填写服务地区");
+        }
+        if(this.input4 == ""){
+          return this.$queryFun.successAlert.call(this,"请填写详细地址");
+        }
+        if(this.input5 == ""){
+          return this.$queryFun.successAlert.call(this,"请填写预约时间");
+        }
+        this.addShowONE = true;
+
 
       },
       addProduct(){//添加产品
         this.flagOne = 1;
         this.xiaohui1 = false;
-        this.ifElse();
-
-        if( this.flag == false){
-          this.addShow = false;
-        }else if(this.flag == true){
-          this.addShow = true;
+        if(this.input1 == ""){
+          return this.$queryFun.successAlert.call(this,"请填写联系人")
         }
+
+        if(this.input2 == ""){
+          return this.$queryFun.successAlert.call(this,"请填写联系人手机");
+
+        }
+        let reg =  /^(13[0-9]|15[0-35-9]|18[0-9]|17[06-8]|14[57])\d{8}$/;
+        if(reg.test(this.input2)==false){
+          return this.$queryFun.successAlert.call(this,"请填写正确手机号");
+        }
+        if(this.selectedOptions2.length<=0||this.selectedOptions1.length<=0){
+          return this.$queryFun.successAlert.call(this,"请填写服务地区");
+        }
+        if(this.input4 == ""){
+          return this.$queryFun.successAlert.call(this,"请填写详细地址");
+        }
+        if(this.input5 == ""){
+          return this.$queryFun.successAlert.call(this,"请填写预约时间");
+        }
+        this.addShow = true;
       },
       query(){  //初始数据
         this.input5 = this.$moment(this.input5).format("YYYY-MM-DD HH:mm:ss");
@@ -468,9 +467,11 @@
           if(res.data.code == "0000"){
             //充值显示
             this.$queryFun.successAlert.call(this,"恭喜工单新建成功","1");
-            this.$router.push({path:"/order/list2"})
-           location.reload();
-           return
+            setTimeout(()=>{
+              this.$router.push({path:"/order/list2"});
+              location.reload();
+            },1000)
+           return;
 
           }else{
             return this.$queryFun.successAlert.call(this,res.data.error)

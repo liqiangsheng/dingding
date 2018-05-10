@@ -95,19 +95,22 @@
                    </div>
             </div>
       <CreditIsRunningLow v-if="CreditIsRunningLowShow" :detailDataOrderTotal="detailData.waitAmount" @isClose="isClose"></CreditIsRunningLow>
+      <WorkOrderSubmission v-if="WorkOrderSubmissionShow"  @isClose="isClose"></WorkOrderSubmission>
   </div>
 </template>
 <script>
   import CreditIsRunningLow from "./creditIsRunningLow.vue"
+  import WorkOrderSubmission from "./WorkOrderSubmission.vue"
   export default {
     components:{
-      CreditIsRunningLow,
+      CreditIsRunningLow,WorkOrderSubmission
     },
     props:["detailAlterId"],
     data() {
       return {
         fukuan:"去支付",
         fukuanShow:false,
+        WorkOrderSubmissionShow:false,
         CreditIsRunningLowShow:false,
         listShow:false,  //服务类型 配件费
         peijian:[], //配件列表
@@ -121,6 +124,7 @@
     created(){
       let url = this.$apidomain +"/orderquery/findOneDetails?id="+this.$store.state.detailAlterId;
       this.$http.get(url).then(res=>{
+        console.log(res);
         this.detailData = res.data.result.coreMainOrder;
         if(this.detailData.emergencyDegree =="1"){
           this.isStyle = {background:"red",color:"#ffffff"}
@@ -149,11 +153,30 @@
       })
     },
     methods: {
+      getTableList(){
+            sessionStorage.removeItem("mainOrderId");
+            sessionStorage.setItem('mainOrderId', JSON.stringify(this.detailData.id));
+            let mainOrderIdObj={};
+            mainOrderIdObj.mainOrderId = this.detailData.id;
+            mainOrderIdObj.officialPartnerId = this.detailData.officialPartnerId;
+            console.log(mainOrderIdObj)
+            let mainOrderIdUrl=this.$apidomain+"/order/payCallback";
+            this.$http.post(mainOrderIdUrl,mainOrderIdObj).then(res1=>{
+              if(res1.data.code =="0000"){
+                this.WorkOrderSubmissionShow = true;
+              }else if(res1.data.code=="0902"){
+                   this.CreditIsRunningLowShow =true;
+              }else{
+                return this.$queryFun.successAlert.call(this,res1.data.error)
+              }
+            })
+      },
       isClose(){
         this.CreditIsRunningLowShow =false;
       },
       fukuanClcik(){//去结款
-        this.CreditIsRunningLowShow =true;
+//        this.CreditIsRunningLowShow =true;
+        this.getTableList()
       },
        close(){ //传值给父亲组件
         let isbool = false;

@@ -20,8 +20,8 @@
         ></el-cascader>
       </div>
       <ul>
-        <li>产品名称：<el-input v-model="input2" placeholder="请输入产品名称" style="width:200px;margin-left: 7px"></el-input></li>
-        <li>配件名称：<el-input v-model="input3" placeholder="请输入配件名称" style="width:200px;margin-left: 7px"></el-input></li>
+        <li>产品名称：<el-input v-model="selectorBehindObj.fullName" placeholder="请输入产品名称" style="width:200px;margin-left: 7px"></el-input></li>
+        <li>配件名称：<el-input v-model="selectorBehindObj.name" placeholder="请输入配件名称" style="width:200px;margin-left: 7px"></el-input></li>
       </ul>
       <div class="bnt">
         <el-button type="primary" @click="query">搜索</el-button>
@@ -38,7 +38,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr v-for="(item,index) in tableListData.mountings">
+        <tr v-for="(item,index) in tableListData.serviceAreaMountings">
           <!--序号-->
           <td>
             {{index+1}}
@@ -53,7 +53,7 @@
           </td>
           <!--产品名称-->
           <td>
-            {{name}}
+            {{item.serviceName}}
           </td>
           <!--&lt;!&ndash;检测费&ndash;&gt;-->
           <!--<td>-->
@@ -125,7 +125,7 @@
         total: 0, //分页
         pageTotal: 0, //分页
         selectorBehindObj: { //选择查询数据
-          serviceId:"",
+          fullName:"",
           labelId:"",
           name:'',
           areaId:"",
@@ -145,7 +145,9 @@
         this.$emit("callBack","2")
       },
       reset(){ //重置
-        this.query();
+        this.labeloptions2=[];
+        this.options = "";
+        this.selectorBehindObj={ fullName:"",labelId:"",name:'',areaId:this.$store.state.Product.areaInfos[0].areaId,serviceId:this.$store.state.Product.areaInfos[0].serviceId}
       },
       yijifenlei2(id){ ////选中分类数据请求
         let urlTwo=this.$common.apidomain+'/articleinfo/findlabelbusinessbyflabel?id='+id;
@@ -163,14 +165,15 @@
         this.getTableList(this.paramsData());
       },
       paramsData(){  //传数据给后台
+        let aaa =this.$store.state.Product.areaInfos[0].serviceId;
         return {params: {
           "pageNo":JSON.stringify(this.showPages),
           "pageSize":JSON.stringify(this.currentPageSize),
-          "serviceId":this.selectorBehindObj.fullName,
+          "serviceId":aaa,
+          "fullName":this.selectorBehindObj.fullName,  //产品名称
           "labelId":this.selectorBehindObj.labelId,
-          "mountingsName ":this.selectorBehindObj.name,
+          "mountingsName":this.selectorBehindObj.name,
            "areaId":this.$store.state.Product.areaInfos[0].areaId,
-           "serviceId":this.$store.state.Product.areaInfos[0].serviceId,
         }}
       },
       getTableList(params){ //搜索
@@ -178,10 +181,10 @@
         this.$http.get(url,params).then(r=>{
           let data=r.data;
           this.tableListData = data.result;
-          if(this.tableListData.mountings.length == 0){
-            this.tableListData.mountings =[{areaId : "0101", areaName : "深圳", id :"无",labelId : "暂无配件", labelParentId :"000", name: "暂无配件", price:"暂无费用", serviceAreaId:"无"}]
+          if(this.tableListData.serviceAreaMountings.length == 0){
+            this.tableListData.serviceAreaMountings =[{areaId : "0101", areaName : "深圳", id :"无",labelId : "暂无配件", labelParentId :"000", serviceName: "暂无配件", name: "暂无配件",price:"暂无费用", serviceAreaId:"无"}]
           }else{
-            this.tableListData.mountings = this.tableListData.mountings;
+            this.tableListData.serviceAreaMountings = this.tableListData.serviceAreaMountings;
           }
           this.name = data.result.fullName;
           this.showPages = data.result.pageNo;

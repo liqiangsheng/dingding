@@ -538,6 +538,18 @@ Vue.filter('paySourceShow',function(input){
   }
   return "无"
 });
+Vue.filter('channelPaySourceShow',function(input){
+  if("2"==input){
+    return "支付宝支付";
+  }else if("1"==input){
+    return "微信支付";
+  }else if("3"==input){
+    return "账户余额";
+  }else if("1"==input){
+    return "线下"
+  }
+  return "无"
+});
 Vue.filter('payStateShow',function(input){
   if("Pay"==input){
     return "已支付";
@@ -734,6 +746,7 @@ Vue.filter('payTypeShow',function(input){
   }
 });
 Vue.filter('payType',function(input){
+
   if("1"==input){
     return "充值";
   }else if("2"==input){
@@ -742,6 +755,8 @@ Vue.filter('payType',function(input){
     return "支付";
   }else if("4"==input){
     return "结款";
+  }else if("5"==input){
+    return "退款"
   }
   return "无"
 });
@@ -1044,7 +1059,7 @@ Vue.filter('channelWarranty',function(input){
 
 //账号管理
 Vue.filter('roles',function(input){
-  if("SuperAdmin"===input){
+  if("Admin"===input){
     return "超级管理员"
   }else{
     return "管理员"
@@ -1073,3 +1088,22 @@ Vue.filter('settleType',function(input){
   return "无"
 });
 
+Vue.filter('rechargeState',function(input){
+  //0.审核中1.通过2.驳回
+  if("0"===input){
+      return "审核中";
+    }else if("1"===input){
+      return "已通过";
+    }else if("2"===input){
+      return "已驳回";
+    }
+  return "无"
+});
+//后台渠道账单
+Vue.filter('billPayType',function(input){
+  if("1"===input){
+    return "已结款"
+  }else{
+    return "查看凭证"
+  }
+})

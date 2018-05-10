@@ -18,7 +18,8 @@
   import Vue from 'vue'
   import axios from 'axios'
   import {requestLogin} from '../api/api';
-  import { setSession,
+  import {
+    setSession,
     getSession,
     setLocalStorageUserInfo,
     getLocalStorage,
@@ -51,7 +52,7 @@
     },
     methods: {
       handleLogin() {
-        this.$router.push({ path: '/' });
+//        this.$router.push({ path: '/' });
           let url =`${this.$apidomain}/login/login`;
           let params={"username":this.account.username,"password":md5(this.account.pwd),"type":getSession("KEY")[0]};
         this.$http.post(url,params).then(res=>{
@@ -62,8 +63,9 @@
               setSession("userInfo",data.result);
               setLocalStorageUserInfo("enrolleeinfo",data.result);
               setSession("fle",true);
+              setSession("update","0")
               this.$router.push({ path: '/'});
-              history.go(0)
+//              history.go(0)
             }else{
               this.logining=false;
               this.$queryFun.successAlert.call(this,data.error);
@@ -80,8 +82,8 @@
       })
     },
     created(){
-      if(getSession("KEY")[0]==="3"&&window.location.href.indexOf("http://localhost")===-1&&false){
-//      if(getSession("KEY")[0]==="3"&&window.location.href.indexOf("http://localhost")===-1){
+      if(getSession("KEY")[0]==="3"&&window.location.href.indexOf("http://localhost")===-1&&false){ //测试
+//      if(getSession("KEY")[0]==="3"&&window.location.href.indexOf("http://localhost")===-1){//上线用
         setTimeout(()=>{
           window.location.href=this.$common.channelLogin;
         },1000);
