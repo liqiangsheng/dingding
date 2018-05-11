@@ -39,7 +39,7 @@
             <li>
 
             </li>
-            <li>工单类型：<span v-if="!!orderDetailed.data">{{orderDetailed.data.type|orderType}}</span><span v-else>无</span> </li>
+            <li>工单类型：{{dataObj.type|orderType}}</li>
             <li>服务城市: {{dataObj.city||placeholder}}</li>
             <li>绑定手机号: {{dataObj.userNumber ||placeholder}}</li>
             <li>联系人:                     <!--可编辑-->
@@ -758,6 +758,7 @@
       }
     },
     created(){
+      console.log(this.orderDetailed)
       this.findOne();
       this.getTableList();
     },
@@ -869,6 +870,7 @@
 
             this.orderData = data.result.coreMainOrder;
             this.dataObj.orderNumber = res.id;
+            this.dataObj.type = res.type;
             this.dataObj.city=res.linkmanArea;
             this.dataObj.userNumber=res.userPhoneNum;
             this.dataObj.contactsName=res.linkmanName;

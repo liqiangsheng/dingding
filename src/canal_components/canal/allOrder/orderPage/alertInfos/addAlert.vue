@@ -55,7 +55,7 @@
 </template>
 <script>
   export default {
-    props:["cityId"],
+    props:["cityId","xiaoqudaoId"],
     components:{
     },
     data() {
@@ -151,7 +151,7 @@
       },
       changeSelector2(val){
         this.moziID = val[val.length - 1];
-        let urlThree=this.$common.apidomain+"/articleinfo/findChannelListServiceInfo?labelId="+this.moziID +"&areaId="+this.cityId;
+        let urlThree=this.$common.apidomain+"/articleinfo/findChannelListServiceInfo?labelId="+this.moziID +"&areaId="+this.cityId+"&relevanceKey="+this.xiaoqudaoId+"&relevanceType="+1;
         this.$http.get(urlThree).then((res)=>{
           if(res.data.code === "0000"){
             this.serviceInfo = res.data.result[0].serviceInfo;
@@ -202,7 +202,8 @@
              this.fenleiOptions = res.data.result;
         }
       })
-
+  console.log(this.xiaoqudaoId)
+      console.log(this.cityId)
     }
   }
 </script>

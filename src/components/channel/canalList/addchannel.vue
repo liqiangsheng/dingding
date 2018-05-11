@@ -194,7 +194,7 @@
         ],
         bank:{
           name: "开户行",
-          key: "bankCardBranch",
+          key: "bankOfDeposit",
           bankValue: '',
           bankName: [
             {

@@ -88,7 +88,7 @@
             <th>
               <el-checkbox v-model="checked" @change="wholeSelector(tableList.evaluates,checked)"></el-checkbox>
             </th>
-            <th v-for="(item,index) in theadsName" :key="index">
+            <th v-for="(item,index) in theadsName">
               {{item}}
               <!--<seqencing-icon v-if="$queryFun.sortFun(index)" :data="$queryFun.sortFun(index)" :getTableList="getTableList" :params="paramsData()" ></seqencing-icon>-->
             </th>

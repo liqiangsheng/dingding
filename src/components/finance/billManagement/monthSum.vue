@@ -100,7 +100,7 @@
             :tableListData="tableListData"
             ></Pagination>
       </div>
-      <money v-if="isMoney" @isClose="isClose" :accountId='accountId'></money>
+      <money v-if="isMoney" @isClose="isClose" :accountList='accountList'></money>
   </div>
 </template>
 <script>
@@ -113,7 +113,7 @@
        props:["typeState"],
        data(){
            return{
-            accountId:"",        //确认结款传给子组件ID
+            accountList:{},        //确认结款传给子组件ID
             isMoney:false,
             object_type:"",      //对象类型
             objectCode:"",      //对象编号
@@ -197,7 +197,7 @@
                 const url = `${this.$apidomain}/billManageController/all`;
                 this.$http.post(url,params).then(res =>{
                     let data = res.data;
-                    console.log(data.result,"渠道账单结算月汇总流水列表");
+                    //console.log(data.result,"渠道账单结算月汇总流水列表");
                     if(data.code=="0000"){
                         this.tableListData = data.result;
                         this.pageData.total = data.result.total;
@@ -229,7 +229,7 @@
                 let billData={};
                 billData.billTime = state.bookkeepingTime;
                 billData.billType = this.typeState;
-                console.log("传给账单详情参数",billData)
+                //console.log("传给账单详情参数",billData)
                 let path=`/finance/billingDetails`;
                 if(isPushPath(this.$store.state.tabPathList, path))this.$store.commit("pushTabPathList",{
                             path:`/finance/billingDetails`,
@@ -244,7 +244,7 @@
              check(data){
                 // console.log(data.junctionsState,"状态")
                  if(data.junctionsState==="1"){
-                   this.accountId = data.id;
+                   this.accountList = data;
                    this.isMoney = true;
                  }
                  

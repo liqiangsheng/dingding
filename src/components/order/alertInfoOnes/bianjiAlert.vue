@@ -57,7 +57,7 @@
 </template>
 <script>
   export default {
-    props:["bianjiData","cityId"],
+    props:["bianjiData","cityId","QuDaoId"],
     components:{
     },
     data() {
@@ -154,7 +154,7 @@
       changeSelector2(val){
         this.moziID = val[val.length - 1];
         console.log(this.moziID)
-        let urlThree=this.$common.apidomain+"/articleinfo/findChannelListServiceInfo?labelId="+this.moziID +"&areaId="+this.cityId;
+        let urlThree=this.$common.apidomain+"/articleinfo/findChannelListServiceInfo?labelId="+this.moziID +"&areaId="+this.cityId+"&relevanceKey="+this.QuDaoId+"&relevanceType="+1;
         this.$http.get(urlThree).then((res)=>{
           if(res.data.code === "0000"){
             this.serviceInfo = res.data.result[0].serviceInfo;

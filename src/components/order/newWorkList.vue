@@ -1,9 +1,9 @@
 <template>
   <div id="app">
     <div >
-      <AddAlter @isClose="isClose" v-if="addShow" @pejianzengjia="pejianzengjia" :cityId="cityId"></AddAlter>
-      <AddAlterOne @isClose="isClose" v-if="addShowONE" @pejianzengjia="pejianzengjia" :bianjiData1="bianjiData1" :cityId="cityId"></AddAlterOne>
-      <BianjiAlter @isClose="isClose" v-if="bianjiShow" @pejianzengjia="pejianzengjia" :bianjiData="bianjiData"  :cityId="cityId"></BianjiAlter>
+      <AddAlter @isClose="isClose" v-if="addShow" @pejianzengjia="pejianzengjia" :cityId="cityId"  :QuDaoId="QuDaoId"></AddAlter>
+      <AddAlterOne @isClose="isClose" v-if="addShowONE" @pejianzengjia="pejianzengjia" :bianjiData1="bianjiData1" :cityId="cityId"  :QuDaoId="QuDaoId"></AddAlterOne>
+      <BianjiAlter @isClose="isClose" v-if="bianjiShow" @pejianzengjia="pejianzengjia" :bianjiData="bianjiData"  :cityId="cityId" :QuDaoId="QuDaoId"></BianjiAlter>
       <div>
         <div class="yuyue">
           <p class="yuyueP"><span></span>预约信息（带<b style="color: #EA5413">*</b>为必填）</p><br>
@@ -35,6 +35,30 @@
               <!--<Col span="12" style="display: inline-block">-->
               <!--<DatePicker type="date" placeholder="请选择日期" style="width: 24.6%;height: 36px" v-model="input5"></DatePicker>-->
               <DatePicker type="datetime" v-model="input5" format="yyyy-MM-dd HH:mm:ss" placeholder="请选择预约日期" style="width: 200px;height: 36px"></DatePicker><!--</Col>-->
+            </li>
+            <li>
+              <div class="ziqudao">
+                <p class="ziqudaoP">　主渠道
+                  <el-select v-model="value1" placeholder="请选择子渠道" @change="zuqudaoA(value1)">
+                    <el-option
+                      v-for="(item,index) in zhuqudao"
+                      :key="index"
+                      :label="item.name"
+                      :value="item.name">
+                    </el-option>
+                  </el-select>
+                  　　子渠道:
+                  <el-select v-model="value" placeholder="请选择子渠道" @change="ziqudaoA(value)" :disabled="disabled">
+                    <el-option
+                      v-for="(item,index) in ziqudao"
+                      :key="index"
+                      :label="item.name"
+                      :value="item.name">
+                    </el-option>
+                  </el-select>
+                </p>
+
+              </div>
             </li>
 
           </ul>
@@ -94,9 +118,9 @@
             </table>
             <!--表格数据结束-->
             <ul class="feiyongList">
-              <li>检测费小计：{{zongjia}}元</li>
-              <li>服务费小计：{{fuwufei}}元</li>
-              <li>预估价：{{yujifei}}元</li>
+              <li>检测费小计：{{zongjia.toFixed(2)}}元</li>
+              <li>服务费小计：{{fuwufei.toFixed(2)}}元</li>
+              <li>预估价：{{yujifei.toFixed(2)}}元</li>
             </ul>
 
           </div>
@@ -109,28 +133,7 @@
           </li>
 
         </ul>
-        <div class="ziqudao">
-          <p class="ziqudaoP">　　主渠道
-            <el-select v-model="value1" placeholder="请选择子渠道" @change="zuqudaoA(value1)">
-              <el-option
-                v-for="(item,index) in zhuqudao"
-                :key="index"
-                :label="item.name"
-                :value="item.name">
-              </el-option>
-            </el-select>
-            　　子渠道:
-            <el-select v-model="value" placeholder="请选择子渠道" @change="ziqudaoA(value)" :disabled="disabled">
-              <el-option
-                v-for="(item,index) in ziqudao"
-                :key="index"
-                :label="item.name"
-                :value="item.name">
-              </el-option>
-            </el-select>
-          </p>
 
-        </div>
         <ul class="zhibao" v-show="qudaoShow">
           <li class="zhibaoP"><span></span><b style="float: left;font-weight: 100">渠道质保</b>
             <p @click="danxuan2(item,index)" v-for="(item,index) in zhibao"><el-button>{{item}}</el-button><img src="/static/images/danxuan.png"  v-show="jinjiduIndex1 == index"></p>
@@ -221,6 +224,7 @@
         yujifei:0,
         mainOrderId:"",// 订单Id
         settleType:"",//主渠道类型
+        QuDaoId:"",
       }
     },
     computed:{
@@ -250,6 +254,7 @@
           if(value == v.name){
             this.zhuqudaoId = v.id;
             this.settleType = v.settleType;
+            this.QuDaoId =v.id;
           }
         });
         //子渠
@@ -273,6 +278,7 @@
         this.ziqudao.forEach((v,i)=>{
           if(value == v.name){
             this.xiaoqudaoId = v.id;
+            this.QuDaoId = v.id;
           }
         })
 
@@ -463,16 +469,13 @@
       getTableList(params){
         let url=this.$apidomain+"/order/submit";
         this.$http.post(url,params).then(res=>{
-          console.log(res)
           if(res.data.code == "0000"){
             //充值显示
-            this.$queryFun.successAlert.call(this,"恭喜工单新建成功","1");
+              this.$queryFun.successAlert.call(this,"恭喜工单新建成功","1");
+                this.$router.push({path:"/order/list2"});
             setTimeout(()=>{
-              this.$router.push({path:"/order/list2"});
-              location.reload();
-            },1000)
-           return;
-
+                location.reload();
+                },300)
           }else{
             return this.$queryFun.successAlert.call(this,res.data.error)
           }

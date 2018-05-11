@@ -55,7 +55,7 @@
 </template>
 <script>
   export default {
-    props:["bianjiData1","cityId"],
+    props:["bianjiData1","cityId","xiaoqudaoId"],
     components:{
     },
     data() {
@@ -119,8 +119,6 @@
         this.objData.serviceModel = this.input2;
         this.objData.size = this.num;
         this.objData.serviceInfo = this.serviceInfo;
-//        this.objData.result = this.labeloptions;
-//        this.objData.objOptions = this.objOptions;
         this.objData.serviceInfo = this.serviceInfo;
         if("001"== this.fenlei){
           this.yijiName = "家电清洗";
@@ -156,7 +154,7 @@
       },
       changeSelector2(val){
         this.moziID = val[val.length - 1];
-        let urlThree=this.$common.apidomain+"/articleinfo/findChannelListServiceInfo?labelId="+this.moziID +"&areaId="+this.cityId;
+        let urlThree=this.$common.apidomain+"/articleinfo/findChannelListServiceInfo?labelId="+this.moziID +"&areaId="+this.cityId+"&relevanceKey="+this.xiaoqudaoId+"&relevanceType="+1;
         this.$http.get(urlThree).then((res)=>{
           console.log(res)
           if(res.data.code === "0000"){

@@ -80,13 +80,13 @@
           </el-date-picker>
         </div>
         <!--下拉-->
-        <div  v-for="(item,index) in optionList" :key="index" class="list">
+        <div  v-for="(item,index) in optionList" class="list">
           {{item.name}} :
           <el-select
             v-model="item.SourceTypeValue" placeholder="请选择" @change="selector(item,item.SourceType,item.SourceTypeValue)">
             <el-option
-              v-for="items in item.SourceType"
-              :key="items.value"
+              v-for="(items,index) in item.SourceType"
+              :key="index"
               :value="items.value"
             >
             </el-option>
@@ -95,13 +95,13 @@
         </div>
         <!--城市-->
 
-        <div class="list" v-for="(item,index) in city" :key="index" >
+        <div class="list" v-for="(item,index) in city">
           城市 :
           <el-select
             v-model="item.SourceTypeValue" placeholder="请选择" @change="selectorArea(item,item.SourceType,item.SourceTypeValue)">
             <el-option
-              v-for="items in item.SourceType"
-              :key="items.value"
+              v-for="(items,index) in item.SourceType"
+              :key="index"
               :value="items.value"
             >
             </el-option>
@@ -122,8 +122,8 @@
           分类 :
           <el-select v-model="orderLabel" placeholder="请选择" @change="selectorOne(orderLabel)">
             <el-option
-              v-for="item in labeloptions2"
-              :key="item.id"
+              v-for="(item,index) in labeloptions2"
+              :key="index"
               :label="item.name"
               :value="item.name">
             </el-option>
@@ -134,8 +134,8 @@
           工单类型 :
           <el-select v-model="orderTypeOne" placeholder="请选择" @change="orderTypeOneClick(orderTypeOne)">
             <el-option
-              v-for="item in orderType"
-              :key="item.id"
+              v-for="(item,index) in orderType"
+              :key="index"
               :label="item.name"
               :value="item.name">
             </el-option>
@@ -395,7 +395,7 @@
         </el-input>
 
         </li>
-        <li v-for="(item,index) in masterImposeData.alertForbiddenList" :key="index" @click="masterImposeSelector(item)">
+        <li v-for="(item,index) in masterImposeData.alertForbiddenList"  @click="masterImposeSelector(item)">
           {{item.name}} <span v-show="item.selector!='0'"></span>
         </li>
       </ul>
@@ -798,8 +798,6 @@
       this.$http.get(url).then(r=>{
         let data=r.data;
         this.labeloptions2=this.labeloptions2.concat(data.result);
-
-        console.log(this.labeloptions2);
       });
     },
     mounted() {
@@ -902,7 +900,6 @@
       //显示新建工单；end
       //导出start
       exportOrder(){
-            console.log(this.tableList)
             let newArr = [];
             this.tableList.forEach((item,index)=>{
               if(item.isCheckboxList == true){
@@ -913,7 +910,6 @@
                let str = newArr.join(",");
                let strUrl = this.$apidomain+"/orderquery/createOrderExcel?orderId="+str;
                this.$http.get(strUrl).then((res)=>{
-//                     console.log(res);
                      if(res.data.code == "0000"){
                          window.location=res.data.result;
 //                       var url1=res.data.result;

@@ -24,7 +24,6 @@ if(locationUrl.includes('manage.')){
   setSession("KEY", "3");
 
 }else{
-
   setSession("KEY", "1");
 
 }

@@ -65,7 +65,7 @@
            >
         </div>
         <!--下拉-->
-        <div  v-for="(item,index) in optionList" :key="index" class="list">
+        <div  v-for="(item,index) in optionList" class="list">
           {{item.name}} :
           <el-select
             v-model="item.SourceTypeValue" placeholder="请选择" @change="selector(item,item.SourceType,item.SourceTypeValue)">
@@ -92,7 +92,7 @@
         </div>
         <!--城市-->
 
-        <div class="list" v-for="(item,index) in city" :key="index" >
+        <div class="list" v-for="(item,index) in city">
           城市 :
           <el-select
             v-model="item.SourceTypeValue" placeholder="请选择" @change="selectorArea(item,item.SourceType,item.SourceTypeValue)">
@@ -139,7 +139,7 @@
         <table id="table" cellSpacing="0px" cellpadding="0">
           <thead>
           <tr class="theads">
-            <th v-for="(item,index) in theadsName" :key="index">{{item}}</th>
+            <th v-for="(item,index) in theadsName">{{item}}</th>
           </tr>
           </thead>
           <tbody>
@@ -315,7 +315,7 @@
 
     <el-dialog  style="z-index:999999"  :visible.sync="dialogTableVisible" size="tiny">
       <ul class="alert_forbidden_text">
-        <li v-for="(item,index) in alertForbiddenList" :key="index" @click="selectorForbidden(item,index)">
+        <li v-for="(item,index) in alertForbiddenList" @click="selectorForbidden(item,index)">
           {{item.name}} <span v-show="item.selector!='0'"></span>
         </li>
       </ul>
@@ -371,7 +371,7 @@
                     v-model="masterImposeData.amount">
           </el-input>
         </li>
-        <li v-for="(item,index) in masterImposeData.alertForbiddenList" :key="index" @click="masterImposeSelector(item)">
+        <li v-for="(item,index) in masterImposeData.alertForbiddenList" @click="masterImposeSelector(item)">
           {{item.name}} <span v-show="item.selector!='0'"></span>
         </li>
       </ul>

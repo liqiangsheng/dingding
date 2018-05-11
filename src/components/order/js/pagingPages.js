@@ -178,7 +178,7 @@ export function changeTimeFilter(input){
   }
 }
 export function cancelOrderFilter(input){
-  if(input==='01'||input==='03'||input==='05'||input==='06'||input==='07'||input==='08'||input==='10'||input==='11'){
+  if(input==='01'||input==='03'||input==='05'||input==='06'||input==='07'||input==='08'||input==='10'||input==='11'||input ==='04'){
     return true;
   }else{
     return false;

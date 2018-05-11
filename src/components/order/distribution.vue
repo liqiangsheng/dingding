@@ -42,7 +42,7 @@
           </el-date-picker>
         </div>
         <!--下拉-->
-        <div  v-for="(item,index) in optionList" :key="index" class="list">
+        <div  v-for="(item,index) in optionList" class="list">
           {{item.name}} :
           <el-select
             v-model="item.SourceTypeValue" placeholder="请选择" @change="selector(item,item.SourceType,item.SourceTypeValue)">
@@ -57,7 +57,7 @@
         </div>
         <!--城市-->
 
-        <div class="list" v-for="(item,index) in city" :key="index" >
+        <div class="list" v-for="(item,index) in city" >
           城市 :
           <el-select
             v-model="item.SourceTypeValue" placeholder="请选择" @change="selectorArea(item,item.SourceType,item.SourceTypeValue)">
@@ -116,7 +116,7 @@
             <th class="multiple">
               <el-checkbox v-model="checked" @change="wholeSelector(tableList,checked)"></el-checkbox>
             </th>
-            <th v-for="(item,index) in theadsName" :key="index">{{item}}</th>
+            <th v-for="(item,index) in theadsName">{{item}}</th>
           </tr>
           </thead>
           <tbody>
@@ -134,7 +134,7 @@
             </td>
             <!--工单类型-->
             <td>
-              {{item.source|orderSource}}
+              {{item.type|orderType}}
             </td>
             <!--分类-->
             <td>
@@ -171,9 +171,11 @@
               {{item.createTime|moment('YYYY-MM-DD HH:mm:ss') | placeholder}}
             </td>
             <!--工单来源-->
+
             <td>
-              {{item.type|orderType}}
+              {{item.source|orderSource}}
             </td>
+
             <!--渠道质保-->
             <td>
               {{item.channelWarranty|qudaozhibao}}
@@ -281,7 +283,7 @@
 
     <el-dialog  style="z-index:999999"  :visible.sync="dialogTableVisible" size="tiny">
       <ul class="alert_forbidden_text">
-        <li v-for="(item,index) in alertForbiddenList" :key="index" @click="selectorForbidden(item,index)">
+        <li v-for="(item,index) in alertForbiddenList"  @click="selectorForbidden(item,index)">
           {{item.name}} <span v-show="item.selector!='0'"></span>
         </li>
       </ul>
@@ -332,7 +334,7 @@
                     v-model="masterImposeData.amount">
           </el-input>
         </li>
-        <li v-for="(item,index) in masterImposeData.alertForbiddenList" :key="index" @click="masterImposeSelector(item)">
+        <li v-for="(item,index) in masterImposeData.alertForbiddenList" @click="masterImposeSelector(item)">
           {{item.name}} <span v-show="item.selector!='0'"></span>
         </li>
       </ul>

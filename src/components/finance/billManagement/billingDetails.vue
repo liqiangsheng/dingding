@@ -297,6 +297,7 @@
       }
   }
   .tableList table{
+      width:100%;
       border-left:1px solid #E0E6ED;           
       font-size:14px;
       th,td{

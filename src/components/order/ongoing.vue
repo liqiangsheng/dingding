@@ -79,7 +79,7 @@
 
         <!--城市-->
 
-        <div class="list" v-for="(item,index) in city" :key="index" >
+        <div class="list" v-for="(item,index) in city">
           城市 :
           <el-select
             v-model="item.SourceTypeValue" placeholder="请选择" @change="selectorArea(item,item.SourceType,item.SourceTypeValue)">
@@ -127,7 +127,7 @@
         <table cellSpacing="0px" cellpadding="0"  id="table">
           <thead>
           <tr class="theads">
-            <th v-for="(item,index) in theadsName" :key="index">
+            <th v-for="(item,index) in theadsName">
               {{item}}
               <seqencing-icon v-if="$queryFun.sortFun(index,sortData)" :data="$queryFun.sortFun(index,sortData)" :getTableList="getTableList" :params="paramsData()" ></seqencing-icon>
             </th>
@@ -302,7 +302,7 @@
 
     <el-dialog  style="z-index:999999"  :visible.sync="dialogTableVisible" size="tiny">
       <ul class="alert_forbidden_text">
-        <li v-for="(item,index) in alertForbiddenList" :key="index" @click="selectorForbidden(item,index)">
+        <li v-for="(item,index) in alertForbiddenList"  @click="selectorForbidden(item,index)">
           {{item.name}} <span v-show="item.selector!='0'"></span>
         </li>
       </ul>
@@ -355,7 +355,7 @@
                     v-model="masterImposeData.amount">
           </el-input>
         </li>
-        <li v-for="(item,index) in masterImposeData.alertForbiddenList" :key="index" @click="masterImposeSelector(item)">
+        <li v-for="(item,index) in masterImposeData.alertForbiddenList" @click="masterImposeSelector(item)">
           {{item.name}} <span v-show="item.selector!='0'"></span>
         </li>
       </ul>
@@ -784,7 +784,7 @@
           "createTime":this.selectorBehindObj.placeTime,     //    下单时间
           "officialPartnerId":this.selectorBehindObj.sourceId,  //渠道
           "masterId":this.selectorBehindObj.masterJobNumber, //师傅工号
-          "state":this.selectorBehindObj.orderStatus,      //工单状态
+//          "state":this.selectorBehindObj.orderStatus,      //工单状态
           "fLabelBusiness" : this.selone, //分类
           "type":this.orderName, //工单类型
           "masterName":this.masterName, //师傅姓名
@@ -864,7 +864,6 @@
         this.$http.post(urlR,{"remark":content,"reasonOfComplain":selector,"fee":amount,"orderId":orderId}).then(r=>{
           let data=r.data;
           if(data.code==='0000'){
-            console.log(data);
             item.params=[];
             item.masterImpose=false;
           }else{
@@ -901,7 +900,6 @@
       },
 
       confirmForbidden(item,textContent){ //确定拒绝
-//        console.log(item, textContent);
         var o={};
         item.forEach((v)=>{
           if(v.selector===true){

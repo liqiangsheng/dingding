@@ -336,6 +336,11 @@
           this.tableListData = data.result;
           this.tableListData.orders.forEach((v,i)=>{
             this.tableListData.orders[i].isbool =false;
+            if(!v.officialPartnerSubsetName){
+              v.officialPartnerSubsetName = "无"
+            }else{
+              v.officialPartnerSubsetName = v.officialPartnerSubsetName;
+            }
             if(this.tableListData.orders[i].emergencyDegree == "1"){
               v.isbool =true;
             }else if(this.tableListData.orders[i].emergencyDegree == "0"){

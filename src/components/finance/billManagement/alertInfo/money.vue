@@ -11,34 +11,34 @@
               <table border="0" cellspacing="0">
                  <tr>
                      <td>渠道名称</td>
-                     <td></td>
+                     <td>{{accountList.officialPartnerName}}</td>
                      <td>渠道编号</td>
-                     <td></td>
+                     <td>{{accountList.officialPartnerId}}</td>
                  </tr>
                  <tr>
                      <td>记账周期</td>
-                     <td></td>
+                     <td>{{accountList.bookkeepingTime}}</td>
                      <td>账单金额</td>
-                     <td></td>
+                     <td>{{accountList.operationFee}}</td>
                  </tr>
                  <tr>
                      <td>可用余额</td>
                      <td></td>
                      <td>待结金额</td>
-                     <td></td>
+                     <td>{{accountList.pendingFee}}</td>
                  </tr>
               </table>
               <!-- 支付方式 -->
               <div>
                 <label>支付方式<span>*</span></label>
                 <el-select v-model="payType" clearable placeholder="请选择" >
-                            <el-option                           
+                            <el-option
                             v-for="(item,index) in payList"
                             :key="index"
                             :label="item.name"
                             :value="item.name">
                             </el-option>
-                </el-select> 
+                </el-select>
             </div>
             <!-- 备注or上传凭证 -->
             <div class="voucher" v-if="isPay">
@@ -67,9 +67,10 @@
       components:{
 
       },
-      props:['accountId'],
+      props:['accountList'],
       data(){
           return{
+           tableList:{},
            text:"" ,     //备注
            payType:"",    //选中的支付方式
            isPay:true,
@@ -81,7 +82,7 @@
 
       },
       created(){
-        
+       // this.getDataList(this.params());
       },
       watch:{
          payType(newVal,oldVal){
@@ -89,6 +90,33 @@
          }
       },
       methods:{
+        params(){
+          let billPayType = "";
+          if(this.payType==="可用余额扣款"){
+              billPayType="1"
+          }else if(this.payType==="线下转账"){
+               billPayType="2"
+          }else{
+              billPayType=""
+          }
+          //billPayType =  this.payType==="可用余额扣款"?"1":"2";
+          return{
+            "junctionsType":billPayType,
+            "idPhotos":"",                //凭证
+            "remark":this.text,           //备注
+            "id":this.accountList.id
+          }
+        },
+        getDataList(params){
+          let url = this.$common.apidomain + '/billManageController/confirmation'
+          this.$http.post(url,params).then(res=>{
+            let data = res.data;
+            if(data.code==="0000"){
+              console.log(data,'确认结款数据')
+             
+            }
+          })
+        },
          submit(){
 
          },
@@ -152,13 +180,13 @@
       margin:39px 100px 0px 17px;
       width:806px;
       height:500px;
-     // background:lightblue; 
+     // background:lightblue;
       table{
            border-left:1px solid #D8D8D8;
            border-top:1px solid #D8D8D8;
            font-size: 14px;
            margin-bottom: 41px;
-          tr{             
+          tr{
               height:38px;
               line-height: 38px;
               td{
@@ -193,17 +221,17 @@
            position: absolute;
            left: 26px;
            top:58px;
-         } 
+         }
         >span{
             position:absolute;
             color:#E65831;
             font-size:14px;
             left:398px;
             top:54px;
-        }      
+        }
         p{
-            width:280px; 
-            height:100%;         
+            width:280px;
+            height:100%;
             background:#EEEDEF;
             position: absolute;
             left: 83px;
@@ -242,7 +270,7 @@
         }
   }
   }
-  
+
   .btn{
           margin-left:266px;
           bottom:40px;

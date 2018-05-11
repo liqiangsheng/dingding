@@ -102,10 +102,10 @@
             </li>
             <li>开户行:
               <span v-if="!isEdit()">
-                {{dataObj.bankCardBranch}}
+                {{dataObj.bankOfDeposit}}
               </span>
               <span v-else>
-                <el-select style="margin-left: 44px"  v-model="dataObj.bankCardBranch" placeholder="请选择" @change="selector1(bank,bank.bankName,dataObj.bankCardBranch)">
+                <el-select style="margin-left: 44px"  v-model="dataObj.bankOfDeposit" placeholder="请选择" @change="selector1(bank,bank.bankName,dataObj.bankOfDeposit)">
                 <el-option
                   v-for="items in bank.bankName"
                   :key="items.value"
@@ -244,7 +244,7 @@
       return{
         bank:{
           name: "开户行",
-          key: "bankCardBranch",
+          key: "bankOfDeposit",
           bankValue: '',
           bankName: [
             {
@@ -423,7 +423,7 @@
         o.areaId = this.linkmanAreaId
         o.linkmanTelephone = this.dataObj.linkmanTelephone;
         o.companyTelephone = this.dataObj.companyTelephone;
-        o.bankCardBranch = this.dataObj.bankCardBranch;
+        o.bankOfDeposit = this.dataObj.bankOfDeposit;
         o.cardNumber = this.dataObj.cardNumber;
         o.settleType =this.dataObj.settleType;
         o.settleDay = this.dataObj.settleDay;

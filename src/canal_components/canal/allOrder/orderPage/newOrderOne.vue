@@ -1,8 +1,8 @@
 <template>
   <div>
-  <AddAlter @isClose="isClose" v-if="addShow" @pejianzengjia="pejianzengjia" :cityId="cityId"></AddAlter>
-  <AddAlterOne @isClose="isClose" v-if="addShowONE" @pejianzengjia="pejianzengjia" :bianjiData1="bianjiData1" :cityId="cityId"></AddAlterOne>
-  <BianjiAlter @isClose="isClose" v-if="bianjiShow" @pejianzengjia="pejianzengjia" :bianjiData="bianjiData"  :cityId="cityId"></BianjiAlter>
+  <AddAlter @isClose="isClose" v-if="addShow" @pejianzengjia="pejianzengjia" :cityId="cityId" :xiaoqudaoId="xiaoqudaoId"></AddAlter>
+  <AddAlterOne @isClose="isClose" v-if="addShowONE" @pejianzengjia="pejianzengjia" :bianjiData1="bianjiData1" :cityId="cityId" :xiaoqudaoId="xiaoqudaoId"></AddAlterOne>
+  <BianjiAlter @isClose="isClose" v-if="bianjiShow" @pejianzengjia="pejianzengjia" :bianjiData="bianjiData"  :cityId="cityId" :xiaoqudaoId="xiaoqudaoId"></BianjiAlter>
   <CreditIsRunningLow v-if="chongzhiShow" @isClose="isClose"  :yujifei="yujifei"></CreditIsRunningLow>
   <WorkOrderSubmission @isClose="isClose" v-if="chongzhiShow1"></WorkOrderSubmission>
 
@@ -38,7 +38,18 @@
           <!--<DatePicker type="date" placeholder="请选择日期" style="width: 24.6%;height: 36px" v-model="input5"></DatePicker>-->
           <DatePicker type="datetime" v-model="input5" format="yyyy-MM-dd HH:mm:ss" placeholder="请选择预约日期" style="width: 200px;height: 36px;"></DatePicker><!--</Col>-->
         </li>
-
+      <li>
+        <p class="ziqudaoP">　　子渠道
+          <el-select v-model="value" placeholder="请选择子渠道" @change="ziqudaoA(value)">
+            <el-option
+              v-for="(item,index) in ziqudao"
+              :key="index"
+              :label="item.name"
+              :value="item.name">
+            </el-option>
+          </el-select>
+        </p>
+      </li>
       </ul>
     </div>
 
@@ -94,9 +105,9 @@
         </table>
         <!--表格数据结束-->
         <ul class="feiyongList">
-          <li>检测费小计：{{zongjia}}元</li>
-          <li>服务费小计：{{fuwufei}}元</li>
-          <li>预估价：{{yujifei}}元</li>
+          <li>检测费小计：{{zongjia.toFixed(2)}}元</li>
+          <li>服务费小计：{{fuwufei.toFixed(2)}}元</li>
+          <li>预估价：{{yujifei.toFixed(2)}}元</li>
         </ul>
 
       </div>
@@ -115,17 +126,7 @@
 
     </ul>
     <div class="ziqudao">
-      <p class="ziqudaoP">　　子渠道
-        <el-select v-model="value" placeholder="请选择子渠道" @change="ziqudaoA(value)">
-          <el-option
-            v-for="(item,index) in ziqudao"
-            :key="index"
-            :label="item.name"
-            :value="item.name">
-          </el-option>
-        </el-select>
-      </p>
-      <br>
+
       <p class="qitaP"><span style="transform: translateY(12px)">　　　其他</span><el-input
         type="textarea"
         placeholder="请输入其他备注"
@@ -205,6 +206,7 @@
         fuwufei:0,
         yujifei:0,
         mainOrderId:"",// 订单Id
+        ziqudaoIdOne:"",
       }
     },
     computed:{
@@ -213,9 +215,11 @@
     created(){
         //子渠道
       this.chushiId = JSON.parse(sessionStorage.getItem("userInfo"))
+      this.xiaoqudaoId =this.chushiId[0].id;
       let url1 = this.$apidomain+"/officialPartnerSubsetInfo/findlistOfficialPartnerSubsetInfo?officialPartnerId="+this.chushiId[0].id;
       this.$http.get(url1).then(res=>{
-        this.ziqudao = res.data.result;
+        this.ziqudao = [{name:"--请选择--",id:this.chushiId[0].id},...res.data.result];
+
       });
       if(this.chushiId[0].channelSettleType == "1"){
         this.zhibaoIsShow =true;
@@ -242,6 +246,7 @@
          this.ziqudao.forEach((v,i)=>{
              if(value == v.name){
                 this.xiaoqudaoId = v.id;
+                this.ziqudaoIdOne =v.id;
              }
          })
       },
@@ -292,7 +297,6 @@
 
         }
          this.query();
-
       },
       detailClick(v,i){  //删除
 //        this.tableListData = this.tableListData.filter((item,index)=>{
@@ -339,7 +343,8 @@
           this.zongjia=Math.max.apply(null, c); //求最大值
             d.push(v.serviceInfo.price2DiscountFee*v.size)
           this.fuwufei= eval(d.join("+"));//求和
-          this.yujifei = this.zongjia+this.fuwufei;  //求总金额
+         this.yujifei = this.zongjia+this.fuwufei;  //求总金额
+
         })
       },
       isClose(val){//增加配件弹框
@@ -409,10 +414,8 @@
         this.jinjiduIndex1 = i;
         if(i==0){
           this.zhibaoStr = "0";
-          console.log( this.zhibaoStr)
         }else if(i==1){
           this.zhibaoStr = "1";
-          console.log( this.zhibaoStr)
         }
       },
       danxuan3(v,i){//正常单选
@@ -430,7 +433,6 @@
       },
       paramsData(){  //传数据给后台
           let aaaaaa=JSON.stringify(this.tableListData)
-        console.log(this.zhibaoStr)
         return{
           "officialPartnerId":this.chushiId[0].id, //主渠道ID
           "appointmentDatetime":this.input5, //预约时间
@@ -442,7 +444,7 @@
           "linkmanTelephone":this.input6, //联系人座机
           "serviceIdsJson":aaaaaa, // 产品信息
           "orderRemark":this.qita, // 订单备注其他
-          "officialPartnerSubsetId":this.xiaoqudaoId,    //  子渠道id
+          "officialPartnerSubsetId":this.ziqudaoIdOne,    //  子渠道id
           "emergencyDegree":this.jinjiduStr, // 紧急度
           "channelWarranty":this.zhibaoStr,    //  渠道质保
 
@@ -750,6 +752,8 @@
           margin-left: 22px;
         }
       }
+
+    }
       .ziqudaoP{
         overflow: hidden;
         margin-bottom: 15px;
@@ -760,8 +764,6 @@
         }
 
       }
-    }
-
 
 
 </style>

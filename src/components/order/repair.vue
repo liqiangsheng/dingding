@@ -89,7 +89,7 @@
         </div>
 
         <!--下拉-->
-        <div  v-for="(item,index) in optionList" :key="index" class="list">
+        <div  v-for="(item,index) in optionList" class="list">
           {{item.name}} :
           <el-select
             v-model="item.SourceTypeValue" placeholder="请选择" @change="selector(item,item.SourceType,item.SourceTypeValue)">
@@ -104,7 +104,7 @@
         </div>
         <!--城市-->
 
-        <div class="list" v-for="(item,index) in city" :key="index" >
+        <div class="list" v-for="(item,index) in city">
           城市 :
           <el-select
             v-model="item.SourceTypeValue" placeholder="请选择" @change="selectorArea(item,item.SourceType,item.SourceTypeValue)">
@@ -165,7 +165,7 @@
             <th>
               <el-checkbox v-model="checked" @change="wholeSelector(tableList,checked)">全选</el-checkbox>
             </th>
-            <th v-for="(item,index) in theadsName" :key="index">{{item}}</th>
+            <th v-for="(item,index) in theadsName">{{item}}</th>
           </tr>
           </thead>
           <tbody>
@@ -461,7 +461,6 @@
     mounted() {
       this.$nextTick(function () {
         this.isTooltip();
-        console.log("isTooltip", this.isTooltip_show);
       });
     },
     data() {
@@ -747,7 +746,6 @@
         let data=r.data;
         this.labeloptions2=this.labeloptions2.concat(data.result);
 
-        console.log(this.labeloptions2);
       });
     },
     destroyed(){
@@ -756,11 +754,9 @@
     methods: {
 
       selectorOne(item){       //选中后的下拉列表
-//        console.log(item);
         this.labeloptions2.forEach(v=>{
           if(v.name==item){
             this.selone=v.id
-//            console.log(this.selone)
           }
         })
 
@@ -1018,7 +1014,6 @@
       },
       changeSelector(value){      //区域
         this.areaoptions1.forEach((v,i)=>{
-          console.log(v)
           if(value[0]===v.label){
             this.areaId=v.id;    //选择区
             v.cities.forEach((e,i)=>{
@@ -1074,7 +1069,6 @@
           let data=r.data;
           if(data.code==='0000'){
             getTableListData(data,this.isCheckboxList,this);
-            console.log(data);
           }else{
             alert(data.error)
           }
@@ -1206,7 +1200,6 @@
        * */
       isCheckbox(data,index){   //列表单选
         let _this=this,isCheck = true,i;
-        console.log("tableList",_this.tableList);
         _this.tableList[index].isCheckboxList = _this.isCheckboxList[index]
         for (i = 0; i < _this.isCheckboxList.length; i++) {
           if (!_this.isCheckboxList[i]) {
@@ -1214,7 +1207,6 @@
             break;
           }
         };
-//        console.log(isCheck)
         _this.checked = isCheck;
       },
       wholeSelector(data,currentState){ //全选  是否选择currentState=true/false

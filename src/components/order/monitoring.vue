@@ -21,7 +21,7 @@
             v-model="inputParams.masterId">
           </el-input>
         </div>
-        <div class="list" v-for="(item,index) in city" :key="index" >
+        <div class="list" v-for="(item,index) in city">
           城市 :
           <el-select
             v-model="item.SourceTypeValue" placeholder="请选择" @change="selectorArea(item,item.SourceType,item.SourceTypeValue)">
@@ -57,7 +57,7 @@
         <table cellSpacing="0px" cellpadding="0" id="table">
           <thead>
           <tr class="theads">
-            <th v-for="(item,index) in theadsName" :key="index">
+            <th v-for="(item,index) in theadsName">
               {{item}}
               <seqencing-icon v-if="$queryFun.sortFun(index,sortData)" :data="$queryFun.sortFun(index,sortData)" :getTableList="getTableList" :params="paramsData()" ></seqencing-icon>
             </th>
@@ -188,7 +188,7 @@
 
     <el-dialog  style="z-index:999999"  :visible.sync="dialogTableVisible" size="tiny">
       <ul class="alert_forbidden_text">
-        <li v-for="(item,index) in alertForbiddenList" :key="index" @click="selectorForbidden(item,index)">
+        <li v-for="(item,index) in alertForbiddenList" @click="selectorForbidden(item,index)">
           {{item.name}} <span v-show="item.selector!='0'"></span>
         </li>
       </ul>
@@ -238,7 +238,7 @@
                     v-model="masterImposeData.amount">
           </el-input>
         </li>
-        <li v-for="(item,index) in masterImposeData.alertForbiddenList" :key="index" @click="masterImposeSelector(item)">
+        <li v-for="(item,index) in masterImposeData.alertForbiddenList"  @click="masterImposeSelector(item)">
           {{item.name}} <span v-show="item.selector!='0'"></span>
         </li>
       </ul>
