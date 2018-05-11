@@ -115,11 +115,11 @@
   overflow: hidden;
   header{
     width: 100%;
-    height: 70px;
+    height: 50px;
     position: relative;
     p:nth-child(1){
       position: absolute;
-      right:80px;
+      right:40px;
       top:20px;
       height:20px;
       font-size:14px;
@@ -130,13 +130,13 @@
     }
     p:nth-child(2){
       position: absolute;
-      right:40px;
+      right:20px;
       top:50px;
-      height:59px;
+      height:40px;
       font-size:14px;
       font-family:PingFangSC-Regular;
       background:rgba(255,247,204,1);
-      line-height:59px;
+      line-height:40px;
     }
   }
   content{
@@ -166,8 +166,10 @@
   }
   footer{
     width: 100%;
+    position: absolute;
+    bottom: 20px;
+    left: 0;
     text-align: center;
-    margin-bottom: 20px;
   }
 }
 </style>

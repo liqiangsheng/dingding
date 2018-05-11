@@ -69,14 +69,16 @@ export function testReg(data,_this,sit){
       });
       return false
     }
-    }else if(k==="companyTel"||k==="companyTelephone"){
-      if(!isPhone.test(data[k])){
-        _this.$message({
-          message: '请输入有效的公司电话',
-        });
-        return false
-      }
-    }else if(k==="password"){
+    }
+    // else if(k==="companyTel"||k==="companyTelephone"){
+    //   if(!isPhone.test(data[k])){
+    //     _this.$message({
+    //       message: '请输入有效的公司电话',
+    //     });
+    //     return false
+    //   }
+    // }
+    else if(k==="password"){
         if(data[k]===""){
           _this.$message({
             message: '密码不可为空',
@@ -89,40 +91,44 @@ export function testReg(data,_this,sit){
           });
           return false
         }
-    }else if(k==="headquarterAddress"){
-      if(data[k]===""){
-        _this.$message({
-          message: '请填写详细地址',
-        });
-        return false;
-      }
-      if(data[k].length>=60){
-        _this.$message({
-          message: '请填写详细地址，长度不超过60个字符',
-        });
-        return false;
-      }
-    }else if(k==="bankOfDeposit"){
-        if(data[k]===""){
-          _this.$message({
-            message: '请填写开户行',
-          });
-          return false;
-        }
-    }else if(k==="cardNumber"){
-        if(data[k]===""){
-          _this.$message({
-            message: '请填写卡号',
-          });
-          return false;
-        }
-        if(!(data[k].length>=7)||!(data[k].length<=28)){
-          _this.$message({
-            message: '请输入8位到28位数的卡号',
-          });
-          return false;
-      }
-    }else if(k==="remark"&&sit==="advertiseme"){
+    }
+    // else if(k==="headquarterAddress"){
+    //   if(data[k]===""){
+    //     _this.$message({
+    //       message: '请填写详细地址',
+    //     });
+    //     return false;
+    //   }
+    //   if(data[k].length>=60){
+    //     _this.$message({
+    //       message: '请填写详细地址，长度不超过60个字符',
+    //     });
+    //     return false;
+    //   }
+    // }
+    // else if(k==="bankOfDeposit"){
+    //     if(data[k]===""){
+    //       _this.$message({
+    //         message: '请填写开户行',
+    //       });
+    //       return false;
+    //     }
+    // }
+    // else if(k==="cardNumber"){
+    //     if(data[k]===""){
+    //       _this.$message({
+    //         message: '请填写卡号',
+    //       });
+    //       return false;
+    //     }
+    //     if(!(data[k].length>=7)||!(data[k].length<=28)){
+    //       _this.$message({
+    //         message: '请输入8位到28位数的卡号',
+    //       });
+    //       return false;
+    //   }
+    // }
+    else if(k==="remark"&&sit==="advertiseme"){
       if(data[k].length>=100){
         _this.$message({
           message: '请填写广告内容，字符长度不可超过100个字符',

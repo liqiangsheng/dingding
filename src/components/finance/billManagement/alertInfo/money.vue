@@ -67,7 +67,7 @@
       components:{
 
       },
-      props:["display"],
+      props:['accountId'],
       data(){
           return{
            text:"" ,     //备注
@@ -79,6 +79,9 @@
            ]
           }
 
+      },
+      created(){
+        
       },
       watch:{
          payType(newVal,oldVal){

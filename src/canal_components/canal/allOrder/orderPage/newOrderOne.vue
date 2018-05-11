@@ -452,24 +452,29 @@
         let url=this.$apidomain+"/order/submitByChannel";
         this.$http.post(url,params).then(res=>{
               if(res.data.code == "0000"){
-                //充值显示
-                   this.mainOrderId = res.data.result.id;
-                   sessionStorage.removeItem("mainOrderId");
-                   sessionStorage.setItem('mainOrderId', JSON.stringify(this.mainOrderId));
-                    let mainOrderIdObj={};
-                    mainOrderIdObj.mainOrderId = this.mainOrderId;
-                    mainOrderIdObj.officialPartnerId = this.chushiId[0].id;
-                let mainOrderIdUrl=this.$apidomain+"/order/payCallback";
-                this.$http.post(mainOrderIdUrl,mainOrderIdObj).then(res1=>{
-                   if(res1.data.code=="0000"){
+                    if(this.chushiId[0].channelSettleType == "1"){
                       this.$queryFun.successAlert.call(this,"工单提交成功","1");
                        this.chongzhiShow1 = true;
-                   }else if(res1.data.code=="0902"){
-                     this.chongzhiShow=true;    //充值显示
-                   }else{
-                     return this.$queryFun.successAlert.call(this,res1.data.error)
-                   }
-                })
+                    }else{
+                      //充值显示
+                      this.mainOrderId = res.data.result.id;
+                      sessionStorage.removeItem("mainOrderId");
+                      sessionStorage.setItem('mainOrderId', JSON.stringify(this.mainOrderId));
+                      let mainOrderIdObj={};
+                      mainOrderIdObj.mainOrderId = this.mainOrderId;
+                      mainOrderIdObj.officialPartnerId = this.chushiId[0].id;
+                      let mainOrderIdUrl=this.$apidomain+"/order/payCallback";
+                      this.$http.post(mainOrderIdUrl,mainOrderIdObj).then(res1=>{
+                        if(res1.data.code=="0000"){
+                          this.$queryFun.successAlert.call(this,"工单提交成功","1");
+                          this.chongzhiShow1 = true;
+                        }else if(res1.data.code=="0902"){
+                          this.chongzhiShow=true;    //充值显示
+                        }else{
+                          return this.$queryFun.successAlert.call(this,res1.data.error)
+                        }
+                      })
+                    }
               }else{
                 alert(res.data.error)
               }

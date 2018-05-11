@@ -146,8 +146,8 @@
       <!--查询按钮-->
       <div class="btn_inquiry" @click="quiry">查询</div>
       <!--查询按钮结束-->
-      <div class="derive"  style="text-align: right">
-        <el-button @click="downloadOrder" size="large" class="derive_btn" v-show="$isButtonObj('bn-order-all-new')">下载工单</el-button>
+      <div class="derive"  style="text-align: right;margin-right: 30px" >
+        <!--<el-button @click="downloadOrder" size="large" class="derive_btn" v-show="$isButtonObj('bn-order-all-new')">下载工单</el-button>-->
         <el-button @click="exportOrder" size="large" class="derive_btn" v-show="$isButtonObj('bn-order-all-new')">导出</el-button>
         <!--<el-button @click="batchOrder(tableList)" size="large">批量派单</el-button>-->
         <!--<el-button @click="addOrderIs" size="large" class="derive_btn" v-show="$isButtonObj('bn-order-all-new')">新建工单</el-button>-->
@@ -244,11 +244,11 @@
             </td>
             <!--渠道质保-->
             <td>
-                {{item.emergencyDegree|qudaozhibao}}
+                {{item.channelWarranty|qudaozhibao}}
             </td>
             <!--紧急度-->
             <td>
-              {{item.channelWarranty|jinjidu}}
+              {{item.emergencyDegree|jinjidu}}
             </td>
             <!--操作-->
             <td class="icon">

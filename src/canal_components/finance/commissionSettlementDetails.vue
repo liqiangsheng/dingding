@@ -82,7 +82,7 @@
                         <td>{{item.createTime}}</td>   <!-- 创建时间-->
                         <td>{{item.mainOrderId}}</td>   <!--工单号 -->
                         <td>{{item.linkmanName}}</td>              <!--联系人 -->
-                        <td>{{item.linkmanPhoneNum}}</td>              <!--手机尾号 -->
+                        <td>{{item.phoneLastNumber}}</td>              <!--手机尾号 -->
                         <td>{{item.linkmanArea}}</td>              <!-- 服务区域-->
                         <td>{{item.forecastIncomeFee}}</td>  <!--预估收入 -->
                         <td>{{item.knotState|kontState}}</td>  <!--结款状态 -->

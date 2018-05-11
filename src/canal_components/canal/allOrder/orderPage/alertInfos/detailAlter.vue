@@ -17,7 +17,7 @@
                                       <li><span style="flex-grow: 1">质保状态</span><span>{{detailData.channelWarranty|qudaozhibao}}</span><span style="flex-grow: 1">紧急程度</span><span><b :style="isStyle">{{detailData.emergencyDegree|jinjidu}}</b></span></li>
                                       <li><span style="flex-grow: 1">联系人</span><span>{{detailData.linkmanName}}</span><span style="flex-grow: 1">联系人手机</span><span>{{detailData.linkmanPhoneNum}}</span></li>
                                       <li><span style="flex-grow: 1">服务地址</span><span style="flex-grow: 5">{{detailData.linkmanDetails}}</span></li>
-                                      <li><span style="flex-grow: 1">预约时间</span><span>{{detailData.appointmentDatetime|moment('YYYY-MM-DD HH:mm:ss')}}</span><span style="flex-grow: 1">完成时间</span><span>{{detailData.createTime|moment('YYYY-MM-DD HH:mm:ss')}}</span></li>
+                                      <li><span style="flex-grow: 1">预约时间</span><span>{{detailData.appointmentDatetime|moment('YYYY-MM-DD HH:mm:ss')}}</span><span style="flex-grow: 1">完成时间</span><span>{{detailData.canWithdrawDepositAmount|moment('YYYY-MM-DD HH:mm:ss')}}</span></li>
                                       <li><span style="flex-grow: 1">服务时长</span><span>{{detailData.workTimeLimit}}</span><span style="flex-grow: 1">子渠道</span><span>{{detailData.officialPartnerSubsetName}}</span></li>
                                       <li><span style="flex-grow: 1">师傅工号</span><span>{{detailData.masterId}}</span><span style="flex-grow: 1">工单类型</span><span>{{detailData.type|orderType}}</span></li>
                                       <li><span style="flex-grow: 1">备注</span><span style="flex-grow: 5">{{detailData.remark}}</span></li>

@@ -82,8 +82,8 @@
       })
     },
     created(){
-      if(getSession("KEY")[0]==="3"&&window.location.href.indexOf("http://localhost")===-1&&false){ //测试
-//      if(getSession("KEY")[0]==="3"&&window.location.href.indexOf("http://localhost")===-1){//上线用
+//      if(getSession("KEY")[0]==="3"&&window.location.href.indexOf("http://localhost")===-1&&false){ //测试
+      if(getSession("KEY")[0]==="3"&&window.location.href.indexOf("http://localhost")===-1){//上线用
         setTimeout(()=>{
           window.location.href=this.$common.channelLogin;
         },1000);

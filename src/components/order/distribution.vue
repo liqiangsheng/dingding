@@ -102,9 +102,9 @@
       <div class="dable_lsit"  style="overflow-x: auto">
 
         <!--导出按钮-->
-        <div class="derive" style="transform:translateY(-50%)">
+        <div class="derive"  style="padding-right: 30px" >
           <el-button @click="batchOrder(tableList)" size="large" v-show="$isButtonObj('bn-order-all-batch')">批量派单</el-button>
-          <el-button @click="addOrderIs" size="large" class="derive_btn" v-show="$isButtonObj('bn-order-all-new')">新建工单</el-button>
+          <!--<el-button @click="addOrderIs" size="large" class="derive_btn" v-show="$isButtonObj('bn-order-all-new')">新建工单</el-button>-->
         </div>
         <!--导出按钮结束-->
 
@@ -176,11 +176,11 @@
             </td>
             <!--渠道质保-->
             <td>
-              {{item.emergencyDegree|qudaozhibao}}
+              {{item.channelWarranty|qudaozhibao}}
             </td>
             <!--紧急度-->
             <td>
-              {{item.channelWarranty|jinjidu}}
+              {{item.emergencyDegree|jinjidu}}
             </td>
             <!--操作-->
             <td class="icon">

@@ -79,7 +79,7 @@
       </div>
       <div class="dable_lsit">
         <!--导出-->
-        <div class="derive">
+        <div class="derive" style="margin-right: 30px">
           <el-button @click="add" size="large">导出</el-button>
         </div>
         <table cellSpacing="0px" cellpadding="0">

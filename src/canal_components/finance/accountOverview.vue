@@ -3,7 +3,7 @@
       <nav class="nav_container">
         <div class="data_list">
             <p>可用余额（元）</p>
-            <p class="sum">{{creditCardMessage.accountAmount}}</p>
+            <p class="sum">{{creditCardMessage.canWithdrawDepositAmount}}</p>
           <div class="button_container">
               <el-button @click="recharge('1')" type="primary">充值</el-button>
               <el-button @click="recharge('0')">提现</el-button>

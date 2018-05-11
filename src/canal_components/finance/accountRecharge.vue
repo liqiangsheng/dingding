@@ -2,7 +2,7 @@
     <div id="app">
       <section class="container">
           <span class="price_name">账户可{{recharge?'':rechargeText}}用余额（元）</span> &nbsp;&nbsp;&nbsp;
-          <span class="price_sum">{{!!creditCardMessage.accountAmount?creditCardMessage.accountAmount.toFixed(2):0.00}}</span>
+          <span class="price_sum">{{!!creditCardMessage.canWithdrawDepositAmount?creditCardMessage.canWithdrawDepositAmount.toFixed(2):0.00}}</span>
 <!--提现 start -->
         <div class="account" v-if="!recharge" >
           <div class="title">{{creditCardMessage.title}}</div>

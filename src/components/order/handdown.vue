@@ -207,11 +207,11 @@
             </td>
             <!--渠道质保-->
             <td>
-              {{item.emergencyDegree|qudaozhibao}}
+              {{item.channelWarranty|qudaozhibao}}
             </td>
             <!--紧急度-->
             <td>
-              {{item.channelWarranty|jinjidu}}
+              {{item.emergencyDegree|jinjidu}}
             </td>
             <!--操作-->
             <td class="icon">

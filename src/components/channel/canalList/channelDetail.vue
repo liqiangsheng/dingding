@@ -102,14 +102,17 @@
             </li>
             <li>开户行:
               <span v-if="!isEdit()">
-                {{dataObj.bankOfDeposit}}
+                {{dataObj.bankCardBranch}}
               </span>
               <span v-else>
-                  <el-input
-                    style="float:right"
-                    placeholder="请输入内容"
-                    v-model="dataObj.bankOfDeposit">
-                 </el-input>
+                <el-select style="margin-left: 44px"  v-model="dataObj.bankCardBranch" placeholder="请选择" @change="selector1(bank,bank.bankName,dataObj.bankCardBranch)">
+                <el-option
+                  v-for="items in bank.bankName"
+                  :key="items.value"
+                  :value="items.value"
+                >
+                </el-option>
+              </el-select>
               </span>
             </li>
             <li>卡号:
@@ -239,6 +242,47 @@
     props:["isDetailed","quiry"],
     data(){
       return{
+        bank:{
+          name: "开户行",
+          key: "bankCardBranch",
+          bankValue: '',
+          bankName: [
+            {
+              value: '中国工商银行',
+              id: "ICBC"
+            }, {
+              value: '中国农业银行',
+              id: "Agricultural"
+            }, {
+              value: '中国建设银行',
+              id: "Constructio"
+            }, {
+              value: '中国银行',
+              id: "China"
+            }, {
+              value: '招商银行',
+              id: "Merchants"
+            }, {
+              value: '交通银行',
+              id: "Communications"
+            }, {
+              value: '中国民生银行',
+              id: "Minsheng"
+            }, {
+              value: '兴业银行',
+              id: "Industrial "
+            }, {
+              value: '上海浦东发展银行',
+              id: "Development"
+            }, {
+              value: '中信银行',
+              id: "CITIC"
+            },{
+              value:'农村信用合作社',
+              id:"RuralCreditCooperative"
+            }
+          ]
+        },
         psaawordShow:false,
         //区域start
         linkmanAreaId:"",//街道ID
@@ -293,6 +337,17 @@
       });
     },
     methods: {
+      selector1(item,values,bankValue){
+        console.log(bankValue)
+        this.bank.bankValue = bankValue;
+//        console.log((bankValue));
+//        values.forEach((v,i)=>{
+//          if(v.value===bankValue){
+//            console.log(v,"8888888")
+//            this.selectorBehindObj[key]=v.id;
+//          }
+//        })
+      },
       password(v){
         this.dataObj.password = v;
       },
@@ -350,28 +405,28 @@
           alert("请输入联系手机号...");
           return;
         }
-        if(!this.dataObj.companyTelephone){
-          alert("请输入公司电话...");
-          return;
-        }
-        if(!this.dataObj.bankOfDeposit){
-          alert("请输入开户行...");
-          return;
-        }
-        if(!this.dataObj.cardNumber){
-          alert("请输入银行卡号...");
-          return;
-        }
+//        if(!this.dataObj.companyTelephone){
+//          alert("请输入公司电话...");
+//          return;
+//        }
+//        if(this.bank.bankValue==""){
+//          alert("请输入开户行...");
+//          return;
+//        }
+//        if(!this.dataObj.cardNumber){
+//          alert("请输入银行卡号...");
+//          return;
+//        }
         let o = {};
         o.id = this.dataObj.id;
         o.areaName = this.linkmanName;
         o.areaId = this.linkmanAreaId
         o.linkmanTelephone = this.dataObj.linkmanTelephone;
         o.companyTelephone = this.dataObj.companyTelephone;
-        o.bankOfDeposit = this.dataObj.bankOfDeposit;
+        o.bankCardBranch = this.dataObj.bankCardBranch;
         o.cardNumber = this.dataObj.cardNumber;
-        o.settle_type =this.dataObj.settle_type;
-        o.settle_day = this.dataObj.settle_day;
+        o.settleType =this.dataObj.settleType;
+        o.settleDay = this.dataObj.settleDay;
         let url=this.$apidomain+"/officialpartnerinfo/updateOfficialPartnerInfo";
         this.$http.post(url,o).then(res=>{
           let data = res.data;

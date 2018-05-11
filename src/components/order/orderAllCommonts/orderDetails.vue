@@ -142,12 +142,6 @@
               紧急度:{{orderData.emergencyDegree|jinjidu}}
             </li>
             <li>
-              品牌:{{orderData.serviceBrand?orderData.serviceBrand:"无"}}
-            </li>
-            <li>
-              型号:{{orderData.serviceModel?orderData.serviceBrand:"无"}}
-            </li>
-            <li>
               <textarea class="text_area" placeholder="编辑基本信息备注"  v-if="this.isEdit()" v-model="dataObj.remarks">
               </textarea>
             </li>
@@ -250,12 +244,17 @@
                     <div class="trigont" v-if="tip"><i></i>师傅备注:{{item.remarks}}</div>
                   </i>
                 </td>
+
                 <td>
                   {{item.serviceName}}
                 </td>
                 <td>
                   {{item.serviceTags|isnull}}
                 </td>
+                <!--'品牌',-->
+                <td>{{item.serviceBrand?item.serviceBrand:"无"}}</td>
+                <!--'型号',-->
+                <td>{{item.serviceModel?item.serviceModel:"无"}}</td>
                 <td>
                   {{item.price1|placeholder_one}}
                 </td>
@@ -666,6 +665,8 @@
             '产品全称',
             '服务名称',
             '产品标签',
+            '品牌',
+            '型号',
             '上门费（元）',
             '服务单价（元）',
 //            '配件费（元）',
@@ -878,7 +879,7 @@
             this.dataObj.makeTime=this.$moment(res.appointmentDatetime).format('YYYY-MM-DD HH:mm:ss');
             this.dataObj.tel= res.linkmanPhoneNum;
             this.dataObj.irrigation=res.officialPartnerName;
-            this.dataObj.officialPartnerSubsetName=res.officialPartnerSubsetName;
+            this.dataObj.officialPartnerSubsetName=res.officialPartnerSubsetName?res.officialPartnerSubsetName:res.officialPartnerName;
             this.dataObj.orderSource=res.source;
             this.dataObj.orderSourceId=res.sourceId;
             this.dataObj.orderStatus=res.state;

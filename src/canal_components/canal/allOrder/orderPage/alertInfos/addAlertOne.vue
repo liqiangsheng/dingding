@@ -196,6 +196,7 @@
         this.input2 = "";
         this.num = 1;
         this.objOptions = [];
+        this.close();
       },
     },
     mounted() {
@@ -244,12 +245,12 @@
     opacity: 0.2;
   }
   .addAlert_box{
-    width: 50%;
-    height: 50%;
+    width: 600px;
+    height: 500px;
     background-color: #fff;
     position: absolute;
-    left: 25%;
-    top:24%;
+    left: 30%;
+    top:14%;
     z-index:2008;
     border-radius: 3px;
     font-size: 16px;

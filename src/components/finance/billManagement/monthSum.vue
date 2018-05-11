@@ -84,8 +84,8 @@
                       <td>{{item.junctionsState|kontState}}</td>
                       <td>{{item.createTime}}</td>
                       <td>
-                        <p  v-if="item.billState==='1'" @click="check()" :class="{active:item.billState==='1','actives':false}">确认结款</p>
-                        <p  v-if="item.billState==='2'" @click="check(item)" :class="{active:item.junctionsState==='1',actives:item.junctionsState==='2'}">{{item.junctionsState|billPayType}}</p>
+                        <p  v-if="item.junctionsState==='1'" @click="check(item)" :class="{active:item.junctionsState==='1','actives':false}">确认结款</p>
+                        <p  v-if="item.junctionsState==='2'" @click="check(item)" :class="{active:false,actives:item.junctionsType==='2'}">{{item.junctionsType|billPayType}}</p>
                         <span class="track" @click="jump(item)">明细</span>
                       </td>
                   </tr>
@@ -100,7 +100,7 @@
             :tableListData="tableListData"
             ></Pagination>
       </div>
-      <money v-if="isMoney" @isClose="isClose"></money>
+      <money v-if="isMoney" @isClose="isClose" :accountId='accountId'></money>
   </div>
 </template>
 <script>
@@ -113,6 +113,7 @@
        props:["typeState"],
        data(){
            return{
+            accountId:"",        //确认结款传给子组件ID
             isMoney:false,
             object_type:"",      //对象类型
             objectCode:"",      //对象编号
@@ -240,9 +241,14 @@
              isClose(v){
                 this.isMoney=v;
              },
-             check(){
-                 this.isMoney = true;
-                 console.log(this.isMoney)
+             check(data){
+                // console.log(data.junctionsState,"状态")
+                 if(data.junctionsState==="1"){
+                   this.accountId = data.id;
+                   this.isMoney = true;
+                 }
+                 
+                // console.log(this.isMoney)
              }
        }
     }

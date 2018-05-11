@@ -1,6 +1,6 @@
 <template>
     <div>
-        <span class="list_name">{{item.name}}<span style="color: #E65831;margin:0 2px">*</span>:</span>
+        <span class="list_name">{{item.name}}:</span>
         <el-input style="width:200px"
           :type="item.type"
           placeholder="请输入内容"

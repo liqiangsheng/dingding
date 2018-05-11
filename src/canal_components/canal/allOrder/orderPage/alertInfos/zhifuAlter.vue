@@ -211,12 +211,12 @@
     opacity: 0.2;
   }
   .creditIsRunningLow_box{
-    width: 80%;
-    height: 75%;
+    width: 600px;
+    height: 530px;
     background-color: #fff;
     position: absolute;
-    left: 11%;
-    top:12%;
+    left: 30%;
+    top:14%;
     z-index:2008;
     border-radius: 3px;
     font-size: 16px;
@@ -224,9 +224,8 @@
     backface-visibility: hidden
   }
   .content{
-    padding-top:1.5em;
     ul{
-      padding: 0 20px 20px 20px;
+      padding: 0 20px 10px 20px;
       li{
         height:40px;
         font-size:14px;

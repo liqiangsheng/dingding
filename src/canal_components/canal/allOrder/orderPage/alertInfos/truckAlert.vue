@@ -95,12 +95,12 @@
     opacity: 0.2;
   }
   .trackAlert_box{
-    width: 50%;
-    height: 65%;
+    width: 550px;
+    height: 600px;
     background-color: #fff;
     position: absolute;
-    left: 25%;
-    top:25%;
+    left: 30%;
+    top:14%;
     z-index:2008;
     border-radius: 3px;
     font-size: 16px;

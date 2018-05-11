@@ -22,10 +22,10 @@
                         <span>登陆账号</span>
                         <span>{{input_list.account}}</span>
                     </li>
-                    <li>
+                    <!-- <li>
                         <span>登陆密码</span>
                         <span>{{input_list.password}}</span>
-                    </li>
+                    </li> -->
                     <li>
                         <span>真实姓名</span>
                         <span>{{input_list.linkmanName}}</span>
@@ -82,13 +82,19 @@
                                 clearable>
                             </el-input>
                         </li>
-                        <li>
+                        <!-- <li>
                             <label>登录密码<span>*</span></label>
                             <el-input
                                 placeholder="请输入登录密码"
                                 v-model="password"
                                 clearable>
                             </el-input>
+                        </li> -->
+                        <li>
+                            <label>登录密码<span>*</span></label>
+                            <el-button style="background:#20a0ff" type="primary" @click="open3">
+                                修改密码
+                            </el-button>
                         </li>
                         <li>
                             <label>真实姓名<span>*</span></label>
@@ -150,26 +156,29 @@
                 </div>
             </div>
             <!-- 修改账号详情end -->
+            <Psaaword v-if="psaawordShow" @isClose="isClose" :dataObjID="dataObjId" ></Psaaword>
      </div>
   </div>
 </template>
 <script>
+    import Psaaword from './passwords'
     export default{
       components:{
-        
+        Psaaword
       },
       props:['detailsList',"getTableList"],
       created(){
         // console.log(this.detailsList,"!!!!!!!编辑账号")
          this.input_list = this.detailsList.officialPartnerSubsetAccountInfo;
-        // console.log(this.input_list,"账号详情")
+         console.log(this.input_list,"账号详情")
+         this.dataObjId = this.input_list.id;
          this.role_name=this.input_list.roleId==="Admin"?"超级管理员":"管理员";    //角色
-         this.password = this.input_list.password                                 //密码
+         //this.password = this.input_list.password                                 //密码
          this.account = this.input_list.account                                   //账号
          this.name =this.input_list.linkmanName                                   //真实姓名
          this.tel = this.input_list.linkmanTelephone                              //手机号
          this.email = this.input_list.linkmanEmail                                //邮箱
-         this.loginTime = this.timeTransfer(this.input_list.recentLogin);         //登陆时间
+         this.loginTime = !this.input_list.recentLogin?"":this.timeTransfer(this.input_list.recentLogin);         //登陆时间
          this.detailsList.subsetAccountRelations.forEach((v,i)=>{
              this.childname.push(v.label);
              this.select_list=this.childname;
@@ -193,6 +202,8 @@
       },
       data(){
           return{
+           dataObjId:"",         //账单ID
+           psaawordShow:false,
            isSubChannel:true,
            input_list:{},
            is_edit:true,
@@ -223,6 +234,13 @@
          }
       },
       methods:{
+          //修改密码
+          open3() {
+           this.psaawordShow = true;
+          },
+          isClose(v){
+                this.psaawordShow = v;
+            },
           timeTransfer(time){
               let date,Y,M,D,h,m,s
                 date = new Date(time);
@@ -402,23 +420,23 @@
           li:nth-of-type(1){
               margin-left:124px;
           }
-          li:nth-of-type(2),li:nth-of-type(3),li:nth-of-type(4){
+          li:nth-of-type(2),li:nth-of-type(3){
               margin-left:96px;
               margin-top: 22px;
           }
-          li:nth-of-type(5){
+          li:nth-of-type(4){
               margin-left:110px;
           }
-          li:nth-of-type(6){
+          li:nth-of-type(5){
               margin-left:124px;
           }
-          li:nth-of-type(7){
+          li:nth-of-type(6){
               margin-left:81px;
           }
-          li:nth-of-type(8){
+          li:nth-of-type(7){
               margin-left:123px;
           }
-          li:nth-of-type(9){
+          li:nth-of-type(8){
               margin-left:64px;
           }
       }

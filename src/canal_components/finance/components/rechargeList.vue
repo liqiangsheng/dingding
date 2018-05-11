@@ -52,7 +52,7 @@
             value:this.$store.state.creditCardMessage.bankCard,
           }, {
             name:'当前余额',
-            value:`${this.$store.state.creditCardMessage.accountAmount.toFixed(2)} 元`,
+            value:`${this.$store.state.creditCardMessage.canWithdrawDepositAmount.toFixed(2)} 元`,
           }, {
             name:' 充值金额',
             value:`${(this.$store.state.accountOverviewAlertData.money-0).toFixed(2)} 元`,

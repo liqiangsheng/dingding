@@ -1,12 +1,12 @@
 <template>
   <div id="app">
     <div class="container">
-      <h3 class="alert_title">{{isAdd.title}}(带<span style="color: #E65831;margin:0 2px">*</span>为必填项) <p class="closeX" id="closeX" @click="closeMove"></p></h3>
+      <h3 class="alert_title">{{isAdd.title}} <p class="closeX" id="closeX" @click="closeMove"></p></h3>
       <div class="scrollbar content">
         <div class="left_info">
           <ul>
             <li>
-              <span class="list_name">  渠道类型<span style="color: #E65831;margin:0 2px">*</span> :</span>
+              <span class="list_name">  渠道类型 :</span>
               <el-select
                 v-model="type.SourceTypeValue" placeholder="请选择" @change="selector(type,type.SourceType,type.SourceTypeValue)">
                 <el-option
@@ -27,7 +27,7 @@
 
             </li>
             <li>
-              <span class="list_name">  开户行<span style="color: #E65831;margin:0 2px">*</span>:</span>
+              <span class="list_name">  开户行:</span>
               <el-select
                 v-model="bank.bankValue" placeholder="请选择" @change="selector1(bank,bank.bankName,bank.bankValue)">
                 <el-option
@@ -40,7 +40,7 @@
             </li>
 
             <li>
-              <span class="list_name">总部地址<span style="color: #E65831;margin:0 2px">*</span>:</span>
+              <span class="list_name">总部地址:</span>
                 <el-cascader
                   expand-trigger="hover"
                   :options="options"
@@ -49,7 +49,7 @@
                   v-model="selectedOptions2"
                   @change="handleChange">
           </el-cascader>
-           区域<span style="color: #E65831;margin:0 2px">*</span>：
+           区域：
           <el-cascader id="city"
                        :disabled="disabled"
                        @change="changeSelector($event)"
@@ -194,7 +194,7 @@
         ],
         bank:{
           name: "开户行",
-          key: "bank",
+          key: "bankCardBranch",
           bankValue: '',
           bankName: [
             {
@@ -233,6 +233,7 @@
             }
           ]
         },
+        cityAreay:"",
 
       }
     },
@@ -259,7 +260,7 @@
       },
       handleChange(value) { //街道
         this.cityId = value[value.length - 1];
-        console.log(value);
+       this.cityAreay = value;
         //选择区域街道
         let cityIdurl=this.$apidomain+"/common/findareaandstreetoptions?cityId="+ this.cityId;//获取区域
         this.$http.get(cityIdurl).then(res=>{
@@ -284,9 +285,9 @@
             message: `请选择渠道类型`,
           });
         }
-        if(!this.selectorBehindObj["bank"]){
+        if(this.cityAreay == ""){
           return this.$message({
-            message: `请选择开户行
+            message: `请选择总部地址跟区域
             `,
           });
         }
@@ -324,11 +325,14 @@
       },
       selector1(item,values,bankValue){       //选中银行后的下拉列表
         var key=item.key;
-        values.forEach((v,i)=>{
-          if(v.value===bankValue){
-            this.selectorBehindObj[key]=v.id;
-          }
-        })
+        this.selectorBehindObj[key]=bankValue;
+//        console.log((bankValue));
+//        values.forEach((v,i)=>{
+//          if(v.value===bankValue){
+//            console.log(v,"8888888")
+//            this.selectorBehindObj[key]=v.id;
+//          }
+//        })
       },
       onchangeFile(event,keyImg){
         let filesObj=event.target.files[0];
