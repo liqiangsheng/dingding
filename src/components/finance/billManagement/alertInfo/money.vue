@@ -23,7 +23,7 @@
                  </tr>
                  <tr>
                      <td>可用余额</td>
-                     <td></td>
+                     <td>{{availableBalance}}</td>
                      <td>待结金额</td>
                      <td>{{accountList.pendingFee}}</td>
                  </tr>
@@ -43,22 +43,32 @@
             <!-- 备注or上传凭证 -->
             <div class="voucher" v-if="isPay">
                 <label>凭证<span>*</span></label>
-                <p>
+                <p >
                     <img src="../../../../assets/images/camera.png">
-                    <a>点击上传</a>
+                    <span @click="uploadImg">
+                        点击上传 
+                        <input type="file" ref="file"  id="file"  v-on:change="traditional_file($event)" 
+                        accept="image/gif,image/jpeg,image/jpg,image/png,image/svg" style="display: none">
+                    </span>
                 </p>
+                <div class="photos" v-if="isNetImg">
+                    <span class="img_show_for_close" @click="uploadClose">×</span>
+                    <img :src="netImg" alt="">
+                </div>
                 <span>选择线下转账方式的请上传转账凭证</span>
             </div>
+
+            
             <div class="remark">
                 <label>备注<span>*</span></label>
-                <textarea placeholder="请填写结算备注"></textarea>
+                <textarea placeholder="请填写结算备注" v-model="text"></textarea>
             </div>
             </div>
             <!-- 底部按钮 -->
             <div class="btn">
                   <el-button @click="close">取消</el-button>
                   <el-button type="success" @click="submit">确定</el-button>
-              </div>
+            </div>
      </div>
   </div>
 </template>
@@ -67,9 +77,13 @@
       components:{
 
       },
-      props:['accountList'],
+      props:['accountList','query'],
       data(){
           return{
+           isShow:true,
+           isNetImg:false,
+           netImg:"",        //后台返回的图片地址
+           availableBalance:"",  
            tableList:{},
            text:"" ,     //备注
            payType:"",    //选中的支付方式
@@ -82,6 +96,13 @@
 
       },
       created(){
+        let url = this.$common.apidomain + "/faWallet/getCanFee"
+        this.$http.post(url,{"userId":this.accountList.officialPartnerId}).then(res=>{
+            let data = res.data
+            if(data.code==="0000"){
+                this.availableBalance=data.result;
+            }
+        })
        // this.getDataList(this.params());
       },
       watch:{
@@ -90,6 +111,34 @@
          }
       },
       methods:{
+        //上传图片
+        uploadImg(){
+           if(this.payType==="线下转账"){
+              document.getElementById('file').click();
+           }else{
+               this.$queryFun.successAlert.call(this,"支付方式为线下转账时才能上传图片")
+           }
+           
+        },
+        traditional_file(el){
+            let _this=this;
+            let filesObj=event.target.files[0];
+            let filesName=event.target.files[0].name;
+            let param = new FormData(); // 创建form对象
+            param.append('file',filesObj, filesName);  // 通过append向form对象添加数据
+              //console.log(param,'图片')
+            let dataReq=param;
+            let url = _this.$common.apidomain +"/upload/kindeditorjson"
+            _this.$http.post(url,dataReq).then(res=>{
+                let data = res.data;
+                _this.netImg= data.url
+                _this.isNetImg=true;
+                //console.log(_this.netImg,"图片地址")
+            })
+        },
+        uploadClose(){
+           this.isNetImg=false;
+        },
         params(){
           let billPayType = "";
           if(this.payType==="可用余额扣款"){
@@ -102,23 +151,33 @@
           //billPayType =  this.payType==="可用余额扣款"?"1":"2";
           return{
             "junctionsType":billPayType,
-            "idPhotos":"",                //凭证
+            "idPhotos":this.netImg,                //凭证
             "remark":this.text,           //备注
             "id":this.accountList.id
           }
         },
         getDataList(params){
           let url = this.$common.apidomain + '/billManageController/confirmation'
-          this.$http.post(url,params).then(res=>{
-            let data = res.data;
-            if(data.code==="0000"){
-              console.log(data,'确认结款数据')
-             
-            }
-          })
+          if(this.payType===""){
+            this.$queryFun.successAlert.call(this,'请选择支付方式')
+          }else if(this.payType==="线下转账"&&this.netImg===""){
+            this.$queryFun.successAlert.call(this,'请上传凭证')
+          }else{
+                this.$http.post(url,params).then(res=>{
+                let data = res.data;
+                if(data.code==="0000"){
+                // console.log(data,'确认结款数据')
+                this.query();
+                this.close()
+                }else{
+                    this.$queryFun.successAlert.call(this,data.error)
+                    this.close()
+                }
+            })
+          }        
         },
          submit(){
-
+           this.getDataList(this.params())
          },
          close(){
              let isbool =false;
@@ -212,6 +271,33 @@
                   transform: translateY(3px);;
               }
           }
+    .photos{
+        position: relative;
+        margin-left:83px;
+        border: 1px solid gray;
+        width: 280px;
+        height: 131px;
+         .img_show_for_close{
+            display: inline-block;
+            width:20px;
+            height: 20px;
+            line-height: 20px;
+            text-align: center;
+            color: #fff;
+            position: absolute;
+            right: -5px;
+            top: -5px;
+            z-index: 3;
+            border-radius:50%;
+            font-size: 14px;
+            background-color:green;
+          }
+        img{
+            width:100%;
+            height:100%;
+        }
+        
+    }
     .voucher{
         margin-top:16px;
         position:relative;
@@ -230,6 +316,7 @@
             top:54px;
         }
         p{
+            //height:131px;
             width:280px;
             height:100%;
             background:#EEEDEF;
@@ -241,7 +328,7 @@
              top:32px;
              left:112px;
             }
-            a{
+            span{
                 position:absolute;
                 bottom:25px;
                 left:108px;

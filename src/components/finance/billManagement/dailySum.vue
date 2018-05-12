@@ -115,7 +115,15 @@
             :tableListData="tableListData"
         ></Pagination>
       </div>
-       <money v-if="isMoney" @isClose="isClose" :accountList='accountList'></money>
+      <!-- 查看凭证 -->
+      <div v-if="isShowImg">
+          <div class="detailAlert"></div>
+          <div class="detailAlert_box">
+              <img :src="imgUrl" alt="">
+              <span class="img_show_for_close" @click="ImgClose">×</span>
+          </div>
+      </div>
+       <money v-if="isMoney" @isClose="isClose" :accountList='accountList' :query='query'></money>
   </div>
 </template>
 <script>
@@ -128,6 +136,8 @@
        props:["typeState"],
        data(){
            return{
+            imgUrl:"",
+            isShowImg:false,
             accountList:"",        //确认结款传给子组件ID
             isMoney : false,      //确认结款
             object_type:"",      //对象类型
@@ -174,6 +184,9 @@
         this.getTableList(this.paramsData());
        },
        methods:{
+           ImgClose(){
+             this.isShowImg=false;
+           },
            //全选,反选start
             checkbox(index){
                         this.$queryFun.isCheckbox.call(this,this.tableListData.list,index);
@@ -212,7 +225,7 @@
                 const url = `${this.$apidomain}/billManageController/all`;
                 this.$http.post(url,params).then(res =>{
                     let data = res.data;
-                   // console.log(data.result,"渠道账单结算日汇总流水列表");
+                    //console.log(data.result,"渠道账单结算日汇总流水列表");
                     if(data.code=="0000"){
                         this.tableListData = data.result;
                         this.pageData.total = data.result.total;
@@ -262,7 +275,11 @@
                  if(data.junctionsState==="1"){
                    this.isMoney = true;
                    this.accountList = data;
-                 }else{
+                 }else if(data.junctionsState==="2"&&data.junctionsType==="2"){
+                   this.isShowImg=true;
+                   this.imgUrl = data.idPhotos;
+                 }
+                 else{
                      this.isMoney =false;
                  }
                  
@@ -272,6 +289,52 @@
     }
 </script>
 <style scoped lang='scss'>
+ .detailAlert{
+    width: 100%;
+    background: black;
+    position: absolute;
+    top:0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index:2007;
+    opacity: 0.2;
+  }
+  .detailAlert_box{
+    position: relative;
+    width: 800px;
+    height: 400px;
+    background-color: #fff;
+    position: absolute;
+    left: 50%;
+    top:50%;
+    margin-top: -200px;
+    margin-left:-400px;
+    z-index:10000;
+    border-radius: 3px;
+    font-size: 16px;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    img{
+        width:100%;
+        height:100%;
+    }
+    .img_show_for_close{
+            display: inline-block;
+            width:20px;
+            height: 20px;
+            line-height: 20px;
+            text-align: center;
+            color: #fff;
+            position: absolute;
+            right: -5px;
+            top: -5px;
+            z-index: 3;
+            border-radius:50%;
+            font-size: 14px;
+            background-color:green;
+          }
+  }
    .month_sum{
         width:100%;
         //display:flex;

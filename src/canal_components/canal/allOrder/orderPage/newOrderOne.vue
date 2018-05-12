@@ -215,10 +215,11 @@
     created(){
         //子渠道
       this.chushiId = JSON.parse(sessionStorage.getItem("userInfo"))
-      this.xiaoqudaoId =this.chushiId[0].id;
+//      this.xiaoqudaoId =this.chushiId[0].id;
+      this.xiaoqudaoId ="";
       let url1 = this.$apidomain+"/officialPartnerSubsetInfo/findlistOfficialPartnerSubsetInfo?officialPartnerId="+this.chushiId[0].id;
       this.$http.get(url1).then(res=>{
-        this.ziqudao = [{name:"--请选择--",id:this.chushiId[0].id},...res.data.result];
+        this.ziqudao = [{name:"--请选择--",id:""},...res.data.result];
 
       });
       if(this.chushiId[0].channelSettleType == "1"){

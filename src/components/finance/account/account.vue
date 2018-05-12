@@ -71,7 +71,7 @@
               {{item.accountAmount}}
             </td>
             <td>
-              {{item.accountAmount}}
+              {{item.freezing}}
             </td>
             <td>
               <span @click="off(item)" v-show="$isButtonObj('bn-finance-account-edit')"><el-button type="text" ><i class="edit_icon"></i>编辑资金</el-button></span>

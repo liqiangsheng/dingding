@@ -77,7 +77,7 @@
                 </td>
                 <!--金额-->
                 <td>
-                  {{item.price2}}
+                  {{item.price2DiscountFee}}
                 </td>
                   <td>
                     <span @click="accessories(item)" style="cursor:pointer;color:rgba(32,160,255,1);font-family:PingFangSC-Regular;">查看配件</span>

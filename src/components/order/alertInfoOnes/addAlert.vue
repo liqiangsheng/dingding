@@ -153,6 +153,7 @@
       },
       changeSelector2(val){
         this.moziID = val[val.length - 1];
+        this.QuDaoId =this.QuDaoId?this.QuDaoId:JSON.parse(sessionStorage.getItem("userInfo"))[0].id;
         let urlThree=this.$common.apidomain+"/articleinfo/findChannelListServiceInfo?labelId="+this.moziID +"&areaId="+this.cityId+"&relevanceKey="+this.QuDaoId+"&relevanceType="+1;
         this.$http.get(urlThree).then((res)=>{
           if(res.data.code === "0000"){
@@ -191,6 +192,7 @@
         this.input2 = "";
         this.num = 1;
         this.objOptions = [];
+        this. close();
       },
 
     },

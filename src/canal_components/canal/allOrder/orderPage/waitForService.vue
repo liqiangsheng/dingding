@@ -5,7 +5,7 @@
       <div class="center">
         <div class="centerDate">
           <ul>
-            <li><span style="display: inline-block;transform: translateY(-10px)">取消时间范围:</span>
+            <li><span style="display: inline-block;transform: translateY(-10px)">取消时间:　　</span>
               <Row style="display: inline-block">
                 <Col span="12">
                 <DatePicker type="daterange" confirm placement="bottom-end" placeholder="请选择日期" style="width: 200px;display: inline-block" v-model="date"></DatePicker>
@@ -13,7 +13,7 @@
               </Row>
             </li>
             <li>
-              分类 :
+              分类 :　　　
               <el-select v-model="orderLabel" placeholder="请选择" @change="selectorOne(orderLabel)">
                 <el-option
                   v-for="item in labeloptions2"
@@ -23,7 +23,7 @@
                 </el-option>
               </el-select>
             </li>
-            <li>子渠道：
+            <li>子渠道：　　
               <el-select v-model="ziqudao" filterable placeholder="请选择" @change="zhibaoqudao(ziqudao)">
                 <el-option
                   v-for="(item,index) in ziqudaoData"
@@ -33,7 +33,7 @@
                 </el-option>
               </el-select>
             </li>
-            <li>渠道质保：
+            <li>渠道质保：　
               <el-select v-model="ziqudaozhibao" filterable placeholder="请选择" @change="ziqudaozhibaoClick(ziqudaozhibao)">
                 <el-option
                   v-for="item in options1"
@@ -48,7 +48,7 @@
         </div>
         <div class="centerDateOne">
           <ul>
-            <li>紧急度：
+            <li>紧急度：　　
               <el-select v-model="jinjidu" filterable placeholder="请选择" @change="jinjiduClick(jinjidu)">
                 <el-option
                   v-for="item in options2"
@@ -58,21 +58,24 @@
                 </el-option>
               </el-select>
             </li>
-            <li>工单号：
+            <li>工单号：　　
               <el-input
                 placeholder="请输入工单号"
+                style="width: 200px"
                 v-model="gongdanhao">
               </el-input>
             </li>
             <li>联系手机号 :
               <el-input
                 placeholder="请输入手机号"
+                style="width: 200px"
                 v-model="tel">
               </el-input>
             </li>
-            <li>联系人：
+            <li>联系人：　　
               <el-input
                 placeholder="请输入联系人"
+                style="width: 200px"
                 v-model="lianxiren">
               </el-input>
             </li>

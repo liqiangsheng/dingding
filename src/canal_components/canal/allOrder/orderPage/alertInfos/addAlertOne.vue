@@ -154,7 +154,8 @@
       },
       changeSelector2(val){
         this.moziID = val[val.length - 1];
-        let urlThree=this.$common.apidomain+"/articleinfo/findChannelListServiceInfo?labelId="+this.moziID +"&areaId="+this.cityId+"&relevanceKey="+this.xiaoqudaoId+"&relevanceType="+1;
+        let abc =this.xiaoqudaoId?this.xiaoqudaoId:JSON.parse(sessionStorage.getItem("userInfo"))[0].id;
+        let urlThree=this.$common.apidomain+"/articleinfo/findChannelListServiceInfo?labelId="+this.moziID +"&areaId="+this.cityId+"&relevanceKey="+abc+"&relevanceType="+1;
         this.$http.get(urlThree).then((res)=>{
           console.log(res)
           if(res.data.code === "0000"){

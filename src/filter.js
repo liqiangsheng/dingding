@@ -534,7 +534,9 @@ Vue.filter('paySourceShow',function(input){
   }else if("WeChat"==input){
     return "微信支付";
   }else if("AgencyFund"==input){
-    return "师傅代收款";
+    return "现金支付";
+  }else if("BalanceFund"==input){
+    return "余额扣款";
   }
   return "无"
 });

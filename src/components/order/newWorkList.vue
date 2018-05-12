@@ -254,7 +254,7 @@
           if(value == v.name){
             this.zhuqudaoId = v.id;
             this.settleType = v.settleType;
-            this.QuDaoId =v.id;
+            this.QuDaoId ="";
           }
         });
         //子渠
