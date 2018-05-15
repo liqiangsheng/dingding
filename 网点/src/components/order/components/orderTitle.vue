@@ -1,30 +1,33 @@
 <template>
           <div class="title_data">
-            <p>工单号：{{orderNumber}}  &nbsp;&nbsp;<span class="clamant" v-if="index%2==0">加急</span></p>
-            <span class="order_state">服务中</span>
+            <p>工单号：{{orderNumber}}  &nbsp;&nbsp;
+              <slot></slot>
+
+            </p>
+            <span class="order_state">{{orderState | BackOrderStatus}}</span>
           </div>
 </template>
 
 <script>
-  
+
   export default {
-   props:["index","orderNumber","state","isClamant"],
+   props:["index","orderNumber","state","isClamant","orderState"],
     components:{
 
     },
     data () {
       return {
-       
+
       }
     },
     methods:{
-   
+
     },
     created() {
-  
+
     },
    mounted(){
-		
+
    },
   }
 </script>
@@ -52,6 +55,6 @@
         font-size:0.24rem;
     }
    }
- 
+
 </style>
 

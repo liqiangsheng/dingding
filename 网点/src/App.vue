@@ -1,6 +1,6 @@
 <template>
   <div>
- <nav>
+    <nav v-if="addMaster">
     <header v-if="homeShow">
         <div class="operate_button_left" @click="openCarte ">
            菜单  <i class="i menu_icon" ></i>
@@ -10,8 +10,8 @@
         </h2>
 
           <div class="operate_button_right">
-
-                  <i class="i news_icon" ></i>
+            <i class="i add_icon" v-if="isAddShow" @click="add"></i>
+            <i class="i news_icon" @click="messageCenterClick"></i>
         </div>
     </header>
    <header class="header1" v-else-if="masterOlderShow">
@@ -21,10 +21,13 @@
      <h2>
        {{title}}
      </h2>
+     <div @click="masterPositionClick" v-if="orderDetailShow" style="position: absolute;right: 0.2rem;font-size:0.28rem;font-family:PingFangSC-Regular;color:rgba(83,107,210,1)">
+            师傅位置
+     </div>
    </header>
    <header class="header2" v-else-if="masterDetailShow">
      <div class="operate_button_left1" @click="gobackOne()">
-       <img src="./assets/images/gobackOne.png" style="display: inline-block;width: 0.7rem;height: 0.7rem;transform: translateY(0.05rem)">
+       <img src="./assets/images/gobackTwo.png" style="display: inline-block;width: 0.7rem;height: 0.7rem;transform: translateY(0.05rem)">
      </div>
      <h2>
        {{title}}
@@ -37,9 +40,8 @@
                 <section class="bill_list_container">
                         <section class="container_top">
                                 <img src="./assets/images/userImg.png" alt="">
-                                <h3>金海维修网点</h3>
+                                <h3>{{fullName}}</h3>
                         </section>
-                  <!--右侧列表-->
                         <section class="container_list">
                             <ul>
                                 <li  class="base_icon order_icon"
@@ -55,9 +57,11 @@
   </div>
 </template>
 <script>
+  import storage from "@/assets/js/storage"
     export default{
         data(){
             return{
+                fullName:"",
                bottomPopup: false,
                 topPopup: false,
                 leftPopup: false,
@@ -65,10 +69,17 @@
                 rightPopup: false,
                 masterOlderShow:false,
                 masterDetailShow:false,
+                orderDetailShow:false,
                  homeShow:true,
+                isAddShow: false,
+                addMaster: true
             }
         },
         methods:{
+          //新建师傅
+          add() {
+            this.$router.push({path: '/addMaster'});
+          },
          open (position) {
       this[position + 'Popup'] = true
     },
@@ -87,17 +98,15 @@
           },
           gobackOne(){
             this.$router.go(-1);
+          },
+          messageCenterClick(){
+           this.$router.push({path:"/messageCenter"})
+          },
+          masterPositionClick(){
+            this.$router.push({path:"/masterPosition"})
           }
         },
-        watch: {
-    topPopup (val) {
 
-      if (val) {
-        setTimeout(() => {
-          this.topPopup = false
-        }, 2000)
-      }
-    }},
         mounted(){
 
         },computed: {
@@ -105,17 +114,27 @@
         },
         watch:{
            "$route":function(a,b){
-
-              this.title = document.title
-             console.log(a)
-             if(a.fullPath === "/masterOrder"){
+             if(!this.fullName){
+                this.fullName = !!storage.getLocalStorage("userInfo")?storage.getLocalStorage("userInfo").fullName:'';
+             }
+             this.title = document.title;
+             this.isAddShow = this.title === "师傅管理" ? true : false;
+             this.addMaster = this.title === '新建师傅' ? false : true;
+             if(a.fullPath === "/masterOrder"||a.fullPath === "/dotInformation"||a.fullPath ==="/messageCenter"||a.fullPath === "/orderDetail"||a.fullPath ==="/masterPosition"){
                this.masterOlderShow = true;
                this.masterDetailShow = false;
                this.homeShow =false
+               if(this.title === "工单详情"){
+                 this.orderDetailShow = true;
+               }else{
+                 this.orderDetailShow = false;
+               }
              }else if(a.fullPath === "/masterDetail"){
                this.masterDetailShow = true;
                this.masterOlderShow = false;
                this.homeShow =false;
+             }else if(a.path.includes("/changeMaster")){
+               this.addMaster=false;
              }else{
                this.masterDetailShow = false;
                this.masterOlderShow = false;
@@ -170,6 +189,14 @@ nav{
                     top:0;
                     transform:translate(-100%,20%);
               }
+          .add_icon {
+            background: url(./assets/images/menu_addIcons.png) center center no-repeat;
+            background-size: 100% 100%;
+            width: .7rem;
+            height: .7rem;
+            top: 0;
+            transform: translate(-230%, 20%);
+          }
         }
         .operate_button_left{
             text-align: left;
@@ -236,7 +263,11 @@ nav{
               background:url(./assets/images/master_icon.png) center center no-repeat;
               background-size:100% 100%;
             }
-
+          /*设置图标*/
+          .setting_icon::before{
+            background:url(./assets/images/setting_icon.png) center center no-repeat;
+            background-size:100% 100%;
+          }
         }
     }
 }
@@ -282,6 +313,39 @@ nav{
     position: relative;
     font-size:0.32rem;
     float: left;
+  }
+}
+#header3{
+  background: #ffffff;
+  height:.96rem;
+  color:black;
+  line-height:.96rem;
+  overflow: hidden;
+  position: relative;
+  text-align: center;
+  background:linear-gradient(138.7deg,rgba(135,154,238,1),rgba(83,107,210,1));
+  .operate_button_left1{
+    text-align: left;
+    padding-left:1em;
+    position: relative;
+    font-size:0.32rem;
+    float: left;
+  }
+  .operate_button_right{
+    text-align: right;
+    float: right;
+    font-size:0.32rem;
+    padding-right:2em;
+    position: relative;
+    .news_icon{
+      background:url(./assets/images/news-icon.png) center center no-repeat;
+      background-size:100% 100%;
+      width:.7rem;
+      height:.7rem;
+      right:0;
+      top:0;
+      transform:translate(-100%,20%);
+    }
   }
 }
 
