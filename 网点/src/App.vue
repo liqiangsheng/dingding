@@ -11,7 +11,7 @@
 
           <div class="operate_button_right">
             <i class="i add_icon" v-if="isAddShow" @click="add"></i>
-            <i class="i news_icon" @click="messageCenterClick"></i>
+            <i class="i news_icon" :class="{'new_massage':!!sysMseeageOrder}" @click="messageCenterClick"></i>
         </div>
     </header>
    <header class="header1" v-else-if="masterOlderShow">
@@ -32,10 +32,13 @@
      <h2>
        {{title}}
      </h2>
+     <div @click="disableMaster" style="position: absolute;right: 0.5rem;font-size:0.28rem;font-family:PingFangSC-Regular;color:#fff">
+        禁用
+     </div>
    </header>
 
  </nav>
-      <router-view style="padding-top:.96rem;"></router-view>
+       <router-view style="padding-top:.96rem;"></router-view>
         <mu-popup position="left" popupClass="demo-popup-left" :open="leftPopup" @close="close('left')">
                 <section class="bill_list_container">
                         <section class="container_top">
@@ -62,7 +65,7 @@
         data(){
             return{
                 fullName:"",
-               bottomPopup: false,
+                bottomPopup: false,
                 topPopup: false,
                 leftPopup: false,
                 title:"",
@@ -70,9 +73,10 @@
                 masterOlderShow:false,
                 masterDetailShow:false,
                 orderDetailShow:false,
-                 homeShow:true,
+                homeShow:true,
                 isAddShow: false,
-                addMaster: true
+                addMaster: true,
+                sysMseeageOrder:"",
             }
         },
         methods:{
@@ -104,12 +108,18 @@
           },
           masterPositionClick(){
             this.$router.push({path:"/masterPosition"})
+          },
+          disableMaster(){
+            this.$router.push({path:"/masterDisable"})
           }
         },
 
         mounted(){
 
-        },computed: {
+          setInterval(() => getMessage.call(this),30000)
+
+        },
+      computed: {
 
         },
         watch:{
@@ -120,7 +130,7 @@
              this.title = document.title;
              this.isAddShow = this.title === "师傅管理" ? true : false;
              this.addMaster = this.title === '新建师傅' ? false : true;
-             if(a.fullPath === "/masterOrder"||a.fullPath === "/dotInformation"||a.fullPath ==="/messageCenter"||a.fullPath === "/orderDetail"||a.fullPath ==="/masterPosition"){
+             if(a.fullPath === "/masterOrder"||a.fullPath === "/dotInformation"||a.fullPath ==="/messageCenter"||a.fullPath === "/orderDetail"||a.fullPath ==="/masterPosition"||a.fullPath ==="/masterDisable"){
                this.masterOlderShow = true;
                this.masterDetailShow = false;
                this.homeShow =false
@@ -146,7 +156,19 @@
 
     }
   }
-
+function getMessage(){
+  let url =`${this.$common.apidomain}/sysMessage/findredismessage`;
+  this.$http.get(url).then(res => this.$httpFilter(res).then(data=>{
+        let result= data.result;
+        if(!!result){
+          this.sysMseeageOrder=result.sysMseeageOrder
+        }else{
+          this.sysMseeageOrder=""
+        }
+//
+  })
+)
+}
 </script>
 <style scoped lang="less">
 nav{
@@ -188,6 +210,7 @@ nav{
                     right:0;
                     top:0;
                     transform:translate(-100%,20%);
+                    /*position:relative;*/
               }
           .add_icon {
             background: url(./assets/images/menu_addIcons.png) center center no-repeat;
@@ -196,6 +219,16 @@ nav{
             height: .7rem;
             top: 0;
             transform: translate(-230%, 20%);
+          }
+          .new_massage::after{
+            width:0.13rem;
+            height:0.13rem;
+            border-radius: 50%;
+            position:absolute;
+            top:.05rem;
+            right:.07rem;
+            content:"";
+            background:#E65831;
           }
         }
         .operate_button_left{
@@ -268,6 +301,15 @@ nav{
             background:url(./assets/images/setting_icon.png) center center no-repeat;
             background-size:100% 100%;
           }
+          .orderTotal::before{
+            background:url(./assets/images/orderTotal.png) center center no-repeat;
+            background-size:100% 100%;
+          }
+          .finance::before{
+            background:url(./assets/images/finance.png) center center no-repeat;
+            background-size:100% 100%;
+          }
+
         }
     }
 }

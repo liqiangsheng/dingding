@@ -31,7 +31,7 @@
             if(i == 0){
              this.$router.push({ path:"/dotInformation" })
             }else if(i == 1){
-              console.log("去修改密码")
+              this.$router.push({path:"/revisePassword"})
             }else if(i == 2){
               sessionStorage.removeItem("orderDetailId")
               sessionStorage.setItem("orderDetailId",JSON.stringify(1))

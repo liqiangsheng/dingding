@@ -4,7 +4,6 @@
              {{item.name}}
         </div>
         <div class="list_value" :style="item.color">
-
             {{item.value }}
         </div>
     </div>

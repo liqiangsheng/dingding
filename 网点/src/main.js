@@ -26,6 +26,10 @@ import 'muse-ui/dist/muse-ui.css'
 
 Vue.use(MuseUI)
 Vue.prototype.$Toast = Toast;
+Vue.prototype.$ToastMessage=v=>Toast( {message: v, iconClass: 'mintui mintui-success' });
+
+
+
 Vue.use(VueCookie);
 Vue.use(Vuex);
 const userInfo=storage.getLocalStorage("userInfo"),

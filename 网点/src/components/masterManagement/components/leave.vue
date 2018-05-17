@@ -1,7 +1,8 @@
 <template>
   <!--请假-->
   <div id="leave_box">
-             此功能暂未开放，敬请期待...
+    <p>此功能暂未开放，敬请期待。。。</p>
+    <img src="/static/images/wait.png">
   </div>
 </template>
 <script>
@@ -20,7 +21,7 @@
 
 </script>
 <style scoped lang="less">
-  #masterList_box{
+  #leave_box{
     position: absolute;
     left: 0;
     bottom: 0;
@@ -28,11 +29,13 @@
     top:1.96rem;
     background:rgba(241,241,241,1);
     overflow-y: auto;
-    .search{
-      width:100%;
-      height:1.32rem;
-      background:rgba(255,255,255,1);
+    img{
+      width: 1.26rem;
+      height: 1.26rem;
+      display: inline-block;
+      margin: 45% 45%;
     }
+
   }
 
 </style>

@@ -3,34 +3,34 @@
     <div id="dotInformation">
       <div class="masterDetailHeader">
         <div class="masterDetailOne">
-          <p><span>215</span></p>
+          <p><span>{{business.allOrderCount||0}}</span></p>
           <p><span>总接单量</span></p>
-          <p><span>服务分80</span></p>
+          <p><span>{{business.average||0}}</span></p>
         </div>
         <ul class="masterDetailThree">
-          <li><span>205</span><br><span>已完成</span></li>
-          <li><span>5</span><br><span>待服务</span></li>
-          <li><span>10</span><br><span>待分配</span></li>
+          <li><span>{{business.completeCountByThisMonth||0}}</span><br><span>已完成</span></li>
+          <li><span>{{business.waitService||0}}</span><br><span>待服务</span></li>
+          <li><span>{{business.waitFor||0}}</span><br><span>待分配</span></li>
 
         </ul>
         <div style="width: 90%;margin: 0 5% 0.3rem;height: 0.02rem;background: #D4D4D4"></div>
         <ul class="masterDetailFour">
-          <li><span>5</span><br><span>异常结款</span></li>
-          <li><span>5</span><br><span>异常次数</span></li>
-          <li><span>0</span><br><span>投诉工单</span></li>
+          <li><span>{{business.payOffline||0}}</span><br><span>异常结款</span></li>
+          <li><span>{{business.abnormalHangSize||0}}</span><br><span>异常次数</span></li>
+          <li><span>{{business.complainOrder||0}}</span><br><span>投诉工单</span></li>
         </ul>
 
       </div>
       <div class="masterDetailContent">
         <ul class="personal_information">
-          <li><span>网点编号</span><span>13478963258</span></li>
-          <li><span>网点名称</span><span>金海维修网点</span></li>
-          <li><span>用户名</span><span>dingdingwx</span></li>
-          <li><span>联系人</span><span>张品</span></li>
-          <li><span>手机号</span><span>13478523698</span></li>
-          <li><span>公司电话</span><span>0755-78945212</span></li>
-          <li><span>服务区域</span><b>罗湖区,南山区-西丽街道，桃源街道，粤海街道，沙河街道，蛇口街道</b></li>
-          <li><span>服务工种</span><b> 家电维修，家电维修,家电维修</b></li>
+          <li><span>网点编号</span><span>{{masterDetailObj.id}}</span></li>
+          <li><span>网点名称</span><span>{{masterDetailObj.name}}</span></li>
+          <li><span>用户名</span><span>{{masterDetailObj.username}}</span></li>
+          <li><span>联系人</span><span>{{masterDetailObj.linkmanName}}</span></li>
+          <li><span>手机号</span><span>{{masterDetailObj.linkmanPhoneNum}}</span></li>
+          <li><span>公司电话</span><span>{{masterDetailObj.companyTel}}</span></li>
+          <li><span>服务区域</span><b>{{areas}}</b></li>
+          <li><span>服务工种</span><b>{{skills}}</b></li>
         </ul>
 
       </div>
@@ -39,11 +39,29 @@
 <script>
     export default {
         data() {
-            return {}
+            return {
+              masterDetailObj:{},//师傅数据
+              areas:"",  //服务地区
+              skills:"",//服务工种
+              business:{},
+            }
         },
         methods: {},
         created() {
-
+              let url=this.$common.apidomain+"/siteInfo/findDetail/?id="+JSON.parse(localStorage.getItem("userInfo")).id
+              this.$http.get(url).then(res=>this.$httpFilter(res).then(data=>{
+                console.log(data)
+                this.masterDetailObj = data.result.siteInfo;
+                this.business = data.result.business;
+                data.result.areas.forEach((v,i)=>{
+                  this.areas +=" "+v.label+",";
+                })
+                this.areas = this.areas.substring(0,this.areas.length-1)
+                data.result.skills.forEach((v,i)=>{
+                  this.skills +=" "+v.label+",";
+                })
+                this.skills = this.skills.substring(0,this.skills.length-1)
+              }))
         }
     }
 </script>

@@ -1,34 +1,49 @@
 <template>
   <!--消息中心-->
     <div id="messageCenter">
-         <div class="messageCenterBox">
-           <!--<div class="messageCenterBox" v-for="(item,index) in messageCenterList">-->
-             <p><span>2018-05-10 14:58:04</span></p>
-             <p>亲爱的XXXX网点，2018-05-10 15:00:00 有新的工单派发给您，请您及时为工单分配师傅，为用户提供优质的上门服务，如有问题，请咨询客服电话4009991891, 祝您生活愉快。</p>
+         <div class="messageCenterBox" v-for="(item,index) in messageCenterList"  :key="index">
+             <p><span>{{item.createTime|moment}}</span></p>
+             <p>{{item.content}}</p>
          </div>
+      <scroll-top></scroll-top>
     </div>
 </template>
 <script>
+  import scrollTop from "@/components/publicComponents/scrollTop"
     export default {
+      components:{scrollTop},
         data() {
             return {
               messageCenterList:[],
+              showPages:1,
+              currentPageSize:10,
+              total:0,
+              pageTotal:0,
+              loading:false
             }
         },
-        methods: {},
+        methods: {
+          getTableList(){
+            const url = `${this.$common.apidomain}/sysMessage/findPage?pageNo=${JSON.stringify(this.showPages)}&pageSize=${JSON.stringify(this.currentPageSize)}`
+            this.$http.get(url).then(res => this.$httpFilter(res).then(data=>{
+              const result = data.result;
+              this.messageCenterList=this.messageCenterList.concat(result.sysMessages)
+              this.pageTotal=result.pageTotal
+              this.loading=true;
+            }))
+          }
+        },
         created() {
-
+          this.getTableList();
+          setTimeout(()=>{
+            this.$commonJs.upwardLoading.call(this,() => this.getTableList()
+            );
+          },1000);
         }
     }
 </script>
 <style scoped lang="less">
 #messageCenter{
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  right:0;
-  overflow-y: auto;
   background:rgba(241,241,241,1);
 }
   .messageCenterBox{

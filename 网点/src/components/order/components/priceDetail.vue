@@ -1,25 +1,25 @@
 <template>
   <!--费用详情-->
     <div id="priceDetail">
-           <div class="priceDetailShow"></div>
+           <div class="priceDetailShow" @click="backgroundClick"></div>
            <div class="priceDetailContent">
              <div  class="orderDetail_contentFooter">
-               <li><span>待收款 </span><span>￥340</span></li>
-               <li><span>工单总费用 </span><span>￥380</span></li>
+               <li><span>待收款 </span><span>￥{{orderInfoObj.waitAmount}}</span></li>
+               <li><span>工单总费用 </span><span>￥{{orderInfoObj.orderTotal}}</span></li>
                <p @click="priceDetail">费用详情 <img src="../../../assets/images/xiangxia.png"></p>
              </div>
              <ul class="orderDetail_list">
-               <li><p>￥30</p><p>总检测费</p></li>
-               <li><p>￥30</p><p>总服务费</p></li>
-               <li><p>￥30</p><p>总配件费</p></li>
-               <li><p>￥30</p><p>总高空费</p></li>
+               <li><p>￥{{orderInfoObj.price1Subtotal}}</p><p>总检测费</p></li>
+               <li><p>￥{{orderInfoObj.price2Subtotal}}</p><p>总服务费</p></li>
+               <li><p>￥{{orderInfoObj.price3Subtotal}}</p><p>总配件费</p></li>
+               <li><p>￥{{orderInfoObj.price4Subtotal}}</p><p>总高空费</p></li>
              </ul>
              <ul class="orderDetail_Pricelist">
-               <li><span>优惠金额</span><span>-￥10</span></li>
-               <li><span>实际已收款</span><span>￥30</span></li>
-               <li><span>预估收入</span><span>￥340</span></li>
-               <li><span style="color:#E65831;">待收款</span><span style="color:#E65831;">￥340</span></li>
-               <li><span style="color:#E65831;">工单总费用</span><span style="color:#E65831;">￥380</span></li>
+               <li><span>优惠金额</span><span>-￥{{orderInfoObj.subtotalTotal}}</span></li>
+               <li><span>实际已收款</span><span>￥{{orderInfoObj.paidAmount}}</span></li>
+               <li><span>预估收入</span><span>￥{{orderInfoObj.handleTotal}}</span></li>
+               <li><span style="color:#E65831;">待收款</span><span style="color:#E65831;">￥{{orderInfoObj.waitAmount}}</span></li>
+               <li><span style="color:#E65831;">工单总费用</span><span style="color:#E65831;">￥{{orderInfoObj.orderTotal}}</span></li>
              </ul>
            </div>
     </div>
@@ -28,15 +28,20 @@
     export default {
         data() {
             return {
+              orderInfoObj:{},
             }
         },
         methods: {
+          backgroundClick(){
+            this.priceDetail();
+          },
           priceDetail(){
             this.$emit("contentFooterOne",false)
           },
         },
         created() {
-
+          this.orderInfoObj = this.$store.state.orderInfo;
+console.log(this.$store.state.orderInfo)
         }
     }
 </script>

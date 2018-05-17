@@ -3,7 +3,8 @@ import Router from 'vue-router'
 import storage from "@/assets/js/storage"
 const Home = resolve => require(["@/components/Home"], resolve);
 const order = resolve => require(["@/components/order/order"], resolve);
-const login = resolve => require(["@/components/login"], resolve);
+const login = resolve => require(["@/components/login/login"], resolve);
+const revisePassword = resolve => require(["@/components/login/revisePassword"], resolve);
 const masterPosition = resolve => require(["@/components/order/components/materPosition"], resolve);
 const orderDetail = resolve => require(["@/components/order/components/orderDetail"], resolve);
 const master = resolve => require(["@/components/masterManagement/masterManagement"],resolve);
@@ -14,6 +15,9 @@ const changeMaster = resolve => require(["@/components/changeMaster/changeMaster
 const setting = resolve => require(["@/components/setting/setting"], resolve);
 const dotInformation = resolve => require(["@/components/setting/components/dotInformation"], resolve);
 const messageCenter = resolve => require(["@/components/messageCenter/messageCenter"], resolve);
+const finance = resolve => require(["@/components/finance/finance"], resolve);      //财务
+const orderTotal = resolve => require(["@/components/orderTotal/orderTotal"], resolve); //工单统计
+const masterDisable = resolve => require(["@/components/masterManagement/masterDisable"],resolve); //禁用账号
  Vue.use(Router);
  let router = new Router({
   routes: [
@@ -67,6 +71,20 @@ const messageCenter = resolve => require(["@/components/messageCenter/messageCen
       name:"师傅详情",
     },
     {
+      path: '/orderTotal',
+      isShow:true,
+      component: orderTotal,
+      name:"工单统计",
+      iconName:"orderTotal"
+    },
+    {
+      path: '/finance',
+      isShow:true,
+      component: finance,
+      name:"财务管理",
+      iconName:"finance"
+    },
+    {
       path: '/setting',
       isShow:true,
       component: setting,
@@ -97,13 +115,25 @@ const messageCenter = resolve => require(["@/components/messageCenter/messageCen
           name: '新建师傅'
         },
         {
-          path: '/changeMaster/:id',
+          path: '/changeMaster/:orderId/:date/:masterId',
           component: changeMaster,
           name: '改派师傅',
           isShow:false,
-        }
+        },
+      {
+          path: '/revisePassword',
+          component: revisePassword,
+          name: '修改密码',
+          isShow:false,
+        },
+        {
+          path: '/masterDisable',
+          component: masterDisable,
+          name: '禁用账号',
+          isShow:false,
+        },
       ]
-})
+});
 import axios from "axios"
 router.beforeEach((to, from, next) => {
 

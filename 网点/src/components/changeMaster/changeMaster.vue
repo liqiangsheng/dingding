@@ -1,12 +1,13 @@
 <template>
     <div id="box">
         <header class="time_container">
-          预约时间：{{ date |moment('YYYY-MM-DD HH:mm:ss')}}
+          预约时间：{{ routeParams.date-0 |moment('YYYY-MM-DD HH:mm:ss')}}
         </header>
         <section class="master_container">
             <div class="master_items" v-for="(item,index) in masterList" :key="index"
                  @click="selectorMaster(item,index)"
                  :class="{select_master:select===index}"
+                 :style="isSelectorMaster(item.id)?'backgroundColor:#C3C3C3':''"
             >
                {{item.name}}
             </div>
@@ -52,22 +53,26 @@
             return {
               masterList:[],
               select:-1,
-              date:"",
-              orderId:"",
+              routeParams:this.$route.params,
               currentOrder:[],
             }
         },
         methods: {
+          isSelectorMaster(id){
+           return id===this.routeParams.masterId?true:false;
+          },
           selectorMaster(v,i){
-            this.select=i;
-            let params={
-              "type":"1",
-              "workerid":v.id,
-            };
-            let url=`${this.$common.apidomain}/orderquery/findtodayorder`;
-            this.$http.get(url,{params}).then(res=>this.$httpFilter(res).then(data=>{
-                this.currentOrder=data.result;
-            }))
+            if(this.select!==i&&!this.isSelectorMaster(v.id)){
+              this.select=i;
+              let params={
+                "type":"1",
+                "workerid":v.id,
+              },
+              url=`${this.$common.apidomain}/orderquery/findtodayorder`;
+                this.$http.get(url,{params}).then(res=>this.$httpFilter(res).then(data=>{
+                    this.currentOrder=data.result;
+                }))
+            }
           },
           subMit(data){
             if(this.select===-1){
@@ -75,7 +80,7 @@
             }
               let url = `${this.$common.apidomain}/order/orderallocation`,
                   params={
-                    "orderIds":this.orderId,
+                    "orderIds":this.routeParams.orderId,
                     "type":"3",
                     "masterId":this.masterList[this.select].id
                   };
@@ -91,28 +96,18 @@
             }));
           },
           paramsData(){
-            return {params: {
+            return { params: {
               "siteId":storage.getLocalStorage("userInfo").id
             }}
           },
         },
         created() {
-          this.orderId = this.$route.params.id.split(",")[0];
-          this.date = this.$route.params.id.split(",")[1]-0;
           let url=`${this.$common.apidomain}/siteInfo/findmaster`;
           this.$http.get(url,this.paramsData()).then(res=>this.$httpFilter(res).then(data=>{
             const result=data.result
                 this.masterList=result;
           })
-//            r=>{
-
-//            this.siteMasterObj = data.result;
-//            this.siteMasterObj.forEach((v,i)=>{
-//              v.radio = false;
-//            });
-//          }
           )
-//          siteInfo/findmaster?siteId=0101003
         }
     }
 </script>

@@ -3,70 +3,113 @@
   <div id="masterDetail">
     <div class="masterDetailHeader">
       <div class="masterDetailOne">
-        <p><span>平均分:4.3</span></p>
+        <p><span>平均分:{{businessData.average||0}}</span></p>
       </div>
       <ul class="masterDetailTwo">
-        <li><span>本月总接单量</span><span>10</span></li>
-        <li><span>上月总接单量</span><span>15</span></li>
-        <li><span>总接单量</span><span>215</span></li>
+        <li><span>本月总接单量</span><span>{{businessData.allOrderCountByThisMonth||0}}</span></li>
+        <li><span>上月总接单量</span><span>{{businessData.allOrderCountByLastMonth||0}}</span></li>
+        <li><span>总接单量</span><span>{{businessData.completeCountByThisMonth||0}}</span></li>
       </ul>
       <ul class="masterDetailThree">
-         <li><span>205</span><br><span>已完成</span></li>
-        <li><span>5</span><br><span>待服务</span></li>
-        <li><span>10</span><br><span>遗留单</span></li>
+        <li><span>{{businessData.completeCountByThisMonth||0}}</span><br><span>已完成</span></li>
+        <li><span>{{businessData.waitService||0}}</span><br><span>待服务</span></li>
+        <li><span>{{businessData.hangUp||0}}</span><br><span>遗留单</span></li>
 
       </ul>
       <ul class="masterDetailFour">
-        <li><span>0</span><br><span>异常结款</span></li>
-        <li><span>100%</span><br><span>准时率</span></li>
-        <li><span>100%</span><br><span>完工率</span></li>
+        <li><span>{{businessData.payOffline||0}}</span><br><span>异常结款</span></li>
+        <li><span>{{businessData.lateRate||0}}%</span><br><span>准时率</span></li>
+        <li><span>{{businessData.completeRate||0}}%</span><br><span>完工率</span></li>
       </ul>
 
     </div>
     <div class="masterDetailContent">
-          <ul class="personal_information">
-            <li><span>张大明</span>
-              <span style="color:rgba(83,107,210,1);display: inline-block;width:1.2rem;height: .42rem;border:0.01rem solid #536BD2;text-align: center;border-radius:0.22rem ;">空闲中</span>
-              <span style="margin-right: 0.4rem" @click="EditInformation()"><img src="../../assets/images/EditInformation.png">编辑信息</span>
-            </li>
-            <li><span>师傅编号</span><span>0544231</span></li>
-            <li><span>师傅手机号</span><span>13478523698</span></li>
-            <li><span>身份证号</span><span>45645644646546446654</span></li>
-            <li id="emergencyContact"><span>紧急联系人</span><span>陈晓霞 13714588888</span></li>
-            <li><span>师傅等级</span><span>中级</span></li>
-            <li><span>服务城市</span><span>深圳</span></li>
-            <li><span>服务区域</span><span>罗湖区</span><br><b>南山区-西丽街道，桃源街道，粤海街道，沙河街道，蛇口街道</b></li>
-            <li><span>服务工种</span><span>家电维修</span><br><b> 家电清洗-冰箱，洗衣机</b></li>
-            <li id="idEdit">证件信息</li>
-            <li id="imgId"><div><p><img src="../../assets/images/idBack.png"></p><span>身份证正面照</span></div>
-                            <div><p><img src="../../assets/images/idBack.png"></p><span>身份证反面照</span></div>
-                            <div> <p><img src="../../assets/images/idBack.png"></p><span>本人手持身份证照</span></div>
-                            <div> <p><img src="../../assets/images/idBack.png"></p><span>其他证件照</span></div>
-            </li>
-          </ul>
+      <ul class="personal_information">
+        <li><span>{{masterDetailObj.name}}</span>
+          <span style="color:rgba(83,107,210,1);display: inline-block;width:1.2rem;height: .42rem;border:0.01rem solid #536BD2;text-align: center;border-radius:0.22rem ;">{{masterDetailObj.workState|masterList}}</span>
+          <span style="margin-right: 0.4rem" @click="EditInformation(masterDetailObj)"><img src="../../assets/images/EditInformation.png">编辑信息</span>
+        </li>
+        <li><span>师傅编号</span><span>{{masterDetailObj.id}}</span></li>
+        <li><span>师傅手机号</span><span>{{masterDetailObj.phoneNum}}</span></li>
+        <li><span>身份证号</span><span>{{masterDetailObj.idNum}}</span></li>
+        <li id="emergencyContact"><span>紧急联系人</span><span>{{masterDetailObj.emergencyContact}}</span></li>
+        <li><span>师傅等级</span><span>{{masterDetailObj.level|masterLevel}}</span></li>
+        <li><span>服务城市</span><span>{{masterDetailObj.city}}</span></li>
+        <li class="cityAe">
+          <span>服务区域</span>
+          <b>
+           {{areas}}
+          </b></li>
+        <li class="cityAe">
+          <span>服务工种</span>
+          <!--<span>家电维修</span><br>-->
+          <b>{{skills}}</b></li>
+        <li id="idEdit">证件信息</li>
+        <li id="imgId">
+          <div><p><img :src="IDImg"></p><span>身份证正面照</span></div>
+          <div><p><img :src="IDImgBack"></p><span>身份证反面照</span></div>
+          <div> <p><img :src="IDImgHand"></p><span>本人手持身份证照</span></div>
+          <div v-for="(item,index) in IDImgOther"> <p><img :src="item"></p><span>其他证件照</span></div>
+        </li>
+      </ul>
 
     </div>
     <div class="footer">
-      <p><span>注册时间:</span><span>2018-04-18</span></p>
-      <p><span>认证时间:</span><span>2018-04-18</span></p>
+      <p><span>注册时间:</span><span>{{masterDetailObj.registerTime|moment('YYYY-MM-DD HH:mm:ss')}}</span></p>
+      <p><span>认证时间:</span><span>{{masterDetailObj.certificateTime|moment('YYYY-MM-DD HH:mm:ss')}}</span></p>
     </div>
 
   </div>
 </template>
 <script>
-    export default {
-      data() {
-        return {
-        }
-      },
-      methods: {
-        EditInformation(v){ //编辑信息
-          console.log("carter")
-        }
+  export default {
+    data() {
+      return {
+        masterDetailObj:{},//师傅数据
+        businessData:{},//业务数据
+        IDImg:"./static/images/IDImg1.png", //身份证正面
+        IDImgBack:"./static/images/IDImg2.png", //身份证反面
+        IDImgHand:"./static/images/IDImg3.png", //身份证手持
+        IDImgOther:"./static/images/IDImg4.png", // 其他
+        areas:"",  //服务地区
+        skills:"",//服务工种
+      }
+    },
+    created(){
 
+      let url=this.$common.apidomain+"/masterinfo/finddetail?id="+JSON.parse(sessionStorage.getItem("masterDetail")).id;
+      this.$http.get(url).then(res=>this.$httpFilter(res).then(data=>{
+        console.log(data)
+        this.masterDetailObj = data.result.masterInfo;
+        this.businessData =data.result.business;
+//        this.areas = data.result.areas;
+        data.result.areas.forEach((v,i)=>{
+          this.areas +=" "+v.label+",";
+        })
+        this.areas = this.areas.substring(0,this.areas.length-1)
+        data.result.skills.forEach((v,i)=>{
+          this.skills +=" "+v.label+",";
+        })
+        this.skills = this.skills.substring(0,this.skills.length-1)
+        let idImg =this.masterDetailObj.idPhotos.split(",");
+        this.IDImg = idImg[0];
+        this.IDImgBack = idImg[1];
+        this.IDImgHand = idImg[2];
+        this.IDImgOther =idImg.splice(3,idImg.length-3);
+      }))
+//      let url=this.$common.apidomain+"/masterinfo/findbusinessdetail?id="+JSON.parse(sessionStorage.getItem("masterDetail")).id;
+    },
+
+
+    methods: {
+      EditInformation(v){ //编辑信息
+        this.$store.commit("masterDetailObj",this.masterDetailObj)  //vuex保存数据
+        this.$router.push({path:"/editMasterDetails"})
       }
 
     }
+
+  }
 
 </script>
 <style scoped lang="less">
@@ -84,23 +127,23 @@
     background: linear-gradient(138.7deg,rgba(135,154,238,1),rgba(83,107,210,1));
     padding-bottom:0.5rem ;
   }
-.masterDetailOne{
-  width: 100%;
-  height: 1.5rem;
-  overflow: hidden;
-  p{
-    margin: 0.5rem 0 0 35%;
-    width:2.24rem;
-    height:0.5rem;
-    background:rgba(255,255,255,1);
-    font-size:0.28rem;
-    font-family:PingFangSC-Regular;
-    color:rgba(83,107,210,1);
-    border-radius: 0.29rem ;
-    text-align: center;
-    line-height: 0.5rem;
+  .masterDetailOne{
+    width: 100%;
+    height: 1.5rem;
+    overflow: hidden;
+    p{
+      margin: 0.5rem 0 0 35%;
+      width:2.24rem;
+      height:0.5rem;
+      background:rgba(255,255,255,1);
+      font-size:0.28rem;
+      font-family:PingFangSC-Regular;
+      color:rgba(83,107,210,1);
+      border-radius: 0.29rem ;
+      text-align: center;
+      line-height: 0.5rem;
+    }
   }
-}
   .masterDetailTwo{
     width: 100%;
     overflow: hidden;
@@ -187,18 +230,18 @@
     width: 100%;
     padding: 0.2rem 0;
     li:nth-child(1){
-       span:nth-child(3){
-         float: right;
-         font-size:0.3rem;
-         font-family:PingFangSC-Regular;
-         color:rgba(83,107,210,1);
-         img{
-           margin: 0 0.13rem;
-           display: inline-block;
-           width: 0.3rem;
-           height: 0.3rem;
-         }
-       }
+      span:nth-child(3){
+        float: right;
+        font-size:0.3rem;
+        font-family:PingFangSC-Regular;
+        color:rgba(83,107,210,1);
+        img{
+          margin: 0 0.13rem;
+          display: inline-block;
+          width: 0.3rem;
+          height: 0.3rem;
+        }
+      }
     }
     li{
       width: 100%;
@@ -224,17 +267,37 @@
         font-family:PingFangSC-Regular;
         color:rgba(57,57,57,1);
       }
+      /*b{*/
+        /*display: inline-block;*/
+        /*font-weight: 100;*/
+        /*line-height:0.42rem;*/
+        /*width: 75%;*/
+        /*margin-left: 25%;*/
+        /*font-size:0.3rem;*/
+        /*font-family:PingFangSC-Regular;*/
+        /*color:rgba(57,57,57,1);*/
+      /*}*/
+
+    }
+    .cityAe{
+      width: 100%;
+      display: flex;
+      span:nth-child(1){
+        display: inline-block;
+        width:1.6rem;
+      }
       b{
         display: inline-block;
+        flex: 1;
         font-weight: 100;
         line-height:0.42rem;
-        width: 75%;
-        margin-left: 25%;
         font-size:0.3rem;
         font-family:PingFangSC-Regular;
         color:rgba(57,57,57,1);
+        span{
+          display: inline-block;
+        }
       }
-
     }
     #idEdit{
       width: 100%;
@@ -247,6 +310,8 @@
       color:rgba(83,107,210,1);
     }
     #emergencyContact{
+      height: 0.6rem;
+      line-height: 0.6rem;
       background:rgba(241,241,241,1);
     }
 
@@ -266,10 +331,10 @@
           background:rgba(255,255,255,1);
           border-radius:0.08rem ;
           img{
-              margin: 0.17rem auto;
-                display: block;
-                width: 2.25rem;
-                height: 1.45rem;
+            margin: 0.17rem auto;
+            display: block;
+            width: 2.25rem;
+            height: 1.45rem;
           }
         }
         span{
@@ -287,20 +352,19 @@
       }
     }
   }
-.footer{
-  width: 100%;
-  padding: 0.2rem;
-  p{
-    height:0.33rem;
-    font-size:0.24rem;
-    font-family:PingFangSC-Regular;
-    color:rgba(136,136,136,1);
-    line-height:0.33rem;
-    span:nth-child(2){
-      margin: 0 0.2rem;
+  .footer{
+    width: 100%;
+    padding: 0.2rem;
+    p{
+      height:0.33rem;
+      font-size:0.24rem;
+      font-family:PingFangSC-Regular;
+      color:rgba(136,136,136,1);
+      line-height:0.33rem;
+      span:nth-child(2){
+        margin: 0 0.2rem;
+      }
     }
   }
-}
 </style>
-
 

@@ -3,17 +3,18 @@
   <div id="masterList_box">
    <div class="search">
      <div id="search_box">
-       <input type="text" placeholder="　搜索" v-model="searchData">
-       <span @click="searchClick(searchData)"><img src="../../../assets/images/serach.png"></span>
+       <input type="text" placeholder="搜索关键词（师傅名称/师傅手机号）" v-model="searchData">
+       <span><img src="../../../assets/images/serach.png"></span>
+       <button v-show="buttonShow"  @click="searchClick(searchData)">搜索</button>
      </div>
    </div>
     <div class="userList">
       <div v-for="(item,index) in userList" class="userListBox">
-          <p class="userListOne"><span>{{item.name}}</span><span>{{item.state}}</span><span @click="seeOlder(item)">查看师傅工单></span></p>
-        <p class="userListTwo"><span>城市:<b>{{item.city}}</b></span><span>已完成:<b>{{item.completed}}</b></span></p>
+          <p class="userListOne"><span>{{item.name}}</span><span>{{item.workState|masterList}}</span><span @click="seeOlder(item)">查看师傅工单></span></p>
+        <p class="userListTwo"><span>城市:<b>{{item.city}}</b></span><span>已完成:<b>{{item.completeCount}}</b></span></p>
           <p class="userListThree">
             <span @click="masterDetailClick(item)"><img src="../../../assets/images/personal_information_icon.png">个人信息</span>
-            <span><a href="tel:18565890306" style="width: 100%;height: 100%; color:rgba(83,107,210,1);"><img src="../../../assets/images/telphone.png"> 联系师傅</a></span>
+            <span><a :href="'tel:'+item.phoneNum" style="width: 100%;height: 100%; color:rgba(83,107,210,1);"><img src="../../../assets/images/telphone.png"> 联系师傅</a></span>
           </p>
       </div>
     </div>
@@ -25,64 +26,47 @@
         return {
           searchData:"", //搜素内容
           userInfoData:"",//网点数据
-          userList:[ //列表数据
-            {
-              "id":"0101003",
-              name:"张侠名",
-              state:"空闲中",
-              city:" 深圳市",
-              completed:"10",
-            },
-            {
-              "id":"0101003",
-              name:"张侠名",
-              state:"空闲中",
-              city:" 深圳市",
-              completed:" 20",
-            },
-
-          ]
+          buttonShow:false, //搜索显示
+          userList:[],//列表数据
+        }
+      },
+      watch:{
+        searchData:function (newData,oldData) {
+          if(newData != ""){
+            this.buttonShow = true;
+          }else{
+            this.buttonShow = false;
+          }
         }
       },
       created(){
-         this.userInfoData = JSON.parse(localStorage.getItem("userInfo"));
-//         let url = this.$apidomain+"/siteInfo/findmaster?siteId="+this.userInfoData.id;
-//         this.$http.get(url).then(res=>{
-//           console.log(res)
-//         })
+         this.searchClick();
       },
       methods: {
-        searchClick(i){ //搜锁
-       console.log(i)
+        searchClick(){ //搜锁
+          this.userInfoData = JSON.parse(localStorage.getItem("userInfo"));
+          let url = this.$common.apidomain+"/siteInfo/findmaster?siteId="+this.userInfoData.id+"&keywords="+this.searchData;
+          this.$http.get(url).then(res=>this.$httpFilter(res).then(data=>{
+            this.userList =data.result;
+          }))
         },
         seeOlder(v){ //查看工单
           sessionStorage.removeItem("masterOrder");
           sessionStorage.setItem("masterOrder",JSON.stringify(v));
-          this.$router.push({path:"../masterOrder"});
+          this.$router.push({path:"/masterOrder"});
         },
         masterDetailClick(v){ //师傅详情
           sessionStorage.removeItem("masterDetail");
           sessionStorage.setItem("masterDetail",JSON.stringify(v));
-          this.$router.push({path:"../masterDetail"});
+          this.$router.push({path:"/masterDetail"});
         },
-        telphoneClick(v){ //打电话
-
-        }
 
       }
 
     }
 
 </script>
-<style lang="less">
-  #search_box .mint-search>.mint-searchbar>.mint-searchbar-inner>.mintui-search{
-          display:none;
 
-  }
-  #search_box .mint-search>.mint-searchbar>.mint-searchbar-inner{
-   ackground:rgba(241,241,241,1);
-  }
-</style>
 <style scoped lang="less">
   #masterList_box{
     position: absolute;
@@ -97,7 +81,6 @@
       height:1.32rem;
       background:rgba(255,255,255,1);
       padding:0.2rem;
-      margin-bottom: 0.26rem;
       #search_box{
         width:100% ;
         height: 0.8rem;
@@ -106,25 +89,40 @@
           width:100% ;
           height: 0.8rem;
           background:rgba(241,241,241,1);
-          border-radius: 45px ;
-          border:1px rgba(241,241,241,1) solid;outline:none;
+          border-radius: 0.45rem ;
+          border:0;
+          outline:none;
           font-size:0.28rem;
-          text-indent: 0.2rem;
+          text-indent: 0.7rem;
           font-family:PingFangSC-Regular;
-          color:rgba(195,195,195,1);
+          /*color:rgba(195,195,195,1);*/
+          color: black;
+        }
+
+        button{
+          position: absolute;
+          right: 0;
+          top:0;
+          width: 1.5rem;
+          height: 0.8rem;
+          border: 0;
+          border: 0.01rem solid rgba(241,241,241,1) solid;outline:none;
+          background:rgba(241,241,241,1);
+          border-radius: 0.45rem ;
+          background: #cccccc;
         }
         span{
          display: inline-block;
           position: absolute;
-          right: 0.1rem;
-          top: 0;
-          width: 0.8rem;
-          height: 0.8rem;
+          left: 0rem;
+          top: 0.15rem;
+          width: 0.4rem;
+          height: 0.4rem;
           img{
             display:inline-block;
-            width: 0.5rem;
-            height: 0.5rem;
-            margin: 0.15rem;
+            width: 0.3rem;
+            height: 0.3rem;
+            margin: 0.1rem;
           }
         }
       }
@@ -149,7 +147,6 @@
             float: left;
           }
           span:nth-child(1){
-            width:1.08rem;
             height:0.5rem;
             font-size:0.36rem;
             font-family:PingFangSC-Semibold;

@@ -1,39 +1,51 @@
 <template>
   <div id="box">
         <section class="search_container" v-if="id==='5'">
+
           <input type="search" name="search" placeholder="搜索工单号" @keyup.enter="search(searchValue)" v-model="searchValue" class="search_input">
            <span  @click="search(searchValue)">搜索</span>
+
         </section>
 
        <section class="data_item" v-for="(item,index) in orders" :key="index" >
+
          <i class="i order_name" :style="icon(item,index)"></i>
+
           <order-title :index="index" :orderNumber="item.id" :state="index" :orderState="item.state" :isClamant="false">
              <span class="clamant" v-if="item.emergencyDegree==='1'">加急</span>
           </order-title>
+
           <div class="order_info">
-            <order-info-list v-for="(itemChild,index2) in item.items" :key="index2" v-if="itemChild.isShow" :item="itemChild" >
-            </order-info-list>
+
+            <order-info-list v-for="(itemChild,index2) in item.items" :key="index2" v-if="itemChild.isShow" :item="itemChild"> </order-info-list>
+
           </div>
-          <section class="operate_content" :class="{'operate_content_id':id==='2'}">
-            <div class="operate_content_item master " :class="{'master_tel':id!=='2'}">
-                    <a v-if="id!=='2'" :href="'tel:'+item.masterPhoneNum">联系师傅</a>
-                    <router-link :to="'/changeMaster/'+item.id+','+item.appointmentDatetime" tag="div" v-if="id==='2'" class="expedite_order">派单</router-link>
+
+          <section class="operate_content" :class="{'operate_content_id':operateContentId(item.state,index)}">
+
+            <div class="operate_content_item master " :class="{'master_tel':linkMaster}">
+                    <a v-if="linkMaster" :href="'tel:'+item.masterPhoneNum">联系师傅</a>
+                    <router-link :to="appointmentDatetime(item)" tag="div" v-if="item.state==='04'&&id=='2'" class="expedite_order">派单</router-link>
             </div>
 
             <div class="operate_content_item user">
-                      <a :href="'tel:'+item.linkmanPhoneNum"> 联系用户</a>
+                   <a :href="'tel:'+item.linkmanPhoneNum"> 联系用户</a>
             </div>
 
-            <router-link tag="div" :to="'/changeMaster/'+item.id+','+item.appointmentDatetime" class="operate_content_item order_expo" v-if="id!=='2'">
+            <router-link tag="div" :to="appointmentDatetime(item)" class="operate_content_item order_expo" v-if="item.state==='04'&&id!=='2'">
                      改派
             </router-link>
           </section>
        </section>
+<!--回滚到顶部-->
+        <scroll-top></scroll-top>
+
   </div>
 </template>
 
 <script>
 import orderTitle from "./orderTitle"
+import scrollTop from "@/components/publicComponents/scrollTop"
 import orderInfoList from "./orderInfoList"
 import storage from "@/assets/js/storage"
 const isShow= id=>  id==="1"?true:false;
@@ -85,7 +97,8 @@ import {Indicator} from 'mint-ui'
     props:["id"],
     components:{
       orderTitle,
-      orderInfoList
+      orderInfoList,
+      scrollTop
     },
     data () {
       return {
@@ -93,6 +106,7 @@ import {Indicator} from 'mint-ui'
         orders:[],
         loading:false,
         value:"kk",
+        isTop:false,
         orderFlag:{
 //          一口价
           once:{
@@ -131,8 +145,6 @@ import {Indicator} from 'mint-ui'
             name:"分类",
             value:"",
             isShow:true,
-//            FLabelBusiness
-//            filterName:"FLabelBusiness",
             key:"catalogName"
           },
            {
@@ -151,22 +163,20 @@ import {Indicator} from 'mint-ui'
             name:"预约时间",
             value:"",
              isShow:true,
-            filterName:"moment",
+//            filterName:"moment",
             key:"appointmentDatetime"
           },
            {
             name:"监控原因",
-             key:"monitorReason",
-             isShow:isShow(this.id),
-//             filterName:"startWorkDeviationShow",
-              value:"",
-              color:"color:#E65831"
+            key:"monitorReason",
+            isShow:isShow(this.id),
+            value:"",
+            color:"color:#E65831"
           },
           {
             name:"遗留原因",
             key:"abnormalHangUpRemark",
             isShow:leaveOver(this.id),
-//            filterName:"startWorkDeviationShow",
             value:"",
             color:"color:#E65831"
           }
@@ -178,6 +188,21 @@ import {Indicator} from 'mint-ui'
       }
     },
     methods:{
+      operateContentId(state,i){
+        if(this.id==="2"&&state==="04"){
+          return true;
+        }else if(state!=="04"&&this.id!=='2'){
+          return true;
+        }else if(state==="04"&&this.id!=='2'){
+            return false;
+        }else{
+          return false;
+        }
+
+      },
+      appointmentDatetime(item){
+        return `/changeMaster/${item.id}/${Date.parse(item.appointmentDatetime)}/${item.masterId}`
+      },
 // NormalOrder("正常工单", "0"),
 //ReworkOrder("返修工单", "1"),
 //  OnePriceOrder("一口价工单", "2"),
@@ -202,9 +227,9 @@ import {Indicator} from 'mint-ui'
         return style;
       },
       search(v){
-//        if(!v){
-////        return  this.$Toast("请输入搜索项")
-//        }
+        if(!v){
+        return this.$Toast("请输入搜索项")
+        }
         Indicator.open('加载中...');
         let url=`${this.$common.apidomain}${filterUrl(this.id)}`
         this.getTableList(url,this.params())
@@ -215,22 +240,22 @@ import {Indicator} from 'mint-ui'
       params(){
         let state="";
         if(this.id==="1"){
-//         监控
+//监控
           state="04,05,06,07,08,10,11".split(",")
         }else if(this.id==="2"){
           state="04".split(",")
-          //待分配
+//待分配
         }else if(this.id==="3"){
           state="05,06,07,10,11,13".split(",")
-          //进行中
+//进行中
         }else if(this.id==="4"){
           state="08,09".split(",")
-          //遗留
+//遗留
         }else if(this.id==="5"){
           state="09,12,14,15,17,18".split(",")
-//        完成
+// 完成
         }
-//        state="04".split(",")
+
         return {
           "page":JSON.stringify(this.showPages),
           "rows":JSON.stringify(this.currentPageSize),
@@ -239,18 +264,30 @@ import {Indicator} from 'mint-ui'
           "id":this.searchValue
         }
       },
-//      get 列表数据
+      rollBack(){
+        let isTop,
+        timer = setInterval(function(){
+          //获取滚动条的滚动高度
+          var osTop = document.documentElement.scrollTop || document.body.scrollTop;
+          //用于设置速度差，产生缓动的效果
+          var speed = Math.floor(-osTop / 6);
+          document.documentElement.scrollTop = document.body.scrollTop = osTop + speed;
+          isTop =true;  //用于阻止滚动事件清除定时器
+          if(osTop == 0){
+            clearInterval(timer);
+          }
+        },20);
 
+      },
+//   get 列表数据
       getTableList(url,params){
-//        return;
-        this.$http.post(url,params).then(r=> this.$httpFilter(r).then(data=>{
-          console.log(data);
-          Indicator.close();
-          this.pageTotal=data.result.pages;
-          const result=JSON.parse(JSON.stringify(data.result));
-          this.loading=true;
-          this.orders=this.orders.concat(result.list);
-          pushOrderItems.call(this)
+        this.$http.post(url,params).then(r=> this.$httpFilter(r).then(data => {
+            Indicator.close();
+            this.pageTotal=data.result.total;
+            const result=JSON.parse(JSON.stringify(data.result));
+            this.loading=true;
+            this.orders=this.orders.concat(result.list);
+            pushOrderItems.call(this)
           })
         )
       }
@@ -260,15 +297,26 @@ import {Indicator} from 'mint-ui'
       let url=`${this.$common.apidomain}${filterUrl(this.id)}`;
       this.getTableList(url,this.params())
     },
-   mounted(){
-//      上拉加载更多；
-        setTimeout(()=>{
-            this.$commonJs.upwardLoading.call(this,()=>{
-              this.getTableList(this.$common.apidomain+filterUrl(),this.params())
-            });
-        },1000);
+    computed:{
+      linkMaster(){
+        return this.id!=="2"?true:false;
+      }
+    },
 
-   },
+     mounted(){
+//          document.addEventListener("scroll",e => {
+//              let top = document.documentElement.scrollTop || document.body.scrollTop;
+//              this.isTop=true;
+//              this.isTop=top>window.innerHeight?true:false;
+//          });
+  //      上拉加载更多；
+          setTimeout(()=>{
+              this.$commonJs.upwardLoading.call(this,()=>{
+                this.getTableList(this.$common.apidomain+filterUrl(this.id),this.params())
+              });
+          },1000);
+
+     },
   }
 </script>
 <style scoped lang="less">
@@ -410,6 +458,7 @@ import {Indicator} from 'mint-ui'
       left:8%;
     }
   }
+
 }
  .data_item{
    width:100%;
@@ -427,5 +476,6 @@ import {Indicator} from 'mint-ui'
      transform:translate(260%,0);
    }
  }
+
 </style>
 

@@ -2,13 +2,16 @@
   <!--完成-->
   <div id="complete">
     <ul class="completeBox" v-for="(item,index) in userList">
-      <li><span class="span1">工单号:</span>{{item.id}} <span>{{item.emergencyDegree}}</span><span>{{item.state}}</span></li>
-      <li><span class="span1">师傅姓名:</span>{{item.name}} </li>
-      <li><span class="span1">分类:</span>{{item.classification}} </li>
-      <li><span class="span1">联系人:</span>{{item.contacts}} </li>
-      <li><span class="span1">服务地址:</span>{{item.serviceAddress}} </li>
-      <li><span class="span1">预约时间:</span>{{item.imeOfAppointmentt}} </li>
-      <p>{{item.orderState}}</p>
+      <li><span class="span1">工单号:</span>{{item.id}}
+        <span style="display: inline-block;width: 0.72rem;height: 0.33rem" v-if="item.emergencyDegree==0">{{item.emergencyDegree|Emergencydegree}}</span>
+        <img style="display: inline-block;width: 0.72rem;height: 0.33rem" v-else-if="item.emergencyDegree==1" src="/static/images/urgent.png">
+        <span>{{item.state|BackOrderStatus}}</span></li>
+      <li><span class="span1">师傅姓名:</span>{{item.masterName}} </li>
+      <li><span class="span1">分类:</span>{{item.catalogName}} </li>
+      <li><span class="span1">联系人:</span>{{item.linkmanName}} </li>
+      <li><span class="span1">服务地址:</span>{{item.linkmanAddress}} </li>
+      <li><span class="span1">预约时间:</span>{{item.appointmentDatetime}} </li>
+      <img v-else-if class="img" :src="item.type|typeImg"></img>
     </ul>
   </div>
 </template>
@@ -16,34 +19,30 @@
     export default {
       data() {
         return {
-          userList:[
-            {
-              id:"1856589030618565890306",
-              name:"李大大",
-              state:"待上工",
-              emergencyDegree:"加急",
-              classification:"手机维修",
-              contacts:"陈小姐",
-              serviceAddress:"广东深圳市南山区科技园A大厦B栋145",
-              imeOfAppointmentt:"2018-05-08 15:00:00",
-              orderState:"企业",
-            },
-            {
-              id:"1856589030618565890306",
-              name:"李大大",
-              state:"待上工",
-              emergencyDegree:"正常",
-              classification:"电脑维修",
-              contacts:"陈大哥",
-              serviceAddress:"广东深圳市南山区科技园A大厦B栋145",
-              imeOfAppointmentt:"2018-05-08 15:00:00",
-              orderState:"企业",
-            }
-          ]
+          userList:[],
+          showPages:"1",  //分页
+          currentPageSize:"100000", //数量
+          total:0,
+          pageTotal:0,
         }
       },
+      created(){
+        this.getTableList();
+      },
       methods: {
-
+        getTableList(){
+          let objData = {};
+          objData.states = ["09","12","15","17","18","19"];
+          objData.id = "";
+          objData.page = this.showPages;
+          objData.rows = this.currentPageSize;
+          objData.siteId=JSON.parse(localStorage.getItem("userInfo")).id;
+          let url= this.$common.apidomain+"/site/order/list";
+          this.$http.post(url,objData).then(res=>this.$httpFilter(res).then(data=>{
+            console.log(data)
+            this.userList = data.result.list;
+          }))
+        }
 
       }
 
@@ -65,7 +64,7 @@
       background: #ffffff;
       padding: 2.5%;
       position: relative;
-      p{
+      .img{
         width: 0.94rem;
         height: 0.42rem;
         position: absolute;
@@ -102,7 +101,7 @@
         line-height: 0.58rem;
         .span1{
           display: inline-block;
-          width:1.32rem;
+          width:1.2rem;
           text-align: right;
           font-size:0.28rem;
           font-family:PingFangSC-Regular;
