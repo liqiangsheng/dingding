@@ -1,0 +1,43 @@
+.btn{
+  position:absolute;
+  bottom:17%;
+  left:50%;
+  transform:translateX(-50%);
+  text-align:center;
+  overflow: hidden;
+  button{
+    width:200px;
+    cursor:pointer;
+    line-height:44px;
+    border:none;
+    padding:0;
+    margin:0;
+    transform: rotate(-360deg);
+    border: 1px solid #979797;
+    border-radius: 4px;
+    float:left;
+    color:#000;
+    background:#fff;
+    outline:none;
+  }
+  .selector{
+    color:#fff;
+    background: #279447;
+  }
+  .forbidden_btn{
+    background: #ff5351;
+    color:#fff;
+  }
+}
+.closeX{
+  position:absolute;
+  top:16%;
+  background-size:100% 100%;
+  background-origin: content-box;
+  width:16px;
+
+  height: 16px;
+  cursor: pointer;
+  right:22%;
+  font-size: 35px;
+}
