@@ -5,6 +5,7 @@
 window.common= {
       apiGps:"http://admin.test.dingdingkuaixiu.com",
       apiupdate:"http://admin.test.dingdingkuaixiu.com",
+      apiModel:"http://image.testdist.dingdingkuaixiu.com/OrderExcel/dingding-importOrderModel.xls", //下载模板
       apiCSV:"http://image.testdist.dingdingkuaixiu.com/",
       masterTest:'http://master.test.dingdingkuaixiu.com', //请求全部师傅数据
       //   masterTest:'http://192.168.20.176:8021', //请求全部师傅数据
@@ -15,8 +16,9 @@ window.common= {
       channelLogin:"http://www.testdist.dingdingkuaixiu.com:85/login",   //渠道端登陆页面 ， 跳转到官网 进行登陆；
       wechatProductAssortment:"http://wechat.testdist.dingdingkuaixiu.com/#/",    //跳转微信用户端指定分类
       // wechatProductAssortment:"http://localhost:8081/#/",
-      // apidomain:"http://192.168.20.172:8011",               //刘伟
-      // apidomain:"http://192.168.20.86:8887",              //雍挺孝
+      // apidomain:"http://192.168.20.75:8887",               //林欢平
+      // apidomain:"http://192.168.20.178:8887",              //雍挺孝
+     // apidomain:"http://192.168.20.178:8887",              //雍挺孝
     //   apidomain:"http://192.168.20.176:8887",              //曾伟建
       // IM_req_url_dial:this.apidomain+'/udesk/callcenterAgentCallout', //拨打联系人 number
       // IM_req_url_order:this.apidomain+'/udesk/tickets',                //工单管理   type,ids
