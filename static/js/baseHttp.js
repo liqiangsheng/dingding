@@ -3,6 +3,7 @@
     测试环境 start
 */
 window.common= {
+      siteAppDomain:"http://site-app.testdist.dingdingkuaixiu.com",
       apiGps:"http://admin.test.dingdingkuaixiu.com",
       apiupdate:"http://admin.test.dingdingkuaixiu.com",
       apiModel:"http://image.testdist.dingdingkuaixiu.com/OrderExcel/dingding-importOrderModel.xls", //下载模板
