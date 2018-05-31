@@ -1,0 +1,22 @@
+#app {
+  .dable_lsit{
+    table{
+      .theads{
+        >th{
+         background:#E5E9F2;
+        }
+      }
+      >tbody{
+        >tr:hover{
+          background:#DBF0FF;
+        }
+        >tr{
+          >td:first-of-type{
+            border-right:none;
+          }
+        }
+      }
+    }
+
+  }
+}
