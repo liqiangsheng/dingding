@@ -1,0 +1,26 @@
+  .container {
+      font-family: MicrosoftYaHei;
+      font-size: 14px;
+      overflow: hidden;
+      overflow-y: auto;
+      letter-spacing: 0;
+      width: 60%;
+      border-radius: 10px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      height: 70%;
+      padding: 0 10px;
+      >.title_text {
+          line-height: 4em;
+      }
+      >h3 {
+          font-family: MicrosoftYaHei;
+          font-size: 14px;
+          color: #333333;
+          padding-left: 10px;
+          letter-spacing: 0;
+      }
+  }
