@@ -1,0 +1,73 @@
+<template>
+  <div class="box">
+    <div>
+      <span>总单数</span>
+      <span></span>
+    </div>
+    <div>
+      <span>已完成</span>
+      <span></span>
+    </div>
+    <div>
+      <span>总流水(元)</span>
+      <span></span>
+    </div>
+    <div>
+      <span>已结算(元)</span>
+      <span></span>
+    </div>
+    <div>
+      <span>待服务</span>
+      <span></span>
+    </div>
+    <div>
+      <span>异常挂起</span>
+      <span></span>
+    </div>
+    <div>
+      <span>异常接款</span>
+      <span></span>
+    </div>
+    <div>
+      <span>平均分</span>
+      <span></span>
+    </div>
+    <div>
+      <span>代收流水</span>
+      <span></span>
+    </div>
+    <div>
+      <span>准时率</span>
+      <span></span>
+    </div>
+    <div>
+      <span>完成率</span>
+      <span></span>
+    </div>
+    <div>
+      <span>投诉工单</span>
+      <span></span>
+    </div>
+    <el-button @click="close()" size="large">关闭</el-button>
+
+  </div>
+</template>
+<script>
+  export default{
+    data(){
+      return{
+
+      }
+    },
+    methods:{
+      close(){
+        this.$emit('closeReset', false)
+      }
+    }
+  }
+</script>
+<style>
+.box{
+  width:480px;
+}
+</style>
