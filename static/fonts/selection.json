@@ -55,7 +55,7 @@
         "isMulticolor2": false,
         "grid": 0,
         "tags": [
-          "师傅"
+          "工程师"
         ],
         "colorPermutations": {
           "2306565125419701255121921255255255125572721": [
@@ -73,7 +73,7 @@
       "properties": {
         "order": 15,
         "id": 9,
-        "name": "师傅",
+        "name": "工程师",
         "prevSize": 32,
         "code": 59649
       },

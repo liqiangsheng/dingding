@@ -24,7 +24,7 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-工单出库-(1):before {
+.icon-工单出库:before {
   content: "\e900";
 }
 .icon-师傅:before {
@@ -42,7 +42,7 @@
 .icon-投诉2:before {
   content: "\e905";
 }
-.icon-时间-(1):before {
+.icon-时间:before {
   content: "\e906";
 }
 .icon-异常:before {

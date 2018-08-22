@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
-    <title>师傅地址</title>
+    <title>工程师地址</title>
     <link rel="stylesheet" href="https://cache.amap.com/lbs/static/main1119.css"/>
     <script type="text/javascript"
             src="https://webapi.amap.com/maps?v=1.4.3&key=c58652b94481fcb3781ac910bbced365&plugin=AMap.InfoWindow,AMap.Marker"></script>
@@ -17,7 +17,7 @@
 <div id="container"></div>
 <script type="text/javascript">
   var lnglats = [[116.368904, 39.923423]];
-  //师傅当前经纬度，订单，用户经纬度
+  //工程师当前经纬度，订单，用户经纬度
   var dd_lon_lat1=sessionStorage.getItem("dd_lon_lat"),
     dd_lon_lat_order1=sessionStorage.getItem("dd_lon_lat_order"),
     dd_distance11=sessionStorage.getItem("dd_distance1"),
@@ -31,23 +31,23 @@
   console.log(2,JSON.parse(dd_lon_lat_order1));
   console.log(3,JSON.parse(dd_distance11));
   console.log(4,JSON.parse(formatted_location11));
-  if(dd_lon_lat1){//师傅经纬度
+  if(dd_lon_lat1){//工程师经纬度
     dd_lon_lat1=JSON.parse(sessionStorage.getItem("dd_lon_lat"));
   }
-  if(dd_lon_lat_order1){//师傅订单 有
+  if(dd_lon_lat_order1){//工程师订单 有
     dd_lon_lat_order1=JSON.parse(sessionStorage.getItem("dd_lon_lat_order"));
     dd_lon_lat_order1_name1=dd_lon_lat_order1.masterId;
     dd_lon_lat_order1_tel1=dd_lon_lat_order1.linkmanName;
-  }else{//师傅订单 没有
+  }else{//工程师订单 没有
     dd_lon_lat_order1_masterInfo=JSON.parse(sessionStorage.getItem("dd_lon_lat_order_masterInfo"));
   }
   if(dd_distance11){//用户经纬度
     dd_distance11=JSON.parse(sessionStorage.getItem("dd_distance1"));
   }
-  if(formatted_location11){//师傅经纬度转文字
+  if(formatted_location11){//工程师经纬度转文字
     formatted_location11=JSON.parse(sessionStorage.getItem("formatted_location1"));
   }
-  lnglats[0]=dd_lon_lat1;//师傅经纬度给lnglats
+  lnglats[0]=dd_lon_lat1;//工程师经纬度给lnglats
 
   //初始化地图对象，加载地图
   var map = new AMap.Map("container", {
@@ -64,14 +64,14 @@
 
   var location_str2=dd_lon_lat1;
   var location_num2=dd_lon_lat1.indexOf(',');
-  var location_num_one2=location_str2.slice(0, location_num2);//师傅经纬度给dd_distance去计算
-  var location_num_two2=location_str2.slice(location_num2 +1 ,location_str2.length);//师傅经纬度给dd_distance去计算
+  var location_num_one2=location_str2.slice(0, location_num2);//工程师经纬度给dd_distance去计算
+  var location_num_two2=location_str2.slice(location_num2 +1 ,location_str2.length);//工程师经纬度给dd_distance去计算
 
   var lnglat = new AMap.LngLat(location_num_one2[0],location_num_two2[1]); //测算距离
   var lnglat1 = lnglat.distance([dd_distance1, dd_distance2]);
 
   console.log('用户', dd_distance1, dd_distance2);
-  console.log('师傅', location_num_one2, location_num_two2);
+  console.log('工程师', location_num_one2, location_num_two2);
   var lnglat_text;
   if(lnglat1 < 1000){
     lnglat_text=lnglat1+"米";
@@ -85,8 +85,8 @@
 
   var content_text=`
         <p>
-          <span>师傅工号:</span><span>${dd_lon_lat_order1  ? dd_lon_lat_order1_name1 : dd_lon_lat_order1_masterInfo.id}</span>&nbsp;&nbsp;&nbsp;
-          <span>师傅姓名:</span><span>${dd_lon_lat_order1  ? dd_lon_lat_order1_tel1 : dd_lon_lat_order1_masterInfo.name}</span>
+          <span>工程师工号:</span><span>${dd_lon_lat_order1  ? dd_lon_lat_order1_name1 : dd_lon_lat_order1_masterInfo.id}</span>&nbsp;&nbsp;&nbsp;
+          <span>工程师姓名:</span><span>${dd_lon_lat_order1  ? dd_lon_lat_order1_tel1 : dd_lon_lat_order1_masterInfo.name}</span>
         </p>
         <p>
            <span>当前地址:</span><span id="dd_formatted_address_dom">${formatted_location11 ? formatted_location11 : '无'}</span>
@@ -116,7 +116,7 @@
     map.setFitView();
 
 
-    //清空当前的数据，防止没有gps数据的师傅借用此数据
+    //清空当前的数据，防止没有gps数据的工程师借用此数据
   sessionStorage.removeItem("dd_lon_lat"),
   sessionStorage.removeItem("dd_lon_lat_order"),
   sessionStorage.removeItem("dd_distance1"),

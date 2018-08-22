@@ -50,8 +50,8 @@ for (var i = 0, marker; i < lnglats.length; i++) {
 
   var content_text=`
         <p>
-          <span>师傅工号:</span><span>${dd_lat_lon_order1[i].masterId ? dd_lat_lon_order1[i].masterId : '无'}</span>&nbsp;&nbsp;&nbsp;
-          <span>师傅姓名:</span><span>${dd_lat_lon_order1[i].name ? dd_lat_lon_order1[i].name : '无'}</span>
+          <span>工程师工号:</span><span>${dd_lat_lon_order1[i].masterId ? dd_lat_lon_order1[i].masterId : '无'}</span>&nbsp;&nbsp;&nbsp;
+          <span>工程师姓名:</span><span>${dd_lat_lon_order1[i].name ? dd_lat_lon_order1[i].name : '无'}</span>
         </p>
         <p>
           <span>状态:</span>
